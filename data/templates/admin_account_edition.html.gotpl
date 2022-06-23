@@ -1,0 +1,45 @@
+{{with .Data}}
+{{with .Account}}
+<form class="ev-auto-form">
+  <div class="block ev-block">
+    <h1 class="title">Information</h1>
+
+    <div class="field ev-required">
+      <label for="/username" class="label">Username</label>
+      <div class="control">
+        <input name="/username" type="text" class="input"
+               value={{.Username}}>
+      </div>
+    </div>
+
+    <div class="field ev-required">
+      <label for="/role" class="label">Role</label>
+      <div class="control">
+        <div class="select">
+          <select name="/role">
+            <option value="user" {{if eq .Role "user"}}selected{{end}}>
+              user
+            </option>
+            <option value="admin" {{if eq .Role "admin"}}selected{{end}}>
+              admin
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="field is-grouped mt-5">
+    <div class="control">
+      <button name="submit" type="submit" class="button is-primary">
+        Submit
+      </button>
+    </div>
+
+    <div class="control">
+      <a class="button" href="/admin/accounts">Cancel</a>
+    </div>
+  </div>
+</form>
+{{end}}
+{{end}}

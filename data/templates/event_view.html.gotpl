@@ -1,0 +1,102 @@
+{{with .Data}}
+{{with .Event}}
+<div class="block ev-block">
+  <h1 class="title">Information</h1>
+
+  <div class="columns">
+    <div class="column is-5">
+      <dl>
+        <dt>Id</dt>
+        <dd class="is-family-monospace">{{.Id}}</dd>
+
+        <dt>Event time</dt>
+        <dd title="{{$.Context.FormatAltDate .EventTime}}">
+          {{$.Context.FormatDate .EventTime}}
+        </dd>
+
+        <dt>Connector</dt>
+        <dd class="is-family-monospace">{{.Connector}}</dd>
+
+        <dt>Name</dt>
+        <dd class="is-family-monospace">{{.Name}}</dd>
+      </dl>
+    </div>
+
+    <div class="column is-5">
+      <dl>
+        <dt>Job</dt>
+        <dd>
+          {{with $.Data.Job}}
+          <a href="/jobs/id/{{.Id}}">{{.Spec.Name}}</a>
+          {{else}}
+          <span class="ev-placeholder">unavailable</span>
+          {{end}}
+        </dd>
+
+        {{if .OriginalEventId}}
+        <dt>Original event</dt>
+        <dd>
+          <span class="is-family-monospace">
+            <a href="/events/id/{{.OriginalEventId}}">{{.Connector}}/{{.Name}}</a>
+          </span>
+        </dd>
+        {{end}}
+      </dl>
+    </div>
+
+    <div class="column is-2 is-narrow">
+      <div class="buttons is-right">
+        {{if .JobId}}
+        <button name="replay" class="button" data-id="{{.Id}}">
+          Replay
+        </button>
+        {{end}}
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+
+<div class="block ev-block">
+  <h1 class="title">Job executions</h1>
+
+  {{if .JobExecutions}}
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="is-narrow"></th>
+        <th>Name</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{range .JobExecutions}}
+      <tr>
+        <td class="is-narrow">
+          {{template "job_status_icon.html" .}}
+        </td>
+
+        <td>
+          <a class="ev-wide-link" href="/job_executions/id/{{.Id}}">
+            {{.JobSpec.Name}}
+          </a>
+        </td>
+      {{end}}
+    </tbody>
+  </table>
+  {{else}}
+  <div class="block">
+    <p>No linked job execution found.</p>
+  </div>
+  {{end}}
+</div>
+
+{{with .Event}}
+<div class="block ev-block">
+  <h1 class="title">Data</h1>
+  <pre><code class="language-json">{{$.Data.EventData}}</code></pre>
+</div>
+{{end}}
+{{end}}
+
+{{template "events_modals.html"}}

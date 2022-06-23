@@ -1,0 +1,670 @@
+@charset "utf-8";
+
+@import "../../evweb/css/base.scss";
+
+// Menu and main content
+#ev-menu {
+  position: fixed;
+  z-index: 1; // above the main content (important on mobile)
+
+  height: 100%;
+
+  padding: 0;
+
+  background-color: $black-ter;
+
+  .title {
+    margin-top: 4px;
+    margin-bottom: $size-large;
+
+    color: $primary;
+  }
+
+  .ev-bottom-menu {
+    nav {
+      position: absolute;
+      bottom: $size-5;
+      width: 100%;
+    }
+  }
+
+  &.ev-expanded {
+    width: $ev-menu-width;
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      padding-left: 12px;
+      padding-right: $size-large;
+
+      .ev-demo {
+        font-variant: small-caps;
+        color: $grey-lightest;
+      }
+    }
+
+    nav.menu {
+      .menu-list {
+        margin-bottom: $size-normal;
+      }
+
+      a {
+        padding-left: $size-large;
+        padding-right: $size-large;
+
+        border-radius: 0;
+
+        &.menu-label {
+          color: $blue;
+
+          padding-left: $size-large;
+          padding-right: $size-large;
+        }
+
+        .tag {
+          margin-left: $size-small;
+        }
+      }
+    }
+  }
+
+  &:not(.ev-expanded) {
+    width: 80px;
+
+    .title {
+      .ev-logo {
+        // The logo is 64x64
+        margin-left: 8px;
+        margin-right: 8px;
+      }
+
+      .ev-text, .ev-demo {
+        display: none;
+      }
+    }
+
+    nav.menu {
+      width: 80px;
+
+      a {
+        text-align: center;
+
+        .icon {
+          font-size: 24px;
+        }
+
+        .ev-label {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+#ev-content {
+  padding-left: 2em;
+  padding-right: 2em;
+
+  padding-bottom: 0;
+
+  &.ev-menu-expanded {
+    margin-left: $ev-menu-width;
+  }
+
+  &:not(.ev-menu-expanded) {
+    margin-left: 80px;
+  }
+
+  #ev-collapse-menu, #ev-expand-menu {
+    float: left;
+    margin-left: -$gap; // Negate the padding of the parent container
+
+    font-size: 16px;
+
+    @include touch {
+      font-size: 24px;
+    }
+  }
+}
+
+// Links
+.ev-wide-link {
+  display: inline-block;
+  width: 100%;
+}
+
+.ev-link-as-text, .ev-link-as-text:hover {
+  color: $text;
+  text-decoration: none;
+}
+
+a.ev-disabled-job {
+  text-decoration: line-through;
+}
+
+// Tooltips
+th, td, dt, dd {
+  &[title]::after {
+    font-family: "Material Design Icons";
+    font-size: $size-7;
+    content: " \F02FD";
+    vertical-align: top;
+    color: $grey-lighter;
+  }
+}
+
+// Secret data
+.ev-secret {
+  cursor: pointer;
+}
+
+// Definition lists
+dl {
+  display: grid;
+  grid-template-columns: fit-content(40%) auto;
+
+  & > dt {
+    grid-column: 1;
+
+    margin-right: 1.0em;
+
+    font-weight: $weight-medium;
+  }
+
+  & > dd {
+    grid-column: 2;
+    overflow-x: auto;
+
+    &:not(:last-child) {
+      margin-bottom: 0.5em;
+    }
+  }
+}
+
+// Tables
+.table {
+  th {
+    font-weight: $weight-medium;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+
+  tbody {
+    tr:not(.is-selected) {
+      &:hover {
+        background-color: $table-row-hover-background-color;
+      }
+    }
+  }
+}
+
+.table#ev-program-output {
+  td {
+    vertical-align: top;
+  }
+}
+
+// Boxes
+div.box {
+  box-shadow: $shadow;
+}
+
+div.ev-block,
+div.ev-block table {
+  background-color: $white-bis;
+}
+
+div.ev-block {
+  border: 1px solid $grey-lighter;
+  border-radius: $radius-small;
+  box-shadow: $shadow;
+}
+
+div.ev-block {
+  padding: $column-gap calc(#{$column-gap}*1.5) $column-gap;
+}
+
+.column > .ev-block {
+  // Make sure that column top blocks all have the same height
+  height: 100%;
+}
+
+// Modals
+.modal {
+  justify-content: start;
+  padding-top: 20vh;
+
+  .modal-card-head {
+    .delete {
+      background: transparent;
+    }
+  }
+
+  .modal-card-body {
+    padding-bottom: 0;
+  }
+
+  .modal-card-foot {
+    background-color: $modal-card-body-background-color;
+  }
+}
+
+// Top bars
+.tabs a {
+  font-weight: $weight-medium;
+}
+
+#ev-top-bar {
+  margin-bottom: 2em;
+
+  font-family: $family-secondary;
+  font-weight: $weight-medium;
+
+  .breadcrumb {
+    li {
+      a {
+        text-decoration: none;
+
+        span.ev-disabled {
+          color: $grey-lighter;
+          font-weight: $weight-normal;
+          text-decoration: line-through;
+          cursor: default;
+        }
+      }
+    }
+  }
+}
+
+// Buttons
+.button {
+  min-width: 6em;
+
+  box-shadow: $shadow;
+
+  &:hover, &.is-hovered {
+    background-color: bulmaLighten($button-background-color, 10%);
+  }
+
+  @each $name, $pair in $button-colors {
+    $color: nth($pair, 1);
+    $color-invert: nth($pair, 2);
+
+    &.is-#{$name} {
+      &:hover, &.is-hovered {
+        background-color: bulmaLighten($color, 5%);
+      }
+    }
+  }
+}
+
+.ev-page-buttons .button {
+  width: 6em;
+}
+
+// Forms
+form {
+  input[readonly] {
+    color: $grey-lighter;
+    cursor: not-allowed;
+  }
+
+  &:not(.ev-all-optional) {
+    .field:not(.ev-required):not(.ev-no-optional-label) .label {
+      &:after {
+        content: " (optional)";
+      }
+    }
+  }
+
+  p.help {
+    margin-bottom: 0;
+  }
+
+  p.help.is-danger {
+    font-weight: $weight-medium;
+  }
+}
+
+.label {
+  font-size: $size-6;
+}
+
+label.checkbox input {
+  margin-right: 0.4em;
+}
+
+.field-label {
+  text-align: left;
+}
+
+.input {
+  border-width: 1px;
+}
+
+// Subscription form
+form.ev-subscription {
+  .ev-description {
+    height: 10em;
+
+    .ev-price {
+      text-align: center;
+
+      .ev-amount {
+        font-size: $size-5;
+      }
+
+      .ev-vat {
+        margin-left: 0.25rem;
+        font-size: $size-7;
+        color: $grey;
+      }
+    }
+
+    .ev-period {
+      text-align: center;
+      font-size: $size-7;
+      color: $grey;
+
+      margin-bottom: $size-4;
+    }
+  }
+
+  .ev-features {
+    height: 24em;
+
+    ul {
+      margin-top: $size-5;
+      list-style-type: none;
+
+      .ev-available::after {
+        font-family: "Material Design Icons";
+        content: " \F012C";
+        color: $green;
+        float: right;
+      }
+
+      .ev-unavailable::after {
+        font-family: "Material Design Icons";
+        content: " \F0156";
+        color: $red;
+        float: right;
+      }
+    }
+  }
+
+  .ev-footnotes {
+    margin-top: $size-4;
+    list-style-position: inside;
+    font-size: $size-7;
+  }
+}
+
+// Metrics
+.ev-metrics {
+  svg {
+    width: 100%;
+    height: 24em;
+
+    .ev-grid line {
+      stroke: $grey-lighter;
+      stroke-width: 0.25;
+    }
+
+    text {
+      font-family: $family-primary;
+      font-size: 0.6rem;
+
+      fill: $text;
+
+      &.ev-axis-title {
+        font-family: $family-secondary;
+        font-size: $subtitle-size;
+      }
+
+      &.ev-tooltip {
+        alignment-baseline: middle;
+        font-size: $size-6;
+      }
+    }
+
+    .ev-legend {
+      rect.ev-background {
+        fill: $white-bis;
+        fill-opacity: 0.6;
+      }
+
+      rect.ev-border {
+        fill: none;
+        stroke: $grey-lighter;
+        stroke-width: 1.0;
+      }
+
+      text {
+        alignment-baseline: central;
+        font-size: 0.8rem;
+        fill: $text;
+      }
+    }
+
+    rect.ev-rect {
+      fill: $blue;
+
+      &.is-success {
+        fill: $success;
+      }
+
+      &.is-warning {
+        fill: $warning;
+      }
+
+      &.is-danger {
+        fill: $danger;
+      }
+    }
+
+    circle.ev-point {
+      fill: $blue;
+
+      &.is-success {
+        fill: $success;
+      }
+
+      &.is-warning {
+        fill: $warning;
+      }
+
+      &.is-danger {
+        fill: $danger;
+      }
+
+      &.ev-p99 {
+        fill: $blue-p99;
+      }
+
+      &.ev-p80 {
+        fill: $blue-p80;
+      }
+
+      &.ev-p50 {
+        fill: $blue-p50;
+      }
+    }
+
+    path.ev-line {
+      fill: none;
+      stroke: $text;
+      stroke-width: 1.5;
+
+      &.is-success {
+        stroke: $success;
+      }
+
+      &.is-warning {
+        stroke: $warning;
+      }
+
+      &.is-danger {
+        stroke: $danger;
+      }
+
+      &.ev-p99 {
+        stroke: $blue-p99;
+      }
+
+      &.ev-p80 {
+        stroke: $blue-p80;
+      }
+
+      &.ev-p50 {
+        stroke: $blue-p50;
+      }
+    }
+  }
+}
+
+// Misc
+.is-halfheight {
+  min-height: 50vh;
+}
+
+.is-fullheight {
+  min-height: 100vh;
+}
+
+// Projects dialog
+#ev-project-dialog-modal {
+  .modal-card-body {
+    max-height: 24em;
+  }
+}
+
+// Job execution view
+#ev-steps {
+  .ev-step-header {
+    margin-top: 0;
+    margin-bottom: 0;
+
+    .column {
+      padding-left: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    h1 {
+      cursor: pointer;
+    }
+
+    &:hover {
+      .title {
+        color: $link;
+      }
+    }
+
+    .ev-duration {
+      color: $grey;
+    }
+  }
+
+  .ev-step-body {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+}
+
+// Job timeline
+#ev-jobs {
+  td.ev-favourite {
+    padding-left: 0;
+    padding-right: 0;
+
+    .icon {
+      cursor: pointer;
+
+      &.ev-is-favourite {
+        color: $yellow;
+      }
+
+      &:not(.ev-is-favourite) {
+        color: $grey-lightest;
+
+        &:hover {
+          color: $grey-lighter;
+        }
+      }
+    }
+  }
+}
+
+// Job statuses
+.tags.ev-status {
+  flex-wrap: nowrap;
+
+  cursor: default;
+
+  .ev-status-label {
+    width: 6em;
+  }
+}
+
+// Scratchpad
+#ev-scratchpad {
+  td.ev-key {
+    vertical-align: top;
+  }
+}
+
+// Terminal rendering
+.ev-term {
+  background-color: $black-ter;
+  color: $grey-lightest;
+
+  .tb  { font-weight: $weight-bold; }
+  .ti  { font-style: italic; }
+  .tu  { text-decoration: underline;  }
+  .tco { text-decoration: line-through; }
+
+  :not(.trv) {
+    &.tfg-black   { color: $black-ter; }
+    &.tfg-red     { color: $red; }
+    &.tfg-green   { color: $green; }
+    &.tfg-yellow  { color: $yellow; }
+    &.tfg-blue    { color: $blue; }
+    &.tfg-magenta { color: $magenta;  }
+    &.tfg-cyan    { color: $cyan; }
+    &.tfg-white   { color: $grey-lightest; }
+
+    &.tbg-black   { background-color: $black-ter; }
+    &.tbg-red     { background-color: $red; }
+    &.tbg-green   { background-color: $green; }
+    &.tbg-yellow  { background-color: $yellow; }
+    &.tbg-blue    { background-color: $blue; }
+    &.tbg-magenta { background-color: $magenta;  }
+    &.tbg-cyan    { background-color: $cyan; }
+    &.tbg-white   { background-color: $grey-lightest; }
+  }
+
+  .trv {
+    &.tfg-black   { background-color: $black-ter; }
+    &.tfg-red     { background-color: $red; }
+    &.tfg-green   { background-color: $green; }
+    &.tfg-yellow  { background-color: $yellow; }
+    &.tfg-blue    { background-color: $blue; }
+    &.tfg-magenta { background-color: $magenta;  }
+    &.tfg-cyan    { background-color: $cyan; }
+    &.tfg-white   { background-color: $grey-lightest; }
+
+    &.tbg-black   { color: $black-ter; }
+    &.tbg-red     { color: $red; }
+    &.tbg-green   { color: $green; }
+    &.tbg-yellow  { color: $yellow; }
+    &.tbg-blue    { color: $blue; }
+    &.tbg-magenta { color: $magenta;  }
+    &.tbg-cyan    { color: $cyan; }
+    &.tbg-white   { color: $grey-lightest; }
+  }
+}

@@ -1,0 +1,40 @@
+{{with .Data.Account}}
+<div class="block ev-block">
+  <h1 class="title">Information</h1>
+
+  <div class="columns">
+    <div class="column is-5">
+      <dl>
+        <dt>Username</dt>
+        <dd>
+          {{.Username}}
+        </dd>
+
+        <dt>Role</dt>
+        <dd>{{.Role}}</dd>
+
+        <dt>Creation time</dt>
+        <dd title="{{$.Context.FormatAltDate .CreationTime}}">
+          {{$.Context.FormatDate .CreationTime}}
+        </dd>
+
+        <dt>Last login time</dt>
+        <dd title="{{$.Context.FormatAltDate .LastLoginTime}}">
+          {{$.Context.FormatDate .LastLoginTime}}
+        </dd>
+      </dl>
+    </div>
+
+    <div class="column is-5">
+    </div>
+
+    <div class="column is-2 is-narrow">
+      <div class="buttons is-right">
+        <a class="button" href="/account/change_password">Change password</a>
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+
+{{template "account_modals.html"}}

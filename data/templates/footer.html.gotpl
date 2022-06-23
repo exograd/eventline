@@ -1,0 +1,14 @@
+<footer class="footer">
+  <div class="container has-text-centered">
+    <hr />
+
+    <div class="block">
+      <a href="https://www.eventline.net">Eventline</a>: open source software
+      developed with care by <a href="https://www.exograd.com">Exograd</a>.
+    </div>
+
+    <div class="block">
+      Copyright 2021-2022 Exograd SAS — all rights reserved.
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,13 @@
+<span class="icon
+             {{if eq .Status "started"}}has-text-info{{end}}
+             {{if eq .Status "successful"}}has-text-success{{end}}
+             {{if eq .Status "aborted"}}has-text-warning{{end}}
+             {{if eq .Status "failed"}}has-text-danger{{end}}">
+  <i class="mdi
+            {{if eq .Status "created"}}mdi-minus-circle-outline{{end}}
+            {{if eq .Status "started"}}mdi-arrow-right-drop-circle-outline{{end}}
+            {{if eq .Status "successful"}}mdi-check-circle-outline{{end}}
+            {{if eq .Status "aborted"}}mdi-close-circle-outline{{end}}
+            {{if eq .Status "failed"}}mdi-alert-circle-outline{{end}}">
+  </i>
+</span>

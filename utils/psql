@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -eu
+
+database=eventline
+if [ $# -ge 1 ]; then
+    database=$1
+fi
+
+uri=postgresql://eventline:eventline@localhost:5432/$database
+
+psql $uri

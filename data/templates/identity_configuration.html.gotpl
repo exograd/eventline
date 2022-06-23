@@ -1,0 +1,54 @@
+{{with .Data}}
+<form id="ev-identity-form"
+      {{with .Identity}}
+      data-identity-id="{{.Id}}"
+      data-connector="{{.Connector}}"
+      data-type="{{.Type}}"
+      {{end}}>
+  <div class="block ev-block">
+    <div class="field ev-required">
+      <label for="/name" class="label">Name</label>
+      <div class="control">
+        <input name="/name" type="text" class="input"
+               {{with .Identity}}value="{{.Name}}"{{end}}>
+      </div>
+    </div>
+
+    <div class="field ev-required">
+      <label for="/connector" class="label">Connector</label>
+      <div class="control">
+        <div class="select">
+          {{template "select.html" .ConnectorSelect}}
+        </div>
+      </div>
+    </div>
+
+    <div class="field ev-required">
+      <label for="/type" class="label">Type</label>
+      <div class="control">
+        <div id="ev-type-select-container" class="select">
+          {{/* Filled dynamically, see identities.js */}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block ev-block">
+    <div id="ev-identity-data">
+      {{template "identity_data_form.html" $}}
+    </div>
+  </div>
+
+  <div class="field is-grouped mt-5">
+    <div class="control">
+      <button name="submit" type="submit" class="button is-primary">
+        Submit
+      </button>
+    </div>
+
+    <div class="control">
+      <a class="button" href="/identities">Cancel</a>
+    </div>
+  </div>
+</form>
+{{end}}

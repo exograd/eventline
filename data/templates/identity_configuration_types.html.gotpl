@@ -1,0 +1,3 @@
+{{with .Data}}
+{{template "select.html" .TypeSelect}}
+{{end}}

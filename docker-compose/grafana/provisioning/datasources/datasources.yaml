@@ -1,0 +1,7 @@
+apiVersion: 1
+datasources:
+  - name: "influxdb"
+    type: "influxdb"
+    database: "eventline"
+    url: "http://influxdb:8086"
+    httpMode: "POST"

@@ -1,0 +1,113 @@
+{{with .Data}}
+<div class="block ev-block">
+  <div class="columns">
+    <div class="column is-5">
+      {{with .Identity}}
+      <dl>
+        <dt>Name</dt>
+        <dd>{{.Name}}</dd>
+
+        <dt>Connector</dt>
+        <dd class="is-family-monospace">{{.Connector}}</dd>
+
+        <dt>Type</dt>
+        <dd class="is-family-monospace">{{.Type}}</dd>
+
+        <dt>Status</dt>
+        <dd>{{template "identity_status_icon.html" .}}</dd>
+
+        {{with .ErrorMessage}}
+        <dt>Error</dt>
+        <dd class="has-text-danger">{{.}}</dd>
+        {{end}}
+
+        <dt>Creation time</dt>
+        <dd title="{{$.Context.FormatAltDate .CreationTime}}">
+          {{$.Context.FormatDate .CreationTime}}
+        </dd>
+
+        <dt>Update time</dt>
+        <dd title="{{$.Context.FormatAltDate .UpdateTime}}">
+          {{$.Context.FormatDate .UpdateTime}}
+        </dd>
+
+        <dt>Last use time</dt>
+        <dd {{with .LastUseTime}}title="{{$.Context.FormatAltDate .}}"{{end}}>
+          {{if .LastUseTime}}
+          {{$.Context.FormatDate .LastUseTime}}
+          {{else}}
+          <span class="ev-placeholder">Identity never used.</span>
+          {{end}}
+        </dd>
+
+        {{with .RefreshTime}}
+        <dt>Next refresh</dt>
+        <dd title="{{$.Context.FormatAltDate .}}">
+          {{$.Context.FormatDate .}}
+        </dd>
+        {{end}}
+      </dl>
+      {{end}}
+    </div>
+
+    <div class="column is-5">
+      <dl>
+        {{template "identity_data_view.html" $}}
+      </dl>
+    </div>
+
+    <div class="column is-2 is-narrow">
+      {{with .Identity}}
+      <div class="buttons is-right">
+        <a class="button" href="/identities/id/{{.Id}}/configuration">
+          Configure
+        </a>
+
+        <button class="button" name="refresh"
+                data-id="{{.Id}}" data-name="{{.Name}}"
+                {{if not .Refreshable}}disabled{{end}}>
+          Refresh
+        </button>
+
+        <button class="button is-danger" name="delete"
+                data-id="{{.Id}}" data-name="{{.Name}}">
+          Delete
+        </button>
+      </div>
+      {{end}}
+    </div>
+  </div>
+</div>
+
+<div class="block ev-block">
+  <h1 class="title">Linked jobs</h1>
+
+  {{if eq (len .Jobs) 0}}
+  <div class="block">
+    <p class="ev-placeholder">No job is currently using this identity.</p>
+  </div>
+  {{else}}
+  <table class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th>Name</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{range .Jobs}}
+      <tr>
+        <td>
+          <a class="ev-wide-link" href="/jobs/id/{{.Id}}">
+            {{.Spec.Name}}
+          </a>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{end}}
+</div>
+{{end}}
+
+{{template "identities_modals.html"}}

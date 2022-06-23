@@ -1,0 +1,36 @@
+logger:
+  backend_type: "terminal"
+  backend:
+    color: true
+    domain_width: 32
+  debug_level: 1
+
+data_directory: "data"
+
+api_http_server:
+  address: "localhost:8085"
+
+web_http_server:
+  address: "localhost:8087"
+
+influx:
+  uri: "http://localhost:8086"
+  bucket: "eventline/main"
+
+pg:
+  uri: "postgres://eventline:eventline@localhost:5432/eventline"
+  schema_directory: "data/pg/schemas"
+  schema_names:
+    - "eventline"
+
+encryption_key: "kDWhsf6HuLOr/3i0rTfOMaFhAWDwfjjgOOKG+TdodyE="
+
+web_http_server_uri: "http://localhost:8087"
+
+connectors:
+  github:
+    webhook_key: "dd09de5ee4b026def599c3e6a0cf8f4a"
+
+runners:
+  local:
+    root_directory: "tmp/local-execution"

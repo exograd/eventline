@@ -1,0 +1,10 @@
+<div class="select is-multiple">
+  {{$select := .}}
+  <select name="{{.Name}}" multiple size="{{.Size}}">
+    {{range $i := .Options}}
+    <option value="{{.Name}}" {{if $select.IsSelected .Name}}selected{{end}}>
+      {{.Label}}
+    </option>
+    {{end}}
+  </select>
+</div>

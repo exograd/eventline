@@ -1,0 +1,3 @@
+[submodule "evweb"]
+	path = evweb
+	url = git@github.com:exograd/evweb.git

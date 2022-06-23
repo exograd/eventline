@@ -1,0 +1,14 @@
+<nav class="breadcrumb is-medium">
+  <ul>
+    {{range $i, $e := .Entries}}
+    <li class="{{if eq $i (len $.Entries | sub 1)}}is-active{{end}}">
+      <a {{with .URI}}href="{{.}}"{{end}}>
+        <span class="{{if $e.Disabled}}ev-disabled{{end}}
+                     {{if $e.Verbatim}}is-family-monospace{{end}}">
+          {{$e.Label}}
+        </span>
+      </a>
+    </li>
+    {{end}}
+  </ul>
+</nav>

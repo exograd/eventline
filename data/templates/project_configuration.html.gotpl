@@ -1,0 +1,127 @@
+{{with .Data}}
+<form class="ev-auto-form">
+  <div class="block ev-block">
+    {{with .Project}}
+    <h1 class="title">Information</h1>
+
+    <div class="field ev-required">
+      <label for="/project/name" class="label">Name</label>
+      <div class="control">
+        <input name="/project/name" type="text" class="input"
+               value="{{.Name}}">
+      </div>
+    </div>
+    {{end}}
+  </div>
+
+  <div class="block ev-block">
+    <h1 class="title">Settings</h1>
+
+    <input name="/project_settings/id" type="hidden" value="{{.Project.Id}}">
+
+    {{with .ProjectSettings }}
+    <div class="field ev-required">
+      <label for="/project_settings/code_header" class="label">Code header</label>
+      <div class="control">
+        <textarea name="/project_settings/code_header"
+                  class="textarea is-family-monospace">{{.CodeHeader}}</textarea>
+      </div>
+    </div>
+    {{end}}
+  </div>
+
+  <div class="block ev-block">
+
+    <h1 class="title">Notifications</h1>
+
+    <input name="/project_notification_settings/id" type="hidden"
+           value="{{.Project.Id}}">
+
+    {{with .ProjectNotificationSettings}}
+
+    <label class="label">Job completion</label>
+
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <input name="/project_notification_settings/on_successful_job"
+                 type="checkbox"
+                 {{if .OnSuccessfulJob}}checked{{end}}>
+          Receive notifications when jobs succeed.
+        </label>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <input name="/project_notification_settings/on_first_successful_job"
+                 type="checkbox"
+                 {{if .OnFirstSuccessfulJob}}checked{{end}}>
+          Receive a notification the first time a job succeed after one
+          or more failures or abortions.
+        </label>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <input name="/project_notification_settings/on_failed_job"
+                 type="checkbox"
+                 {{if .OnFailedJob}}checked{{end}}>
+          Receive notifications when jobs fail.
+        </label>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <input name="/project_notification_settings/on_aborted_job"
+                 type="checkbox"
+                 {{if .OnAbortedJob}}checked{{end}}>
+          Receive notifications when jobs are aborted.
+        </label>
+      </div>
+    </div>
+
+    <label class="label">Identities</label>
+
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <input name="/project_notification_settings/on_identity_refresh_error"
+                 type="checkbox"
+                 {{if .OnIdentityRefreshError}}checked{{end}}>
+          Receive notifications when an identity cannot be refreshed due to
+          an OAuth2 authorization error.
+        </label>
+      </div>
+    </div>
+    {{end}}
+
+    <label class="label">Recipient accounts</label>
+
+    {{with .AccountMultiSelect}}
+    <div class="field">
+      <div class="control">
+        {{template "multi_select.html" .}}
+      </div>
+    </div>
+    {{end}}
+  </div>
+
+  <div class="field is-grouped mt-5">
+    <div class="control">
+      <button name="submit" type="submit" class="button is-primary">
+        Submit
+      </button>
+    </div>
+
+    <div class="control">
+      <a class="button" href="/projects">Cancel</a>
+    </div>
+  </div>
+</form>
+{{end}}

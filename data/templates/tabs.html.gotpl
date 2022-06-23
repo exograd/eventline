@@ -1,0 +1,17 @@
+<div class="tabs is-centered is-medium mb-6">
+  {{$tabs := .}}
+  <ul>
+    {{range .Tabs}}
+      <li class="{{if eq .Id $tabs.SelectedTab}}is-active{{end}}">
+        <a href="{{.URI}}">
+          {{if .Icon}}
+            <span class="icon"><i class="mdi mdi-{{.Icon}}"></i></span>
+            <span>{{.Label}}</span>
+          {{else}}
+            {{.Label}}
+          {{end}}
+        </a>
+      </li>
+    {{end}}
+  </ul>
+</div>

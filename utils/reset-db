@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -eu
+
+user=postgres
+password=postgres
+
+database=eventline
+if [ $# -ge 1 ]; then
+    database=$1
+fi
+
+uri=postgresql://$user:$password@localhost:5432/$database
+
+psql -v ON_ERROR_STOP=1 $uri <<-EOF
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public AUTHORIZATION eventline;
+GRANT ALL ON SCHEMA public TO eventline;
+EOF

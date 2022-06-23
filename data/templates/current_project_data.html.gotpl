@@ -1,0 +1,23 @@
+{{/* If we are rendering an error page before project id detection, we do not
+want to display anything. */}}
+
+{{if .ProjectIdChecked}}
+{{if .ProjectId}}
+{{if .ProjectName}}
+<a id="project-dialog-link" class="is-size-5" title="Select project">
+  {{.ProjectName}}
+</a>
+<a href="/projects/id/{{.ProjectId}}/configuration"
+   title="Configure project">
+  <span class="icon is-medium">
+    <i class="mdi mdi-18px mdi-cog-outline"></i>
+  </span>
+</a>
+{{end}}
+{{else}}
+<a href="/projects" class="is-size-5"
+   title="Select project">
+  <span class="is-size-5">No project currently selected</span>
+</a>
+{{end}}
+{{end}}

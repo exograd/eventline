@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -eu
+
+root=$(realpath $(dirname "$0")/..)
+
+cd $root
+git describe --tags HEAD

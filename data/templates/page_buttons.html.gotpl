@@ -1,0 +1,17 @@
+{{if not .IsEmpty}}
+{{if .HasPreviousOrNextURI}}
+<div class="buttons ev-page-buttons is-centered mt-5">
+  <a class="button is-link"
+     {{if .PreviousURI}}href="{{.PreviousURI}}"{{else}}disabled{{end}}>
+    <span class="icon"><i class="mdi mdi-chevron-left"></i></span>
+    <span>Previous</span>
+  </a>
+
+  <a class="button is-link"
+     {{if .NextURI}}href="{{.NextURI}}"{{else}}disabled{{end}}>
+    <span>Next</span>
+    <span class="icon"><i class="mdi mdi-chevron-right"></i></span>
+  </a>
+</div>
+{{end}}
+{{end}}

@@ -1,0 +1,83 @@
+{{with .Data}}
+{{with .Page}}
+<div class="ev-block">
+  {{if .IsEmpty}}
+  <div class="block">
+    <p>No events have been produced yet.</p>
+  </div>
+  {{else}}
+  <table id="ev-events" class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th class="is-narrow">Event time</th>
+        <th class="is-narrow">Connector</th>
+        <th class="is-narrow">Name</th>
+        <th class="is-narrow">Job</th>
+        <th class="is-narrow"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{range .Elements}}
+      <tr>
+        <td>
+          <a class="ev-wide-link is-family-monospace" href="/events/id/{{.Id}}">
+            {{.Id}}
+          </a>
+        </td>
+
+        <td class="is-narrow" title="{{$.Context.FormatAltDate .EventTime}}">
+          {{$.Context.FormatDate .EventTime}}
+        </td>
+
+        <td class="is-narrow is-family-monospace">
+          {{.Connector}}
+        </td>
+
+        <td class="is-narrow is-family-monospace">
+          {{.Name}}
+        </td>
+
+        <td class="is-narrow">
+          {{$name := (index $.Data.JobNames .JobId.ValueOrZero)}}
+          {{if $name}}
+          <a href="/jobs/id/{{.JobId}}">{{$name}}</a>
+          {{else}}
+          <span class="ev-placeholder">unavailable</span>
+          {{end}}
+        </td>
+
+        <td class="is-narrow">
+          {{/* Since there is only one potential menu entry here, we only
+              show the menu button if the entry makes sense (events must have
+              a job id to be replayable). */}}
+          {{if .JobId}}
+          <div class="dropdown is-right">
+            <div class="dropdown-trigger">
+              <span class="tag">
+                <i class="mdi mdi-18px mdi-dots-horizontal"></i>
+              </span>
+            </div>
+            <div class="dropdown-menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item"
+                   data-id="{{.Id}}" data-action="replay">
+                  Replay
+                </a>
+              </div>
+            </div>
+          </div>
+          {{end}}
+        </td>
+        {{end}}
+    </tbody>
+  </table>
+  {{end}}
+</div>
+{{end}}
+
+{{template "page_buttons.html" .Page}}
+{{end}}
+
+{{template "events_modals.html"}}

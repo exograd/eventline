@@ -1,0 +1,7 @@
+{{with .Data}}
+<div id="ev-content-container" class="mt-6"
+     data-job-execution-id="{{.JobExecution.Id}}">
+</div>
+{{end}}
+
+{{template "jobs_modals.html"}}

@@ -1,0 +1,55 @@
+{{with .Data}}
+{{with .Job}}
+<div class="block ev-block">
+  <h1 class="title">Information</h1>
+
+  <div class="columns">
+    <div class="column is-5">
+      <dl>
+        <dt>Name</dt>
+        <dd>{{.Spec.Name}}</dd>
+
+        {{with .Spec.Description}}
+        <dt>Description</dt>
+        <dd>{{. | toSentence}}</dd>
+        {{end}}
+
+        <dt>Creation time</dt>
+        <dd title="{{$.Context.FormatAltDate .CreationTime}}">
+          {{$.Context.FormatDate .CreationTime}}
+        </dd>
+
+        <dt>Last update</dt>
+        <dd title="{{$.Context.FormatAltDate .UpdateTime}}">
+          {{$.Context.FormatDate .UpdateTime}}
+        </dd>
+      </dl>
+    </div>
+
+    <div class="column is-5">
+    </div>
+
+    <div class="column is-2 is-narrow">
+      <div class="buttons is-right">
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
+
+<form id="ev-job-execution-form">
+  <div class="block ev-block">
+    <h1 class="title">Execution</h1>
+
+    {{template "parameters_form.html" .Job.Spec.Parameters}}
+  </div>
+
+  <div class="field mt-5">
+    <div class="control">
+      <button name="submit" type="submit" class="button is-primary">
+        Execute
+      </button>
+    </div>
+  </div>
+</form>
+{{end}}

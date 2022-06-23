@@ -1,0 +1,88 @@
+{{with .Data}}
+{{with .Page}}
+<div class="ev-block">
+  {{if .IsEmpty}}
+  <div class="block">
+    <p>This job has never been executed.</p>
+  </div>
+  {{else}}
+  <table id="ev-job-executions" class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="is-narrow"></th>
+        <th>Name</th>
+        <th class="is-narrow">Scheduled time</th>
+        <th class="is-narrow">Start time</th>
+        <th class="is-narrow">Duration</th>
+        <th class="is-narrow"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{range .Elements}}
+      <tr>
+        <td class="is-narrow">
+          {{template "job_status_icon.html" .}}
+        </td>
+
+        <td>
+          <a class="ev-wide-link" href="/job_executions/id/{{.Id}}">
+            {{.JobSpec.Name}}
+          </a>
+        </td>
+
+        <td class="is-narrow" title="{{$.Context.FormatAltDate .ScheduledTime}}">
+          {{$.Context.FormatDate .ScheduledTime}}
+        </td>
+
+        <td class="is-narrow" {{with .StartTime}}title="{{$.Context.FormatAltDate .}}"{{end}}>
+          {{with .StartTime}}
+          {{$.Context.FormatDate .}}
+          {{else}}
+          <span class="ev-placeholder">—</span>
+          {{end}}
+        </td>
+
+        <td class="is-narrow">
+          {{with .Duration}}
+          {{$.Context.FormatDuration .}}
+          {{else}}
+          <span class="ev-placeholder">—</span>
+          {{end}}
+        </td>
+
+        <td class="is-narrow">
+          <div class="dropdown is-right">
+            <div class="dropdown-trigger">
+              <span class="tag">
+                <i class="mdi mdi-18px mdi-dots-horizontal"></i>
+              </span>
+            </div>
+            <div class="dropdown-menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item
+                          {{if .Finished}}ev-disabled{{end}}"
+                   data-id="{{.Id}}" data-action="abort">
+                  Abort
+                </a>
+                <a class="dropdown-item
+                          {{if not .Finished}}ev-disabled{{end}}"
+                   data-id="{{.Id}}" data-action="restart">
+                  Restart
+                </a>
+              </div>
+            </div>
+          </div>
+        </td>
+        {{end}}
+    </tbody>
+  </table>
+
+  {{end}}
+</div>
+{{end}}
+
+{{template "page_buttons.html" .Page}}
+{{end}}
+
+{{template "jobs_modals.html"}}

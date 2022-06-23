@@ -1,0 +1,42 @@
+<div id="ev-refresh-identity-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <h1 class="modal-card-title">Identity refresh</h1>
+      <button name="cancel" class="delete"></button>
+    </header>
+    <section class="modal-card-body">
+      <p>
+        Do you want to refresh
+        identity <strong><span class="ev-identity-name"></span></strong> ?
+      </p>
+    </section>
+    <footer class="modal-card-foot">
+      <button name="refresh" class="button is-info">Refresh</button>
+      <button name="cancel" class="button">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+<div id="ev-delete-identity-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <h1 class="modal-card-title">Identity deletion</h1>
+      <button name="cancel" class="delete"></button>
+    </header>
+    <section class="modal-card-body">
+      <p>
+        Do you want to delete
+        identity <strong><span class="ev-identity-name"></span></strong> ?
+      </p>
+      <p>
+        <strong>This action cannot be undone.</strong>
+      </p>
+    </section>
+    <footer class="modal-card-foot">
+      <button name="delete" class="button is-danger">Delete</button>
+      <button name="cancel" class="button">Cancel</button>
+    </footer>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div class="field">
+  <label for="time-range" class="label">Time range</label>
+  <div class="control">
+    <div class="select is-fullwidth">
+      <select name="time-range">
+        <option value="30d" selected>30 days</option>
+        <option value="7d">7 days</option>
+        <option value="24h">24 hours</option>
+      </select>
+    </div>
+  </div>
+</div>

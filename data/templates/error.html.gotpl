@@ -1,0 +1,18 @@
+{{with .Data}}
+<div class="block ev-block">
+  <h1 class="title">Error</h1>
+  <p>{{.Message | toSentence}}</p>
+</div>
+
+<div class="block">
+  <div class="buttons">
+    <a class="button is-link ev-go-back">
+      Go back
+    </a>
+
+    <a class="button" href="mailto:support@exograd.com">
+      Get help
+    </a>
+  </div>
+</div>
+{{end}}

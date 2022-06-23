@@ -1,0 +1,41 @@
+{{with .Data.Account}}
+<form class="ev-auto-form">
+  <div class="block ev-block">
+    <h1 class="title">Settings</h1>
+
+    {{with .Settings}}
+    <div class="field ev-required">
+      <label for="/settings/date_format" class="label">Date format</label>
+      <div class="control">
+        <label class="radio">
+          <input name="/settings/date_format" type="radio" value="absolute"
+                 {{if eq .DateFormat "absolute"}}checked{{end}}>
+          Absolute
+        </label>
+        <label class="radio">
+          <input name="/settings/date_format" type="radio" value="relative"
+                 {{if eq .DateFormat "relative"}}checked{{end}}>
+          Relative
+        </label>
+      </div>
+    </div>
+
+    <label for="/settings/page_size" class="label">Default page size</label>
+    <div class="field">
+      <div class="control">
+        <input class="input" name="/settings/page_size" type="number"
+               {{with .PageSize}}value="{{.}}"{{end}}/>
+      </div>
+    </div>
+    {{end}}
+  </div>
+
+  <div class="field mt-5">
+    <div class="control">
+      <button name="submit" type="submit" class="button is-primary">
+        Submit
+      </button>
+    </div>
+  </div>
+</form>
+{{end}}

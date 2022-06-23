@@ -1,0 +1,5 @@
+{{with .Data}}
+<div id="job-definition" class="block ev-block">
+  <pre><code class="language-yaml">{{.JobSpecData}}</code></pre>
+</div>
+{{end}}

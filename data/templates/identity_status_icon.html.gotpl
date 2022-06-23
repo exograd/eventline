@@ -1,0 +1,14 @@
+<div class="tags has-addons ev-status" title="Identity {{.Status}}">
+  <span class="tag
+               {{if eq .Status "pending"}}is-info{{end}}
+               {{if eq .Status "ready"}}is-success{{end}}
+               {{if eq .Status "error"}}is-danger{{end}}">
+    <i class="mdi mdi-18px
+              {{if eq .Status "pending"}}mdi-clock-outline{{end}}
+              {{if eq .Status "ready"}}mdi-check-circle-outline{{end}}
+              {{if eq .Status "error"}}mdi-alert-circle-outline{{end}}">
+    </i>
+  </span>
+
+  <span class="tag ev-status-label">{{.Status}}</span>
+</div>

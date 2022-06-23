@@ -1,0 +1,108 @@
+{{with .Data}}
+<div class="buttons is-right">
+  <a class="button is-primary" href="/identities/create">
+    Create identity
+  </a>
+</div>
+
+{{with .Page}}
+<div class="ev-block">
+  {{if .IsEmpty}}
+  <div class="block">
+    <p>You have not created any identity yet.</p>
+  </div>
+  {{else}}
+  <table id="ev-identities"
+         class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="is-narrow"></th>
+        <th>Name</th>
+        <th class="is-narrow">Connector</th>
+        <th class="is-narrow">Type</th>
+        <th class="is-narrow">Last update</th>
+        <th class="is-narrow">Last use</th>
+        <th class="is-narrow"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{range .Elements}}
+      <tr>
+        <td class="is-narrow">
+          {{template "identity_status_icon.html" .}}
+        </td>
+
+        <td>
+          <a class="ev-wide-link" href="/identities/id/{{.Id}}">
+            {{.Name}}
+          </a>
+        </td>
+
+        <td class="is-narrow is-family-monospace">
+          {{.Connector}}
+        </td>
+
+        <td class="is-narrow is-family-monospace">
+          {{.Type}}
+        </td>
+
+        <td class="is-narrow" title="{{$.Context.FormatAltDate .UpdateTime}}">
+          {{$.Context.FormatDate .UpdateTime}}
+        </td>
+
+        <td class="is-narrow"
+          {{with .LastUseTime}}title="{{$.Context.FormatAltDate .}}"{{end}}>
+          {{if .LastUseTime}}
+            {{$.Context.FormatDate .LastUseTime}}
+          {{else}}
+            <span class="ev-placeholder">—</span>
+          {{end}}
+        </td>
+
+        <td class="is-narrow">
+          <div class="dropdown is-right">
+            <div class="dropdown-trigger">
+              <span class="tag">
+                <i class="mdi mdi-18px mdi-dots-horizontal"></i>
+              </span>
+            </div>
+            <div class="dropdown-menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item"
+                   href="/identities/id/{{.Id}}/logs">
+                  Logs
+                </a>
+
+                <a class="dropdown-item"
+                   href="/identities/id/{{.Id}}/configuration">
+                  Configure
+                </a>
+
+                <a class="dropdown-item
+                          {{if not .Refreshable}}ev-disabled{{end}}"
+                   data-id="{{.Id}}" data-name="{{.Name}}" data-action="refresh">
+                  Refresh
+                </a>
+
+                <hr class="dropdown-divider">
+
+                <a class="dropdown-item has-text-danger"
+                   data-id="{{.Id}}" data-name="{{.Name}}" data-action="delete">
+                  Delete
+                </a>
+              </div>
+            </div>
+          </div>
+        </td>
+        {{end}}
+    </tbody>
+  </table>
+  {{end}}
+</div>
+{{end}}
+
+{{template "page_buttons.html" .Page}}
+{{end}}
+
+{{template "identities_modals.html"}}

@@ -1,0 +1,173 @@
+{{with .Data}}
+<div class="block ev-block">
+  <h1 class="title">Information</h1>
+
+  <div id="ev-job-execution" class="columns is-full-width"
+       data-status="{{.JobExecution.Status}}">
+    <div class="column is-5">
+      {{with .JobExecution}}
+      <dl>
+        <dt>Name</dt>
+        <dd>{{.JobSpec.Name}}</dd>
+
+        <dt>Scheduled time</dt>
+        <dd title="{{$.Context.FormatAltDate .ScheduledTime}}">
+          {{$.Context.FormatDate .ScheduledTime}}
+        </dd>
+
+        <dt>Start time</dt>
+        <dd {{with .StartTime}}title="{{$.Context.FormatAltDate .}}"{{end}}>
+          {{with .StartTime}}
+          {{$.Context.FormatDate .}}
+          {{else}}
+          <span class="ev-placeholder">job has not started yet</span>
+          {{end}}
+        </dd>
+
+        <dt>Duration</dt>
+        <dd>
+          {{with .Duration}}
+          {{$.Context.FormatDuration .}}
+          {{else}}
+          <span class="ev-placeholder">job is not finished yet</span>
+          {{end}}
+        </dd>
+
+        <dt>Status</dt>
+        <dd>{{template "job_status_icon.html" .}}</dd>
+      </dl>
+      {{end}}
+    </div>
+
+    <div class="column is-5">
+      <dl>
+        <dt>Event</dt>
+        <dd>
+          {{with .Event}}
+          <a href="/events/id/{{.Id}}">{{.Connector}}/{{.Name}}</a>
+          {{else}}
+          <span class="ev-placeholder">—</span>
+          {{end}}
+        </dd>
+      </dl>
+    </div>
+
+    <div class="column is-2 is-narrow">
+      <div class="buttons is-right">
+        {{with .JobExecution}}
+        <button name="abort" class="button" data-id="{{.Id}}"
+                {{if .Finished}}disabled{{end}}>
+          Abort
+        </button>
+        <button name="restart" class="button" data-id="{{.Id}}"
+                {{if not .Finished}}disabled{{end}}>
+          Restart
+        </button>
+        {{end}}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{with .JobExecution}}
+{{with .FailureMessage}}
+<div class="block ev-block">
+  <h1 class="title">Failure message</h1>
+  <p class="has-text-danger">{{.}}</p>
+</div>
+{{end}}
+{{end}}
+
+<div id="ev-steps">
+  {{range $i, $stepExecution := .StepExecutions}}
+  {{$step := (index $.Data.JobExecution.JobSpec.Steps $i)}}
+  <div class="block ev-block ev-step"
+       data-id="{{.Id}}" data-position="{{.Position}}"
+       data-status="{{.Status}}">
+    <div class="columns ev-step-header">
+      <div class="column">
+        <h1 class="title is-size-5">
+          <span class="icon ev-folding-icon">
+            <i class="mdi mdi-chevron-right"></i>
+          </span>
+
+          {{template "step_status_icon.html" .}}
+
+          <span class="ev-label">
+            {{$step.Label}}
+          </span>
+        </h1>
+      </div>
+      <div class="column is-narrow has-text-right">
+        <span class="ev-duration">
+          {{with .Duration}}
+          {{$.Context.FormatDuration .}}
+          {{end}}
+        </span>
+
+        <a class="ev-download" title="Download log file"
+           href="/step_executions/id/{{.Id}}/log_file">
+          <span class="icon">
+            <i class="mdi mdi-file-download-outline"></i>
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <div class="columns ev-step-body is-hidden">
+      <div class="column is-12">
+        {{with $step}}
+        <div class="block">
+          {{with .Code}}
+          <div class="block ev-code">
+            <h2 class="subtitle">Code</h2>
+            <pre><code>{{.}}</code></pre>
+          </div>
+          {{end}}
+
+          {{with .Command}}
+          <div class="block">
+            <h2 class="subtitle">Command</h2>
+            <pre><code>{{.Name}}{{range .Arguments}} {{.}}{{end}}</pre>
+          </div>
+          {{end}}
+
+          {{with .Script}}
+          <div class="block">
+            <h2 class="subtitle">Script</h2>
+            <pre><code>{{.Path}}{{range .Arguments}} {{.}}{{end}}</pre>
+          </div>
+          <div class="block ev-code">
+            <h2 class="subtitle">Code</h2>
+            <pre><code>{{.Content}}</code></pre>
+          </div>
+          {{end}}
+
+          {{with .Bundle}}
+          <div class="block">
+            <h2 class="subtitle">Bundle</h2>
+            <pre><code>{{.PathAndCommand}}{{range .Arguments}} {{.}}{{end}}</pre>
+          </div>
+          {{end}}
+        </div>
+        {{end}}
+
+        {{with .FailureMessage}}
+        <div class="block">
+          <h2 class="subtitle">Failure message</h2>
+          <p class="has-text-danger">{{.}}</p>
+        </div>
+        {{end}}
+
+        {{with .Output}}
+        <div class="block ev-program-output">
+          <h2 class="subtitle">Output</h2>
+          <pre class="ev-term">{{.}}</pre>
+        </div>
+        {{end}}
+      </div>
+    </div>
+  </div>
+  {{end}}
+</div>
+{{end}}

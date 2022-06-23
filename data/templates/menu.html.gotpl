@@ -1,0 +1,40 @@
+<div class="ev-top-menu">
+  <nav class="menu">
+    <ul class="menu-list">
+      {{range .Menu.Entries}}
+      <li {{if .Apart}}class="mt-5"{{end}}>
+        <a class="{{if eq .Id $.Menu.SelectedEntry}}is-active{{end}}"
+           data-id="{{.Id}}"
+           {{if .External}}target="_blank"{{end}}
+           {{with .URI}}href="{{.}}"{{end}}>
+          {{if .Icon}}
+          <span class="icon" title="{{.Label}}">
+            <i class="mdi mdi-{{.Icon}}"></i>
+          </span>
+          {{end}}
+          <span class="ev-label">{{.Label}}</span>
+
+          {{if .New}}
+          {{template "new.html"}}
+          {{end}}
+        </a>
+      </li>
+      {{end}}
+    </ul>
+  </nav>
+</div>
+
+{{if .Context.LoggedIn}}
+<div class="ev-bottom-menu">
+  <nav class="menu">
+    <ul class="menu-list">
+      <li>
+        <a data-id="logout" title="Log out">
+          <span class="icon"><i class="mdi mdi-logout"></i></span>
+          <span class="ev-label">Log out</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+{{end}}

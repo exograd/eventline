@@ -1,0 +1,78 @@
+{{with .Data}}
+<!DOCTYPE HTML>
+<html lang="en"
+      data-page-id="{{.PageId}}"
+      data-is-public-page="{{.Context.PublicPage}}"
+      data-is-logged-in="{{.Context.LoggedIn}}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>Eventline{{with .Title}} – {{.}}{{end}}</title>
+
+    <link rel="icon" href="/assets/images/favicon.{{.Context.VersionHash}}.png">
+
+    <link rel="stylesheet" href="/assets/css/eventline.{{.Context.VersionHash}}.css">
+
+    <script src="/assets/js/evweb.{{.Context.VersionHash}}.js"></script>
+    <script src="/assets/js/ext.{{.Context.VersionHash}}.js"></script>
+    <script src="/assets/js/eventline.{{.Context.VersionHash}}.js"></script>
+  </head>
+
+  <body>
+    <div id="ev-menu" class="column is-narrow">
+      <h1 class="title is-3">
+        <img class="ev-logo" title="Eventline"
+             src="/assets/images/logo-256.png" width="64" height="64">
+        <span class="ev-text">Eventline</span>
+      </h1>
+
+      {{if .Menu}}
+      {{template "menu.html" .}}
+      {{end}}
+    </div>
+
+    <div id="ev-content">
+      <a id="ev-expand-menu" title="Expand menu">
+        <span class="icon is-medium">
+          <i class="mdi mdi-arrow-collapse-right"></i>
+        </span>
+      </a>
+      <a id="ev-collapse-menu" title="Collapse menu">
+        <span class="icon is-medium">
+          <i class="mdi mdi-arrow-collapse-left"></i>
+        </span>
+      </a>
+
+      <div class="container">
+        <div id="ev-content-wrapper">
+          <div>
+            <div id="ev-top-bar" class="columns is-marginless">
+              <div class="column p-0">
+                {{with .Breadcrumb}}
+                {{template "breadcrumb.html" .}}
+                {{end}}
+              </div>
+
+              <div id="ev-current-project" class="column p-0 is-narrow">
+                {{template "current_project_data.html" $.Context}}
+              </div>
+            </div>
+
+            {{with .Tabs}}
+              {{template "tabs.html" .}}
+            {{end}}
+
+            <div id="ev-notifications" class="block mt-6">
+            </div>
+
+            {{.BodyData}}
+          </div>
+
+          {{template "footer.html" .}}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+{{end}}

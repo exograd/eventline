@@ -1,0 +1,105 @@
+{{with .Data}}
+<div class="buttons is-right">
+  <a class="button is-primary" href="/admin/accounts/create">
+    Create account
+  </a>
+</div>
+
+{{with .Page}}
+<div class="ev-block">
+  {{if .IsEmpty}}
+  <div class="block">
+    <p>You have not created any account yet.</p>
+  </div>
+  {{else}}
+  <table id="ev-accounts"
+         class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th class="is-narrow">Role</th>
+        <th class="is-narrow">Last login</th>
+        <th class="is-narrow"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{range .Elements}}
+      <tr>
+        <td>
+          <a class="ev-wide-link" href="/admin/accounts/id/{{.Id}}/edit">
+            {{.Username}}
+          </a>
+        </td>
+
+        <td class="is-narrow">
+          {{.Role}}
+        </td>
+
+        <td class="is-narrow"
+            {{with .LastLoginTime}}title="{{$.Context.FormatAltDate .}}"{{end}}>
+          {{with .LastLoginTime}}
+          {{$.Context.FormatDate .}}
+          {{else}}
+          <span class="ev-placeholder">—</span>
+          {{end}}
+        </td>
+
+        <td class="is-narrow">
+          <div class="dropdown is-right">
+            <div class="dropdown-trigger">
+              <span class="tag">
+                <i class="mdi mdi-18px mdi-dots-horizontal"></i>
+              </span>
+            </div>
+            <div class="dropdown-menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item"
+                   href="/admin/accounts/id/{{.Id}}/edit">
+                  Edit
+                </a>
+                <a class="dropdown-item"
+                   href="/admin/accounts/id/{{.Id}}/change_password">
+                  Change password
+                </a>
+                <a class="dropdown-item has-text-danger"
+                   data-id="{{.Id}}" data-username="{{.Username}}"
+                   data-action="delete">
+                  Delete
+                </a>
+              </div>
+            </div>
+          </div>
+        </td>
+      {{end}}
+    </tbody>
+  </table>
+  {{end}}
+</div>
+{{end}}
+
+{{template "page_buttons.html" .Page}}
+{{end}}
+
+<div id="ev-delete-account-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <h1 class="modal-card-title">Account deletion</h1>
+      <button name="cancel" class="delete"></button>
+    </header>
+    <section class="modal-card-body">
+      <p>
+        Do you want to delete
+        account <strong><span class="ev-account-username"></span></strong> ?
+      </p>
+      <p>
+        <strong>This action cannot be undone.</strong>
+      </p>
+    </section>
+    <footer class="modal-card-foot">
+      <button name="delete" class="button is-danger">Delete</button>
+      <button name="cancel" class="button">Cancel</button>
+    </footer>
+  </div>
+</div>

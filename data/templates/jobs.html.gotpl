@@ -1,0 +1,150 @@
+{{with .Data}}
+{{with .Page}}
+<div class="ev-block">
+  {{if .IsEmpty}}
+  <div class="block">
+    <p>You have not created any job yet.</p>
+  </div>
+  {{else}}
+  <table id="ev-jobs" class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th class="is-narrow"></th> {{/* status tag */}}
+        <th class="is-narrow"></th> {{/* favourite icon */}}
+        <th>Name</th>
+        <th class="is-narrow" title="Number of executions on the last 7 days">
+          Executions
+        </th>
+        <th class="is-narrow" title="Success percentage on the last 7 days">
+          Success
+        </th>
+        <th class="is-narrow">
+          Last execution
+        </th>
+        <th class="is-narrow" title="Median duration on the last 7 days">
+          Duration
+        </th>
+        <th class="is-narrow"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{range .Elements}}
+      {{$lastJobExecution := (index $.Data.LastJobExecutions .Id)}}
+      {{$jobStats := (index $.Data.JobStats .Id)}}
+      <tr>
+        <td class="is-narrow">
+          {{with $lastJobExecution}}
+          {{template "job_status_icon.html" .}}
+          {{else}}
+          <div class="tags has-addons ev-status" title="Job never executed">
+            <span class="tag">
+              <i class="mdi mdi-18px mdi-checkbox-blank-circle-outline">
+              </i>
+            </span>
+
+            <span class="tag ev-status-label">—</span>
+          </div>
+
+          {{end}}
+        </td>
+
+        <td class="ev-favourite">
+          {{$isFavourite := index $.Data.FavouriteJobTable .Id}}
+          <span class="icon {{if $isFavourite}}ev-is-favourite{{end}}"
+                data-id="{{.Id}}"
+                {{if $isFavourite}}
+                title="Remove from favourites"
+                {{else}}
+                title="Add to favourites"
+                {{end}}>
+            <i class="mdi mdi-18px mdi-star-outline"></i>
+          </span>
+        </td>
+
+        <td>
+          <a href="/jobs/id/{{.Id}}"
+             class="ev-wide-link {{if .Disabled}}ev-disabled-job{{end}}"
+             {{if .Disabled}}title="Job disabled"{{end}}>
+            {{.Spec.Name}}
+          </a>
+        </td>
+
+        <td class="is-narrow has-text-right">
+          {{with $jobStats}}
+          {{.NbExecutions}}
+          {{else}}
+          <span class="ev-placeholder">—</span>
+          {{end}}
+        </td>
+
+        <td class="is-narrow has-text-right">
+          {{with $jobStats}}
+          <span class="{{if ge .SuccessRatio 0.9}}has-text-success
+                       {{else if lt .SuccessRatio 0.6}}has-text-danger
+                       {{else}}has-text-warning{{end}}">
+            {{.SuccessPercentageString}}
+          </span>
+          {{else}}
+          <span class="ev-placeholder">—</span>
+          {{end}}
+        </td>
+
+        <td class="is-narrow has-text-right"
+            {{with $lastJobExecution}}{{with .StartTime}}title="{{$.Context.FormatAltDate .}}"{{end}}{{end}}>
+          {{with $lastJobExecution}}
+          {{with .StartTime}}{{$.Context.FormatDate .}}{{end}}
+          {{else}}
+          <span class="ev-placeholder">—</span>
+          {{end}}
+        </td>
+
+        <td class="is-narrow has-text-right">
+          {{with $jobStats}}
+          {{with .DurationP50}}
+          {{$.Context.FormatDuration .}}
+          {{else}}
+          <span class="ev-placeholder" title="Job never succeeded">—</span>
+          {{end}}
+          {{else}}
+          <span class="ev-placeholder">—</span>
+          {{end}}
+        </td>
+
+        <td class="is-narrow">
+          <div class="dropdown is-right">
+            <div class="dropdown-trigger">
+              <span class="tag">
+                <i class="mdi mdi-18px mdi-dots-horizontal"></i>
+              </span>
+            </div>
+            <div class="dropdown-menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item" href="/jobs/id/{{.Id}}/execute">
+                  Execute
+                </a>
+                {{if .Disabled}}
+                <a class="dropdown-item"
+                   data-id="{{.Id}}" data-action="enable">
+                  Enable
+                </a>
+                {{else}}
+                <a class="dropdown-item"
+                   data-id="{{.Id}}" data-action="disable">
+                  Disable
+                </a>
+                {{end}}
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{end}}
+</div>
+{{end}}
+
+{{template "page_buttons.html" .Page}}
+{{end}}

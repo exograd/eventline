@@ -1,0 +1,58 @@
+{{/* . is the list of parameters */}}
+{{if .}}
+{{range .}}
+<div class="field {{if not .Default}}ev-required{{end}}
+            {{with .Values}}ev-no-optional-label{{end}}">
+  <label for="/parameters/{{.Name}}" class="label">{{.Label}}</label>
+  <div class="control">
+    {{/* Number */}}
+    {{if eq .Type "number"}}
+    <input name="/parameters/{{.Name}}" type="number" class="input"
+           {{with .Default}}value="{{.}}"{{end}}>
+    {{/* Integer */}}
+    {{else if eq .Type "integer"}}
+    <input name="/parameters/{{.Name}}" type="number" class="input"
+           {{with .Default}}value="{{.}}"{{end}}>
+    {{/* String */}}
+    {{else if eq .Type "string"}}
+    {{if .Values}}
+    {{$default := .Default}}
+    <div class="select">
+      <select name="/parameters/{{.Name}}">
+        {{range .Values}}
+        <option value="{{.}}" {{if eq . $default}}selected{{end}}>
+          {{.}}
+        </option>
+        {{end}}
+      </select>
+    </div>
+    {{else}}
+    <input name="/parameters/{{.Name}}" type="text" class="input"
+           {{with .Default}}value="{{.}}"{{end}}>
+    {{end}}
+    {{/* Boolean */}}
+    {{else if eq .Type "boolean"}}
+    <label class="radio">
+      <input name="/parameters/{{.Name}}" type="radio" value="true"
+             {{if .Default}}checked{{end}}>
+      Yes
+    </label>
+    <label class="radio">
+      <input name="/parameters/{{.Name}}" type="radio" value="false"
+             {{if not .Default}}checked{{end}}>
+      No
+    </label>
+    {{end}}
+  </div>
+  {{with .Description}}
+  <p class="help">
+    {{. | toSentence}}
+  </p>
+  {{end}}
+</div>
+{{end}}
+{{else}}
+<div class="block">
+  <p>This command does not have any parameter.</p>
+</div>
+{{end}}

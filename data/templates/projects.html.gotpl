@@ -1,0 +1,77 @@
+{{with .Data}}
+<div class="buttons is-right">
+  <a class="button is-primary" href="/projects/create">
+    Create project
+  </a>
+</div>
+
+{{with .Page}}
+<div class="ev-block">
+  {{if .IsEmpty}}
+  <div class="block">
+    <p>You have not created any project yet.</p>
+  </div>
+  {{else}}
+  <table id="ev-projects"
+         class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th class="is-narrow"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{range .Elements}}
+      <tr>
+        <td>
+          <a class="ev-wide-link ev-project-selector"
+             title="Select project {{.Name}}"
+             data-id="{{.Id}}" data-name="{{.Name}}">
+            {{.Name}}
+          </a>
+        </td>
+
+        <td class="is-narrow">
+          <a class="button" href="/projects/id/{{.Id}}/configuration">
+            Configure
+          </a>
+
+          <button class="button is-danger" name="delete"
+                  data-id="{{.Id}}" data-name="{{.Name}}">
+            Delete
+          </button>
+        </td>
+      {{end}}
+    </tbody>
+  </table>
+  {{end}}
+</div>
+{{end}}
+
+{{template "page_buttons.html" .Page}}
+{{end}}
+
+<div id="ev-delete-project-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <h1 class="modal-card-title">Project deletion</h1>
+      <button name="cancel" class="delete"></button>
+    </header>
+    <section class="modal-card-body">
+      <p>
+        Do you want to delete
+        project <strong><span class="ev-project-name"></span></strong> ? All
+        resources associated with it will be deleted as well.
+      </p>
+      <p>
+        <strong>This action cannot be undone.</strong>
+      </p>
+    </section>
+    <footer class="modal-card-foot">
+      <button name="delete" class="button is-danger">Delete</button>
+      <button name="cancel" class="button">Cancel</button>
+    </footer>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<div id="ev-api-key-created-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <h1 class="modal-card-title">API key created</h1>
+    </header>
+    <section class="modal-card-body">
+      <p>
+        API key <strong><span class="ev-api-key-name"></span></strong> has
+        been created:
+      </p>
+      <p class="has-text-centered">
+        <span class="ev-api-key-value is-size-4 is-family-monospace"></span>
+      </p>
+      <p>
+        API keys allow access to your Eventline account and must be treated
+        similarly to passwords. Store them safely, for example in a secure
+        password manager.
+      </p>
+      <p>
+        <strong>Eventline only stores hashes of API keys: make sure to copy
+        this key now, you will not be able to access it again.</strong>
+      </p>
+    </section>
+    <footer class="modal-card-foot">
+      <button name="ok" class="button is-info">Ok</button>
+    </footer>
+  </div>
+</div>
+
+<div id="ev-delete-api-key-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <h1 class="modal-card-title">API key deletion</h1>
+      <button name="cancel" class="delete"></button>
+    </header>
+    <section class="modal-card-body">
+      <p>
+        Do you want to delete
+        API key <strong><span class="ev-api-key-name"></span></strong> ?
+      </p>
+      <p>
+        External services and tools using this key will not be able to access
+        Eventline anymore.
+      </p>
+      <p>
+        <strong>This action cannot be undone.</strong>
+      </p>
+    </section>
+    <footer class="modal-card-foot">
+      <button name="delete" class="button is-danger">Delete</button>
+      <button name="cancel" class="button">Cancel</button>
+    </footer>
+  </div>
+</div>

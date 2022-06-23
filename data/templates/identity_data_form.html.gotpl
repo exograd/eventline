@@ -1,0 +1,76 @@
+{{with .Data.IdentityDataDef}}
+{{range .Entries}}
+{{if not .Internal}}
+<div class="field {{if not .Optional}}ev-required{{end}}">
+  <label for="{{.Key}}" class="label">{{.Label}}</label>
+  <div class="control">
+    {{/* String */}}
+    {{if (or (eq .Type "string") (not .Type))}}
+    <input name="/data/{{.Key}}" class="input"
+           {{if .Secret}}autocomplete="off"{{end}}
+           {{with .Value}}value="{{.}}"{{end}}>
+    {{/* String list */}}
+    {{else if eq .Type "string_list"}}
+    <input name="/data/{{.Key}}" class="input ev-list-input"
+           {{if .Secret}}autocomplete="off"{{end}}
+           {{with .Value}}value="{{join . ","}}"{{end}}>
+    {{/* Enum */}}
+    {{else if eq .Type "enum"}}
+    {{$value := .Value}}
+    <div class="select">
+      <select name="/data/{{.Key}}">
+        {{range .EnumValues}}
+        <option value="{{.}}" {{if eq . $value}}selected{{end}}>
+          {{.}}
+        </option>
+        {{end}}
+      </select>
+    </div>
+    {{/* Enum list */}}
+    {{else if eq .Type "enum_list"}}
+    {{$value := .Value}}
+    {{$preselectedValues := .PreselectedEnumValues}}
+    <div class="select is-multiple">
+      <select name="/data/{{.Key}}" multiple
+              {{with .MultiselectEnumSize}}size="{{.}}"{{end}}>
+        {{range .EnumValues}}
+        <option value="{{.}}"
+                {{if or (stringMember . $value) (stringMember . $preselectedValues)}}selected{{end}}>
+          {{.}}
+        </option>
+        {{end}}
+      </select>
+    </div>
+    {{/* Date (unused for the time being */}}
+    {{else if eq .Type "date"}}
+    {{/* URI */}}
+    {{else if eq .Type "uri"}}
+    <input name="/data/{{.Key}}" class="input" type="url"
+           {{with .Value}}value="{{.}}"{{end}}>
+    {{/* Text block */}}
+    {{else if eq .Type "text_block"}}
+    <textarea name="/data/{{.Key}}" class="textarea">{{.Value}}</textarea>
+    {{/* Boolean */}}
+    {{else if eq .Type "boolean"}}
+    <label class="radio">
+      <input name="/data/{{.Key}}" type="radio" value="true"
+             {{if .Value}}checked{{end}}>
+      Yes
+    </label>
+    <label class="radio">
+      <input name="/data/discovery" type="radio" value="false"
+             {{if not .Value}}checked{{end}}>
+      No
+    </label>
+
+    {{end}}
+  </div>
+  {{if (eq .Type "string_list")}}
+  <p class="help">
+    Values must be separated by commas.
+  </p>
+  {{end}}
+</div>
+{{end}}
+{{end}}
+{{end}}

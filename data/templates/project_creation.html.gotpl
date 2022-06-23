@@ -1,0 +1,24 @@
+<form class="ev-auto-form">
+  <div class="block ev-block">
+    <h1 class="title">Information</h1>
+
+    <div class="field ev-required">
+      <label for="/name" class="label">Name</label>
+      <div class="control">
+        <input name="/name" type="text" class="input">
+      </div>
+    </div>
+  </div>
+
+  <div class="field is-grouped mt-5">
+    <div class="control">
+      <button name="submit" type="submit" class="button is-primary">
+        Submit
+      </button>
+    </div>
+
+    <div class="control">
+      <a class="button" href="/projects">Cancel</a>
+    </div>
+  </div>
+</form>

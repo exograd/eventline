@@ -1,0 +1,12 @@
+= Eventline Handbook
+:author: Exograd SAS
+:email: contact@exograd.com
+:doctype: book
+:toc: left
+:toclevels: 2
+:toc-title: Table of Contents
+:description: Reference for the Eventline scheduling platform
+
+include::preface.adoc[]
+
+include::tutorial.adoc[]

@@ -1,0 +1,27 @@
+{{with .Data}}
+<div id="job-metrics" data-job-id="{{.Job.Id}}">
+  <div id="status-count-metrics" class="block ev-block ev-metrics">
+    <h1 class="title">Number of job executions per status</h1>
+    <div class="columns">
+      <div class="column is-10">
+        <svg></svg>
+      </div>
+      <div class="column is-2 is-narrow">
+        {{template "metrics/time_range_field.html"}}
+      </div>
+    </div>
+  </div>
+
+  <div id="running-time-metrics" class="block ev-block ev-metrics">
+    <h1 class="title">Successful job running time percentiles</h1>
+    <div class="columns">
+      <div class="column is-10">
+        <svg></svg>
+      </div>
+      <div class="column is-2 is-narrow">
+        {{template "metrics/time_range_field.html"}}
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

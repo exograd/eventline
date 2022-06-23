@@ -1,0 +1,10 @@
+<div class="select">
+  {{$select := .}}
+  <select {{with .Id}}id="{{.}}"{{end}} name="{{.Name}}">
+    {{range $i := .Options}}
+      <option value="{{.Name}}" {{if $select.IsSelected .Name}}selected{{end}}>
+        {{.Label}}
+      </option>
+    {{end}}
+  </select>
+</div>

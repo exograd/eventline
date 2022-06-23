@@ -1,0 +1,48 @@
+version: "3"
+services:
+  postgres:
+    image: "postgres:14.4"
+    command: >
+      postgres -c "shared_buffers=6GB"
+               -c "max_connections=40"
+               -c "log_statement=all"
+    container_name: "postgres"
+    ports: ["5432:5432"]
+    volumes:
+      - "./docker-compose/postgres:/docker-entrypoint-initdb.d:ro"
+      - "postgres-data:/var/lib/postgresql/data:rw"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    logging: &logging
+      driver: "json-file"
+      options:
+        max-size: "10m"
+  influxdb:
+    image: "influxdb:1.8"
+    container_name: "influxdb"
+    ports: ["8086:8086"]
+    volumes:
+      - "./docker-compose/influxdb:/docker-entrypoint-initdb.d:ro"
+      - "influxdb-data:/var/lib/influxdb:rw"
+    environment:
+      INFLUXDB_REPORTING_DISABLED: "true"
+    logging: *logging
+  grafana:
+    image: "grafana/grafana:7.4.3"
+    container_name: "grafana"
+    user: "root"
+    ports: ["3000:3000"]
+    volumes:
+      - "./docker-compose/grafana/provisioning:/etc/grafana/provisioning:ro"
+      - "grafana-data:/var/lib/grafana:rw"
+    logging: *logging
+  mailcatcher:
+    image: "exograd/mailcatcher:0.8.0"
+    container_name: "mailcatcher"
+    ports: ["1125:1125", "1080:1080"]
+    logging: *logging
+volumes:
+  postgres-data:
+  influxdb-data:
+  grafana-data:

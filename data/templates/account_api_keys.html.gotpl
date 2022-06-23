@@ -1,0 +1,69 @@
+{{with .Data}}
+<div class="buttons is-right">
+  <a class="button is-primary" href="/account/api_keys/create">
+    Create an API key
+  </a>
+</div>
+
+{{with .Page}}
+<div class="ev-block">
+  {{if .IsEmpty}}
+  <div class="block">
+    <p>You have not created any API key yet.</p>
+  </div>
+  {{else}}
+  <table id="ev-api-keys"
+         class="table is-fullwidth">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th class="is-narrow">Last use</th>
+        <th class="is-narrow"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {{range .Elements}}
+      <tr>
+        <td>
+          {{.Name}}
+        </td>
+
+        <td class="is-narrow"
+            {{with .LastUseTime}}title="{{$.Context.FormatAltDate .}}"{{end}}>
+          {{if .LastUseTime}}
+          {{$.Context.FormatDate .LastUseTime}}
+          {{else}}
+          <span class="ev-placeholder">—</span>
+          {{end}}
+        </td>
+
+        <td>
+          <div class="dropdown is-right">
+            <div class="dropdown-trigger">
+              <span class="tag">
+                <i class="mdi mdi-18px mdi-dots-horizontal"></i>
+              </span>
+            </div>
+            <div class="dropdown-menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item has-text-danger"
+                   data-id="{{.Id}}" data-name="{{.Name}}"
+                   data-action="delete">
+                  Delete
+                </a>
+              </div>
+            </div>
+          </div>
+        </td>
+        {{end}}
+    </tbody>
+  </table>
+  {{end}}
+</div>
+{{end}}
+
+{{template "page_buttons.html" .Page}}
+{{end}}
+
+{{template "account_modals.html"}}

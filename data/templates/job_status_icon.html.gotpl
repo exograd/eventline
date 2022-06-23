@@ -1,0 +1,17 @@
+<div class="tags has-addons ev-status" title="Job {{.Status}}">
+  <span class="tag
+               {{if eq .Status "started"}}is-info{{end}}
+               {{if eq .Status "successful"}}is-success{{end}}
+               {{if eq .Status "aborted"}}is-warning{{end}}
+               {{if eq .Status "failed"}}is-danger{{end}}">
+    <i class="mdi mdi-18px
+              {{if eq .Status "created"}}mdi-minus-circle-outline{{end}}
+              {{if eq .Status "started"}}mdi-arrow-right-drop-circle-outline{{end}}
+              {{if eq .Status "successful"}}mdi-check-circle-outline{{end}}
+              {{if eq .Status "aborted"}}mdi-close-circle-outline{{end}}
+              {{if eq .Status "failed"}}mdi-alert-circle-outline{{end}}">
+    </i>
+  </span>
+
+  <span class="tag ev-status-label">{{.Status}}</span>
+</div>

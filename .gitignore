@@ -1,0 +1,10 @@
+/bin/eventline
+/bin/evcli
+
+/data/assets/css/*
+/data/assets/fonts/*
+/data/assets/js/*
+/data/assets/images/*
+
+/doc/*.html
+/doc/*.pdf

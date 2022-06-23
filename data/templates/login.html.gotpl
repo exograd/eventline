@@ -1,0 +1,35 @@
+{{with .Data.ErrorMessage}}
+<div class="notification is-danger">
+  {{. | toSentence}}
+</div>
+{{end}}
+
+<form id="ev-login-form" class="ev-auto-form">
+  <div class="block ev-block">
+    <h1 class="title">Credentials</h1>
+
+    <div class="field ev-required">
+      <label for="/username" class="label">Username</label>
+      <div class="control">
+        <input name="/username" class="input"
+               autocomplete="username" autofocus>
+      </div>
+    </div>
+
+    <div class="field ev-required">
+      <label for="/password" class="label">Password</label>
+      <div class="control">
+        <input name="/password" type="password" class="input"
+               autocomplete="current-password">
+      </div>
+    </div>
+  </div>
+
+  <div class="field mt-5">
+    <div class="control">
+      <button name="submit" type="submit" class="button is-primary">
+        Submit
+      </button>
+    </div>
+  </div>
+</form>
