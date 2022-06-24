@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 )
 
 func EncodeOAuth2State(identityId eventline.Id, sessionId eventline.Id) (string, error) {

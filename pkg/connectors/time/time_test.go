@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/exograd/evgo/pkg/utils"
+	"github.com/exograd/eventline/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 

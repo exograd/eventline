@@ -3,8 +3,8 @@ package service
 import (
 	"sort"
 
-	"github.com/exograd/evgo/pkg/eventline"
-	"github.com/exograd/evgo/pkg/web"
+	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/eventline/pkg/web"
 )
 
 func NewLoginMenu(selectedEntry string) *web.Menu {

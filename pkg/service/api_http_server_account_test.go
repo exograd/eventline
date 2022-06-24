@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/stretchr/testify/require"
 )
 

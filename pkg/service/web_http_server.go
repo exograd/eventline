@@ -6,7 +6,7 @@ import (
 	"path"
 	"strings"
 
-	"github.com/exograd/evgo/pkg/web"
+	"github.com/exograd/eventline/pkg/web"
 	"github.com/exograd/go-daemon/dhttp"
 )
 

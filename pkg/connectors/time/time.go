@@ -3,7 +3,7 @@ package time
 import (
 	"time"
 
-	"github.com/exograd/evgo/pkg/utils"
+	"github.com/exograd/eventline/pkg/utils"
 )
 
 type WeekDay string

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/pg"
 	"github.com/jackc/pgx/v4"
 )

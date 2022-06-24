@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/exograd/evgo/pkg/eventline"
-	"github.com/exograd/evgo/pkg/test"
+	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/eventline/pkg/test"
 	"github.com/stretchr/testify/require"
 )
 

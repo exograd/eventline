@@ -4,8 +4,8 @@ import (
 	"encoding/base64"
 	"errors"
 
-	"github.com/exograd/evgo/pkg/eventline"
-	"github.com/exograd/evgo/pkg/web"
+	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/eventline/pkg/web"
 )
 
 func (s *WebHTTPServer) setupLoginRoutes() {

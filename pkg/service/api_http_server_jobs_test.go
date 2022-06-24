@@ -5,9 +5,9 @@ import (
 	"net/url"
 	"testing"
 
-	ctime "github.com/exograd/evgo/pkg/connectors/time"
-	"github.com/exograd/evgo/pkg/eventline"
-	"github.com/exograd/evgo/pkg/test"
+	ctime "github.com/exograd/eventline/pkg/connectors/time"
+	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/eventline/pkg/test"
 	"github.com/stretchr/testify/require"
 )
 

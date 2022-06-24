@@ -1,7 +1,7 @@
 package time
 
 import (
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 )
 
 type TickEvent struct {

@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 )
 
 func LoadJobFile(filePath string) (*eventline.JobSpec, error) {

@@ -1,8 +1,8 @@
 package service
 
 import (
-	cgithub "github.com/exograd/evgo/pkg/connectors/github"
-	"github.com/exograd/evgo/pkg/eventline"
+	cgithub "github.com/exograd/eventline/pkg/connectors/github"
+	"github.com/exograd/eventline/pkg/eventline"
 )
 
 func (s *WebHTTPServer) setupExternalRoutes() {

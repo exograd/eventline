@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 )
 
 func (h *HTTPHandler) ParseMetricParameters() (*eventline.MetricParameters, error) {

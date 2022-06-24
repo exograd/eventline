@@ -1,4 +1,4 @@
-module github.com/exograd/evgo
+module github.com/exograd/eventline
 
 go 1.18
 

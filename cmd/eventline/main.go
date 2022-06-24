@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/exograd/evgo/pkg/service"
+	"github.com/exograd/eventline/pkg/service"
 	"github.com/exograd/go-daemon/daemon"
 )
 

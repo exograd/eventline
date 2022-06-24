@@ -3,7 +3,7 @@ package eventline
 import (
 	"fmt"
 
-	"github.com/exograd/evgo/pkg/utils"
+	"github.com/exograd/eventline/pkg/utils"
 )
 
 type UnknownConnectorDefError struct {

@@ -1,6 +1,6 @@
 package test
 
-import "github.com/exograd/evgo/pkg/eventline"
+import "github.com/exograd/eventline/pkg/eventline"
 
 func ConnectorDef() *eventline.ConnectorDef {
 	def := eventline.NewConnectorDef("test")

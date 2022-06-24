@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/exograd/evgo/pkg/utils"
+	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-log"
 )

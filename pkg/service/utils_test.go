@@ -3,9 +3,9 @@ package service
 import (
 	"testing"
 
-	cgeneric "github.com/exograd/evgo/pkg/connectors/generic"
-	"github.com/exograd/evgo/pkg/eventline"
-	"github.com/exograd/evgo/pkg/test"
+	cgeneric "github.com/exograd/eventline/pkg/connectors/generic"
+	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/eventline/pkg/test"
 	"github.com/exograd/go-daemon/pg"
 	"github.com/stretchr/testify/require"
 )

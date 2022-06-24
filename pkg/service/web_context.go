@@ -5,8 +5,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/exograd/evgo/pkg/eventline"
-	"github.com/exograd/evgo/pkg/utils"
+	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/eventline/pkg/utils"
 )
 
 // The set of information we inject into every rendered piece of web content.

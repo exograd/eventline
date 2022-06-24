@@ -1,7 +1,7 @@
 package eventline
 
 import (
-	"github.com/exograd/evgo/pkg/utils"
+	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-daemon/check"
 )
 

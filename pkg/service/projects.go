@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
 )

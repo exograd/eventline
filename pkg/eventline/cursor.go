@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/exograd/evgo/pkg/utils"
+	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-daemon/dhttp"
 	"github.com/exograd/go-daemon/pg"
 )

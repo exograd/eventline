@@ -1,7 +1,7 @@
 package service
 
 import (
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 )
 
 func (s *APIHTTPServer) setupProjectRoutes() {

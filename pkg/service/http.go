@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/exograd/evgo/pkg/eventline"
-	"github.com/exograd/evgo/pkg/utils"
-	"github.com/exograd/evgo/pkg/web"
+	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/eventline/pkg/utils"
+	"github.com/exograd/eventline/pkg/web"
 	"github.com/exograd/go-daemon/dhttp"
 	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-log"

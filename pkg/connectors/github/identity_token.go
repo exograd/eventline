@@ -3,7 +3,7 @@ package github
 import (
 	"regexp"
 
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
 )
 

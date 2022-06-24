@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/exograd/evgo/pkg/utils"
+	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/dcrypto"
 	"github.com/exograd/go-daemon/pg"

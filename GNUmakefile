@@ -5,10 +5,10 @@ EVWEB_INPUT_DIRS = . ../data # relative to the evweb directory
 BIN_DIR ?= $(CURDIR)/bin
 
 GO_PKGS =					\
-  github.com/exograd/evgo/cmd/eventline		\
+  github.com/exograd/eventline/cmd/eventline	\
   $(EVCLI_PKG)
 
-EVCLI_PKG = github.com/exograd/evgo/cmd/evcli
+EVCLI_PKG = github.com/exograd/eventline/cmd/evcli
 
 GO_TEST_OPTIONS ?= -count 1
 

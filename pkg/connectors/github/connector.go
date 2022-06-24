@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/dhttp"

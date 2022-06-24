@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/exograd/evgo/pkg/eventline"
+	"github.com/exograd/eventline/pkg/eventline"
 )
 
 type Client struct {
