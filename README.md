@@ -24,4 +24,4 @@ Please see [contributing guidelines](CONTRIBUTING.md).
 
 ## License
 
-Eventline is released under the [ICS License](LICENSE).
+Eventline is released under the [ISC License](LICENSE).
