@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	daemon.Run("eventline", "pipeline scheduler", service.NewService())
+	daemon.Run("eventline", "job scheduling platform", service.NewService())
 }
