@@ -8,8 +8,8 @@ github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7Do
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/exograd/go-daemon v0.0.0-20220618125444-14190305e348 h1:QfwFgpa+SEMIXBbpRSNG3mbzNkP8jvKuTnm3tS2CzMk=
-github.com/exograd/go-daemon v0.0.0-20220618125444-14190305e348/go.mod h1:VVu0o63iAG92AxHy9uq2DMq539cA7AslrqsjHHuuFPc=
+github.com/exograd/go-daemon v0.0.0-20220624103558-016ac7a7b219 h1:8AQfAlo6sReXIsonMhoTfUkTTDonmG92R/AW1rPUBsU=
+github.com/exograd/go-daemon v0.0.0-20220624103558-016ac7a7b219/go.mod h1:VVu0o63iAG92AxHy9uq2DMq539cA7AslrqsjHHuuFPc=
 github.com/exograd/go-log v0.0.0-20220624102840-d28c3e9f8c96 h1:zx57O6rA0/0+sS6z5H4peWJwU1cX1NV5/sKep2aKPEc=
 github.com/exograd/go-log v0.0.0-20220624102840-d28c3e9f8c96/go.mod h1:VT6uAqfeDAGClqzEI9ZwBCpCajdZNVzUgB3oaswKjGA=
 github.com/exograd/go-oauth2c v0.0.0-20220525082142-bca244aafbca h1:I4mIuiNwWBC45m5RR6mSwj5n9EQveQLN5zC5cBax0SY=

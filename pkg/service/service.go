@@ -96,6 +96,10 @@ func (s *Service) Init(d *daemon.Daemon) error {
 	s.Daemon = d
 	s.Log = d.Log
 
+	if s.Cfg.EncryptionKey.IsZero() {
+		return fmt.Errorf("missing or empty encryption key")
+	}
+
 	if err := s.initWebHTTPServerURI(); err != nil {
 		return err
 	}

@@ -3,7 +3,7 @@ module github.com/exograd/eventline
 go 1.18
 
 require (
-	github.com/exograd/go-daemon v0.0.0-20220618125444-14190305e348
+	github.com/exograd/go-daemon v0.0.0-20220624103558-016ac7a7b219
 	github.com/exograd/go-log v0.0.0-20220624102840-d28c3e9f8c96
 	github.com/exograd/go-oauth2c v0.0.0-20220525082142-bca244aafbca
 	github.com/exograd/go-program v0.0.0-20220116124618-691d97553601
