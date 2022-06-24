@@ -14,9 +14,6 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/dcrypto"
-	"github.com/exograd/go-daemon/dhttp"
-	"github.com/exograd/go-daemon/influx"
 	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-log"
 )
@@ -24,31 +21,6 @@ import (
 var (
 	BuildId string
 )
-
-type ServiceCfg struct {
-	Logger *log.LoggerCfg `json:"logger"`
-
-	DataDirectory string `json:"data_directory"`
-
-	APIHTTPServer dhttp.ServerCfg `json:"api_http_server"`
-	WebHTTPServer dhttp.ServerCfg `json:"web_http_server"`
-
-	Influx *influx.ClientCfg `json:"influx"`
-
-	Pg *pg.ClientCfg `json:"pg"`
-
-	EncryptionKey dcrypto.AES256Key `json:"encryption_key"`
-
-	WebHTTPServerURI string `json:"web_http_server_uri"`
-
-	Connectors map[string]json.RawMessage `json:"connectors"`
-
-	Workers map[string]eventline.WorkerCfg `json:"workers"`
-
-	JobRetention int `json:"job_retention"` // days
-
-	Runners RunnersCfg `json:"runners"`
-}
 
 type Service struct {
 	Cfg ServiceCfg
@@ -95,7 +67,7 @@ func NewService() *Service {
 }
 
 func (s *Service) ServiceCfg() interface{} {
-	cfg := ServiceCfg{}
+	cfg := DefaultServiceCfg()
 
 	s.Cfg = cfg
 
