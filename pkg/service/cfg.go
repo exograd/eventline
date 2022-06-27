@@ -33,7 +33,7 @@ type ServiceCfg struct {
 
 	JobRetention int `json:"job_retention"` // days
 
-	Runners map[eventline.RuntimeName]json.RawMessage `json:"runners"`
+	Runners map[string]json.RawMessage `json:"runners"`
 }
 
 func DefaultServiceCfg() ServiceCfg {

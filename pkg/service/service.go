@@ -40,7 +40,7 @@ type Service struct {
 
 	connectors map[string]eventline.Connector
 
-	runnerDefs     map[eventline.RuntimeName]*eventline.RunnerDef
+	runnerDefs     map[string]*eventline.RunnerDef
 	runnerStopChan chan struct{}
 	runnerWg       sync.WaitGroup
 }
@@ -61,7 +61,7 @@ func NewService(data ServiceData) *Service {
 
 		connectors: make(map[string]eventline.Connector),
 
-		runnerDefs:     make(map[eventline.RuntimeName]*eventline.RunnerDef),
+		runnerDefs:     make(map[string]*eventline.RunnerDef),
 		runnerStopChan: make(chan struct{}),
 	}
 
@@ -208,6 +208,8 @@ func (s *Service) initRunner(def *eventline.RunnerDef) error {
 	}
 
 	s.runnerDefs[def.Name] = def
+
+	eventline.RunnerDefs[def.Name] = def
 
 	return nil
 }

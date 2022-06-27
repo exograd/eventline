@@ -7,18 +7,8 @@ import (
 	"github.com/exograd/go-daemon/check"
 )
 
-type RuntimeName string
-
-const (
-	RuntimeNameLocal RuntimeName = "local"
-)
-
-var RuntimeNameValues = []RuntimeName{
-	RuntimeNameLocal,
-}
-
 type Runtime struct {
-	Name          RuntimeName       `json:"name"`
+	Name          string            `json:"name"`
 	Parameters    RuntimeParameters `json:"-"`
 	RawParameters json.RawMessage   `json:"parameters"`
 }
@@ -28,13 +18,18 @@ type RuntimeParameters interface {
 }
 
 func (r *Runtime) Check(c *check.Checker) {
-	if c.CheckStringValue("name", r.Name, RuntimeNameValues) {
+	runtimeNames := make([]string, 0, len(RunnerDefs))
+	for name := range RunnerDefs {
+		runtimeNames = append(runtimeNames, name)
+	}
+
+	if c.CheckStringValue("name", r.Name, runtimeNames) {
 		c.CheckObject("parameters", r.Parameters)
 	} else {
 		// If the runtime name is invalid, we do not want to check the content
 		// of the parameters, but we at least can check that it is there.
 		c.Check("parameters", r.Parameters != nil, "missing_value",
-			"missing values")
+			"missing value")
 	}
 }
 

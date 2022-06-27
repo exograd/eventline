@@ -12,12 +12,14 @@ import (
 	"github.com/exograd/go-log"
 )
 
+var RunnerDefs = map[string]*RunnerDef{}
+
 type RunnerCfg interface {
 	check.Object
 }
 
 type RunnerDef struct {
-	Name RuntimeName
+	Name string
 	Cfg  RunnerCfg
 }
 
@@ -84,7 +86,7 @@ func NewRunner(data RunnerInitData) *Runner {
 
 	runtimeName := data.Data.JobExecution.JobSpec.Runtime.Name
 	switch runtimeName {
-	case RuntimeNameLocal:
+	case "local":
 		r.behaviour = NewLocalRunner(r)
 
 	default:
