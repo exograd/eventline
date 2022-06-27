@@ -1,4 +1,4 @@
-package service
+package eventline
 
 import (
 	"bufio"
@@ -15,8 +15,9 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
+	"github.com/exograd/go-daemon/check"
+	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-log"
 )
@@ -38,66 +39,64 @@ func (err *StepFailureError) Unwrap() error {
 }
 
 type LocalRunnerCfg struct {
-	RootDirectory string `json:"root_directory,omitempty"`
+	RootDirectory string `json:"root_directory"`
+}
+
+func (cfg *LocalRunnerCfg) Check(c *check.Checker) {
+	c.CheckStringNotEmpty("root_directory", cfg.RootDirectory)
 }
 
 type LocalRunner struct {
-	Log     *log.Logger
-	Service *Service
+	runner *Runner
+	log    *log.Logger
+	daemon *daemon.Daemon
 
-	jobExecution     *eventline.JobExecution
-	stepExecutions   eventline.StepExecutions
-	executionContext *eventline.ExecutionContext
-	project          *eventline.Project
-	projectSettings  *eventline.ProjectSettings
-	scope            eventline.Scope
+	jobExecution     *JobExecution
+	stepExecutions   StepExecutions
+	executionContext *ExecutionContext
+	project          *Project
+	projectSettings  *ProjectSettings
+	scope            Scope
 
 	rootPath    string
 	environment map[string]string
-
-	stopChan <-chan struct{}
-	wg       *sync.WaitGroup
 }
 
-func NewLocalRunner(s *Service, data *RunnerData) *LocalRunner {
-	cfg := s.Cfg.Runners.Local
+func LocalRunnerDef() *RunnerDef {
+	return &RunnerDef{
+		Name: "local",
+		Cfg: &LocalRunnerCfg{
+			RootDirectory: "tmp/local-execution",
+		},
+	}
+}
 
-	je := data.JobExecution
+func NewLocalRunner(r *Runner) *LocalRunner {
+	cfg := r.cfg.(*LocalRunnerCfg)
 
-	logger := s.Log.Child("runner", log.Data{
-		"runner":        "local",
-		"job_execution": je.Id.String(),
-	})
+	je := r.jobExecution
 
 	rootDirPath := cfg.RootDirectory
-	if rootDirPath == "" {
-		rootDirPath = "/var/lib/eventline/local-execution"
-	}
 	rootPath := path.Join(rootDirPath, je.Id.String())
 
-	environment := data.Environment()
-
 	return &LocalRunner{
-		Log:     logger,
-		Service: s,
+		runner: r,
+		log:    r.log,
+		daemon: r.daemon,
 
-		jobExecution:     data.JobExecution,
-		stepExecutions:   data.StepExecutions,
-		executionContext: data.ExecutionContext,
-		project:          data.Project,
-		projectSettings:  data.ProjectSettings,
-		scope:            eventline.NewProjectScope(data.Project.Id),
+		jobExecution:     je,
+		stepExecutions:   r.stepExecutions,
+		executionContext: r.executionContext,
+		project:          r.project,
+		projectSettings:  r.projectSettings,
+		scope:            r.scope,
 
-		rootPath:    rootPath,
-		environment: environment,
-
-		stopChan: s.runnerStopChan,
-		wg:       &s.runnerWg,
+		rootPath: rootPath,
 	}
 }
 
 func (r *LocalRunner) Start() error {
-	r.wg.Add(1)
+	r.runner.wg.Add(1)
 	go r.main()
 
 	return nil
@@ -105,7 +104,7 @@ func (r *LocalRunner) Start() error {
 
 func (r *LocalRunner) Stopping() bool {
 	select {
-	case <-r.stopChan:
+	case <-r.runner.stopChan:
 		return true
 	default:
 		return false
@@ -113,22 +112,22 @@ func (r *LocalRunner) Stopping() bool {
 }
 
 func (r *LocalRunner) main() {
-	defer r.wg.Done()
+	defer r.runner.wg.Done()
 	defer r.clearEnvironment()
 
-	var currentStepExecution *eventline.StepExecution
+	var currentStepExecution *StepExecution
 
 	jeId := r.jobExecution.Id
 
 	defer func() {
 		if value := recover(); value != nil {
 			msg, trace := utils.RecoverValueData(value)
-			r.Log.Error("panic: %s\n%s", msg, trace)
+			r.log.Error("panic: %s\n%s", msg, trace)
 
 			panicErr := fmt.Errorf("panic: %s", msg)
 
 			if se := currentStepExecution; se != nil {
-				_, _, err := r.Service.UpdateStepExecutionFailure(jeId, se.Id,
+				_, _, err := r.runner.UpdateStepExecutionFailure(jeId, se.Id,
 					panicErr, r.scope)
 				if err != nil {
 					r.handleError(fmt.Errorf("cannot update step %d: %w",
@@ -141,7 +140,7 @@ func (r *LocalRunner) main() {
 		}
 	}()
 
-	r.Log.Info("starting execution")
+	r.log.Info("starting execution")
 
 	if err := r.initEnvironment(); err != nil {
 		r.handleError(fmt.Errorf("cannot initialize environment: %w", err))
@@ -156,9 +155,9 @@ func (r *LocalRunner) main() {
 
 		step := r.jobExecution.JobSpec.Steps[i]
 
-		r.Log.Info("executing step %d", se.Position)
+		r.log.Info("executing step %d", se.Position)
 
-		_, _, err := r.Service.UpdateStepExecutionStart(jeId, se.Id, r.scope)
+		_, _, err := r.runner.UpdateStepExecutionStart(jeId, se.Id, r.scope)
 		if err != nil {
 			r.handleError(fmt.Errorf("cannot update step %d: %w",
 				se.Position, err))
@@ -171,7 +170,7 @@ func (r *LocalRunner) main() {
 
 		var stepFailureErr *StepFailureError
 		if errors.As(err, &stepFailureErr) {
-			_, _, updateErr := r.Service.UpdateStepExecutionFailure(jeId,
+			_, _, updateErr := r.runner.UpdateStepExecutionFailure(jeId,
 				se.Id, err, r.scope)
 			if updateErr != nil {
 				r.handleError(fmt.Errorf("cannot update step %d: %w",
@@ -189,7 +188,7 @@ func (r *LocalRunner) main() {
 		}
 
 		if stepFailureErr == nil {
-			_, _, err := r.Service.UpdateStepExecutionSuccess(jeId, se.Id,
+			_, _, err := r.runner.UpdateStepExecutionSuccess(jeId, se.Id,
 				r.scope)
 			if err != nil {
 				r.handleError(fmt.Errorf("cannot update step %d: %w",
@@ -199,22 +198,22 @@ func (r *LocalRunner) main() {
 		}
 	}
 
-	r.Log.Info("execution finished")
+	r.log.Info("execution finished")
 
-	_, err := r.Service.UpdateJobExecutionSuccess(jeId, r.scope)
+	_, err := r.runner.UpdateJobExecutionSuccess(jeId, r.scope)
 	if err != nil {
-		r.Log.Error("cannot update job: %v", err)
+		r.log.Error("cannot update job: %v", err)
 		return
 	}
 }
 
 func (r *LocalRunner) handleInterruption() {
-	r.Log.Info("execution interrupted")
+	r.log.Info("execution interrupted")
 
-	je, ses, err := r.Service.UpdateJobExecutionAbortion(r.jobExecution.Id,
+	je, ses, err := r.runner.UpdateJobExecutionAbortion(r.jobExecution.Id,
 		r.scope)
 	if err != nil {
-		r.Log.Error("%v", err)
+		r.log.Error("%v", err)
 	}
 
 	r.jobExecution = je
@@ -222,12 +221,12 @@ func (r *LocalRunner) handleInterruption() {
 }
 
 func (r *LocalRunner) handleError(err error) {
-	r.Log.Error("%v", err)
+	r.log.Error("%v", err)
 
-	je, ses, err := r.Service.UpdateJobExecutionFailure(r.jobExecution.Id,
+	je, ses, err := r.runner.UpdateJobExecutionFailure(r.jobExecution.Id,
 		err, r.scope)
 	if err != nil {
-		r.Log.Error("%v", err)
+		r.log.Error("%v", err)
 	}
 
 	r.jobExecution = je
@@ -272,7 +271,7 @@ func (r *LocalRunner) initEnvironment() error {
 	return nil
 }
 
-func (r *LocalRunner) writeStepData(i int, step *eventline.Step, stepDirPath string) error {
+func (r *LocalRunner) writeStepData(i int, step *Step, stepDirPath string) error {
 	if step.Code != "" || step.Script != nil {
 		var code string
 
@@ -283,7 +282,7 @@ func (r *LocalRunner) writeStepData(i int, step *eventline.Step, stepDirPath str
 		}
 
 		var buf bytes.Buffer
-		if !eventline.StartsWithShebang(code) {
+		if !StartsWithShebang(code) {
 			buf.WriteString(r.projectSettings.CodeHeader)
 		}
 		buf.WriteString(code)
@@ -323,12 +322,12 @@ func (r *LocalRunner) writeStepData(i int, step *eventline.Step, stepDirPath str
 func (r *LocalRunner) clearEnvironment() {
 	if err := os.RemoveAll(r.rootPath); err != nil {
 		if !errors.Is(err, fs.ErrNotExist) {
-			r.Log.Error("cannot delete directory %q: %v", r.rootPath, err)
+			r.log.Error("cannot delete directory %q: %v", r.rootPath, err)
 		}
 	}
 }
 
-func (r *LocalRunner) executeStep(i int, se *eventline.StepExecution) error {
+func (r *LocalRunner) executeStep(i int, se *StepExecution) error {
 	// Interruption handling (i.e. when the server is being stopped while jobs
 	// are running).
 	ctx, cancel := context.WithCancel(context.Background())
@@ -338,8 +337,8 @@ func (r *LocalRunner) executeStep(i int, se *eventline.StepExecution) error {
 
 	go func() {
 		select {
-		case <-r.stopChan:
-			r.Log.Info("interrupting job")
+		case <-r.runner.stopChan:
+			r.log.Info("interrupting job")
 			cancel()
 			return
 
@@ -358,7 +357,7 @@ func (r *LocalRunner) executeStep(i int, se *eventline.StepExecution) error {
 	cmd.Dir = r.rootPath
 
 	cmd.Env = make([]string, 0, len(r.environment))
-	for k, v := range r.environment {
+	for k, v := range r.runner.environment {
 		cmd.Env = append(cmd.Env, k+"="+v)
 	}
 
@@ -423,7 +422,7 @@ func (r *LocalRunner) executeStep(i int, se *eventline.StepExecution) error {
 	return nil
 }
 
-func (r *LocalRunner) readOutput(se *eventline.StepExecution, output io.ReadCloser, name string, errChan chan<- error, wg *sync.WaitGroup) {
+func (r *LocalRunner) readOutput(se *StepExecution, output io.ReadCloser, name string, errChan chan<- error, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	bufferedOutput := bufio.NewReader(output)
@@ -454,7 +453,7 @@ func (r *LocalRunner) readOutput(se *eventline.StepExecution, output io.ReadClos
 		// execution later.
 
 		if len(line) > 0 {
-			err = r.Service.Daemon.Pg.WithConn(func(conn pg.Conn) (err error) {
+			err = r.daemon.Pg.WithConn(func(conn pg.Conn) (err error) {
 				err = se.UpdateOutput(conn, append(line, '\n'))
 				return
 			})
@@ -474,7 +473,7 @@ func (r *LocalRunner) readOutput(se *eventline.StepExecution, output io.ReadClos
 	}
 }
 
-func (r *LocalRunner) stepCommand(se *eventline.StepExecution, s *eventline.Step) (name string, args []string) {
+func (r *LocalRunner) stepCommand(se *StepExecution, s *Step) (name string, args []string) {
 	switch {
 	case s.Code != "":
 		name = path.Join("steps", strconv.Itoa(se.Position))

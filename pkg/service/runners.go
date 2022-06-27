@@ -1,62 +1,45 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/eventline/pkg/utils"
+	"github.com/exograd/go-log"
 )
 
 type RunnersCfg struct {
-	Local LocalRunnerCfg `json:"local"`
+	//Local LocalRunnerCfg `json:"local"`
 }
 
 type Runner interface {
 	Start() error
 }
 
-type RunnerData struct {
-	JobExecution     *eventline.JobExecution
-	StepExecutions   eventline.StepExecutions
-	ExecutionContext *eventline.ExecutionContext
-	Project          *eventline.Project
-	ProjectSettings  *eventline.ProjectSettings
-}
+func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
+	name := data.JobExecution.JobSpec.Runtime.Name
 
-func (rd *RunnerData) Environment() map[string]string {
-	env := map[string]string{
-		"EVENTLINE":                  "true",
-		"EVENTLINE_PROJECT_ID":       rd.Project.Id.String(),
-		"EVENTLINE_PROJECT_NAME":     rd.Project.Name,
-		"EVENTLINE_JOB_ID":           rd.JobExecution.JobId.String(),
-		"EVENTLINE_JOB_NAME":         rd.JobExecution.JobSpec.Name,
-		"EVENTLINE_JOB_EXECUTION_ID": rd.JobExecution.Id.String(),
-		"EVENTLINE_CONTEXT_PATH":     "/eventline/context.json",
+	def, found := s.runnerDefs[name]
+	if !found {
+		return nil, fmt.Errorf("no runner found for runtime %q", name)
 	}
 
-	for _, i := range rd.ExecutionContext.Identities {
-		for name, value := range i.Environment() {
-			env[name] = value
-		}
+	logger := s.Log.Child("runner", log.Data{
+		"runtime":       "local",
+		"job_execution": data.JobExecution.Id.String(),
+	})
+
+	initData := eventline.RunnerInitData{
+		Log:    logger,
+		Daemon: s.Daemon,
+
+		Cfg:  def.Cfg,
+		Data: data,
+
+		StopChan: s.runnerStopChan,
+		Wg:       &s.runnerWg,
 	}
 
-	for name, value := range rd.JobExecution.JobSpec.Environment {
-		env[name] = value
-	}
-
-	return env
-}
-
-func (s *Service) StartRunner(data *RunnerData) (Runner, error) {
-	runtimeName := data.JobExecution.JobSpec.Runtime.Name
-
-	var runner Runner
-
-	switch runtimeName {
-	case eventline.RuntimeNameLocal:
-		runner = NewLocalRunner(s, data)
-
-	default:
-		utils.Panicf("unhandled runtime %q", runtimeName)
-	}
+	runner := eventline.NewRunner(initData)
 
 	if err := runner.Start(); err != nil {
 		return nil, err

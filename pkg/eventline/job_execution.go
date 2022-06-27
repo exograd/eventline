@@ -31,6 +31,35 @@ func (err UnknownJobExecutionError) Error() string {
 	return fmt.Sprintf("unknown job execution %q", err.Id)
 }
 
+type JobExecutionAbortedError struct {
+	Id Id
+}
+
+func (err *JobExecutionAbortedError) Error() string {
+	return fmt.Sprintf("job execution %q has been aborted", err.Id)
+}
+
+func IsJobAbortedError(err error) bool {
+	var jobExecutionAbortedErr *JobExecutionAbortedError
+	return errors.As(err, &jobExecutionAbortedErr)
+}
+
+type JobExecutionFinishedError struct {
+	Id Id
+}
+
+func (err *JobExecutionFinishedError) Error() string {
+	return fmt.Sprintf("job %q is finished", err.Id)
+}
+
+type JobExecutionNotFinishedError struct {
+	Id Id
+}
+
+func (err *JobExecutionNotFinishedError) Error() string {
+	return fmt.Sprintf("job %q is not finished yet", err.Id)
+}
+
 type JobExecutionStatus string
 
 const (

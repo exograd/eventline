@@ -8,9 +8,6 @@ import (
 	"net/url"
 	"sync"
 
-	cgeneric "github.com/exograd/eventline/pkg/connectors/generic"
-	cgithub "github.com/exograd/eventline/pkg/connectors/github"
-	ctime "github.com/exograd/eventline/pkg/connectors/time"
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
@@ -22,8 +19,14 @@ var (
 	BuildId string
 )
 
+type ServiceData struct {
+	Connectors []eventline.Connector
+	Runners    []*eventline.RunnerDef
+}
+
 type Service struct {
-	Cfg ServiceCfg
+	Data ServiceData
+	Cfg  ServiceCfg
 
 	Daemon *daemon.Daemon
 	Log    *log.Logger
@@ -42,16 +45,19 @@ type Service struct {
 
 	connectors map[string]eventline.Connector
 
+	runnerDefs     map[eventline.RuntimeName]*eventline.RunnerDef
 	runnerStopChan chan struct{}
 	runnerWg       sync.WaitGroup
 }
 
-func NewService() *Service {
+func NewService(data ServiceData) *Service {
 	hash := sha1.New()
 	hash.Write([]byte(BuildId))
 	buildIdHash := hex.EncodeToString(hash.Sum(nil))
 
 	s := &Service{
+		Data: data,
+
 		BuildIdHash: buildIdHash,
 
 		workers:                make(map[string]*eventline.Worker),
@@ -60,6 +66,7 @@ func NewService() *Service {
 
 		connectors: make(map[string]eventline.Connector),
 
+		runnerDefs:     make(map[eventline.RuntimeName]*eventline.RunnerDef),
 		runnerStopChan: make(chan struct{}),
 	}
 
@@ -108,6 +115,10 @@ func (s *Service) Init(d *daemon.Daemon) error {
 		return err
 	}
 
+	if err := s.initRunners(); err != nil {
+		return err
+	}
+
 	eventline.GlobalEncryptionKey = s.Cfg.EncryptionKey
 
 	if err := s.initPg(); err != nil {
@@ -132,13 +143,7 @@ func (s *Service) Init(d *daemon.Daemon) error {
 }
 
 func (s *Service) initConnectors() error {
-	cs := []eventline.Connector{
-		cgeneric.NewConnector(),
-		cgithub.NewConnector(),
-		ctime.NewConnector(),
-	}
-
-	for _, c := range cs {
+	for _, c := range s.Data.Connectors {
 		if err := s.initConnector(c); err != nil {
 			return fmt.Errorf("cannot initialize connector %q: %w",
 				c.Name(), err)
@@ -179,6 +184,35 @@ func (s *Service) initConnector(c eventline.Connector) error {
 	s.connectors[name] = c
 
 	eventline.Connectors[name] = c
+
+	return nil
+}
+
+func (s *Service) initRunners() error {
+	for _, def := range s.Data.Runners {
+		if err := s.initRunner(def); err != nil {
+			return fmt.Errorf("cannot initialize runner %q: %w",
+				def.Name, err)
+		}
+	}
+
+	return nil
+}
+
+func (s *Service) initRunner(def *eventline.RunnerDef) error {
+	if cfgData, found := s.Cfg.Runners[def.Name]; found {
+		if err := json.Unmarshal(cfgData, def.Cfg); err != nil {
+			return fmt.Errorf("cannot decode configuration: %w", err)
+		}
+
+		checker := check.NewChecker()
+		def.Cfg.Check(checker)
+		if err := checker.Error(); err != nil {
+			return fmt.Errorf("invalid configuration: %w", err)
+		}
+	}
+
+	s.runnerDefs[def.Name] = def
 
 	return nil
 }

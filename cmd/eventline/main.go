@@ -6,5 +6,12 @@ import (
 )
 
 func main() {
-	daemon.Run("eventline", "job scheduling platform", service.NewService())
+	sdata := service.ServiceData{
+		Connectors: service.Connectors,
+		Runners:    service.Runners,
+	}
+
+	s := service.NewService(sdata)
+
+	daemon.Run("eventline", "job scheduling platform", s)
 }

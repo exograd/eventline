@@ -33,7 +33,7 @@ type ServiceCfg struct {
 
 	JobRetention int `json:"job_retention"` // days
 
-	Runners RunnersCfg `json:"runners"`
+	Runners map[eventline.RuntimeName]json.RawMessage `json:"runners"`
 }
 
 func DefaultServiceCfg() ServiceCfg {
@@ -65,11 +65,5 @@ func DefaultServiceCfg() ServiceCfg {
 		},
 
 		WebHTTPServerURI: "http://localhost:8087",
-
-		Runners: RunnersCfg{
-			Local: LocalRunnerCfg{
-				RootDirectory: "tmp/local-execution",
-			},
-		},
 	}
 }

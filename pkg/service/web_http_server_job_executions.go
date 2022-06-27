@@ -149,7 +149,7 @@ func (s *WebHTTPServer) hJobExecutionsIdAbortPOST(h *HTTPHandler) {
 
 	if _, err := s.Service.AbortJobExecution(jeId, scope); err != nil {
 		var unknownJobExecutionErr *eventline.UnknownJobExecutionError
-		var jobExecutionFinishedErr *JobExecutionFinishedError
+		var jobExecutionFinishedErr *eventline.JobExecutionFinishedError
 
 		if errors.As(err, &unknownJobExecutionErr) {
 			h.ReplyError(404, "unknown_job_execution", "%v", err)
@@ -175,7 +175,7 @@ func (s *WebHTTPServer) hJobExecutionsIdRestartPOST(h *HTTPHandler) {
 
 	if _, err := s.Service.RestartJobExecution(jeId, scope); err != nil {
 		var unknownJobExecutionErr *eventline.UnknownJobExecutionError
-		var jobExecutionNotFinishedErr *JobExecutionNotFinishedError
+		var jobExecutionNotFinishedErr *eventline.JobExecutionNotFinishedError
 
 		if errors.As(err, &unknownJobExecutionErr) {
 			h.ReplyError(404, "unknown_job_execution", "%v", err)
