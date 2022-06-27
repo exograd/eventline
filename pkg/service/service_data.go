@@ -7,6 +7,11 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 )
 
+type ServiceData struct {
+	Connectors []eventline.Connector
+	Runners    []*eventline.RunnerDef
+}
+
 var Connectors = []eventline.Connector{
 	cgeneric.NewConnector(),
 	cgithub.NewConnector(),

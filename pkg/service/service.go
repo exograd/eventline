@@ -19,11 +19,6 @@ var (
 	BuildId string
 )
 
-type ServiceData struct {
-	Connectors []eventline.Connector
-	Runners    []*eventline.RunnerDef
-}
-
 type Service struct {
 	Data ServiceData
 	Cfg  ServiceCfg
