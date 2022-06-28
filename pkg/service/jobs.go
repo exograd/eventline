@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
+	rlocal "github.com/exograd/eventline/pkg/runners/local"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
 )
@@ -110,7 +111,7 @@ func (s *Service) CreateOrUpdateJob(conn pg.Conn, spec *eventline.JobSpec, scope
 	if spec.Runner == nil {
 		spec.Runner = &eventline.JobRunner{
 			Name:       "local",
-			Parameters: &eventline.LocalRunnerParameters{},
+			Parameters: &rlocal.RunnerParameters{},
 		}
 	}
 

@@ -5,6 +5,7 @@ import (
 	cgithub "github.com/exograd/eventline/pkg/connectors/github"
 	ctime "github.com/exograd/eventline/pkg/connectors/time"
 	"github.com/exograd/eventline/pkg/eventline"
+	rlocal "github.com/exograd/eventline/pkg/runners/local"
 )
 
 type ServiceData struct {
@@ -19,5 +20,5 @@ var Connectors = []eventline.Connector{
 }
 
 var Runners = []*eventline.RunnerDef{
-	eventline.LocalRunnerDef(),
+	rlocal.RunnerDef(),
 }

@@ -1,4 +1,4 @@
-package eventline
+package local
 
 import (
 	"bufio"
@@ -15,8 +15,8 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-log"
@@ -38,59 +38,41 @@ func (err *StepFailureError) Unwrap() error {
 	return err.err
 }
 
-type LocalRunnerCfg struct {
-	RootDirectory string `json:"root_directory"`
-}
-
-func (cfg *LocalRunnerCfg) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("root_directory", cfg.RootDirectory)
-}
-
-type LocalRunner struct {
-	runner *Runner
+type Runner struct {
+	runner *eventline.Runner
 	log    *log.Logger
 	daemon *daemon.Daemon
 
-	jobExecution     *JobExecution
-	stepExecutions   StepExecutions
-	executionContext *ExecutionContext
-	project          *Project
-	projectSettings  *ProjectSettings
-	scope            Scope
+	jobExecution     *eventline.JobExecution
+	stepExecutions   eventline.StepExecutions
+	executionContext *eventline.ExecutionContext
+	project          *eventline.Project
+	projectSettings  *eventline.ProjectSettings
+	scope            eventline.Scope
 
 	rootPath string
 }
 
-type LocalRunnerParameters struct {
-}
-
-func (r *LocalRunnerParameters) Check(c *check.Checker) {
-}
-
-func LocalRunnerDef() *RunnerDef {
-	return &RunnerDef{
+func RunnerDef() *eventline.RunnerDef {
+	return &eventline.RunnerDef{
 		Name: "local",
-		Cfg: &LocalRunnerCfg{
+		Cfg: &RunnerCfg{
 			RootDirectory: "tmp/local-execution",
 		},
-		InstantiateParameters: NewLocalParameters,
-		InstantiateBehaviour:  NewLocalRunner,
+		InstantiateParameters: NewRunnerParameters,
+		InstantiateBehaviour:  NewRunner,
 	}
 }
 
-func NewLocalParameters() RunnerParameters {
-	return &LocalRunnerParameters{}
-}
-
-func NewLocalRunner(r *Runner) RunnerBehaviour {
-	cfg := r.Cfg.(*LocalRunnerCfg)
+func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
+	cfg := r.Cfg.(*RunnerCfg)
 
 	je := r.JobExecution
 
 	rootDirPath := cfg.RootDirectory
 	rootPath := path.Join(rootDirPath, je.Id.String())
 
-	return &LocalRunner{
+	return &Runner{
 		runner: r,
 		log:    r.Log,
 		daemon: r.Daemon,
@@ -106,14 +88,14 @@ func NewLocalRunner(r *Runner) RunnerBehaviour {
 	}
 }
 
-func (r *LocalRunner) Start() error {
+func (r *Runner) Start() error {
 	r.runner.Wg.Add(1)
 	go r.main()
 
 	return nil
 }
 
-func (r *LocalRunner) Stopping() bool {
+func (r *Runner) Stopping() bool {
 	select {
 	case <-r.runner.StopChan:
 		return true
@@ -122,11 +104,11 @@ func (r *LocalRunner) Stopping() bool {
 	}
 }
 
-func (r *LocalRunner) main() {
+func (r *Runner) main() {
 	defer r.runner.Wg.Done()
 	defer r.clearEnvironment()
 
-	var currentStepExecution *StepExecution
+	var currentStepExecution *eventline.StepExecution
 
 	jeId := r.jobExecution.Id
 
@@ -218,7 +200,7 @@ func (r *LocalRunner) main() {
 	}
 }
 
-func (r *LocalRunner) handleInterruption() {
+func (r *Runner) handleInterruption() {
 	r.log.Info("execution interrupted")
 
 	je, ses, err := r.runner.UpdateJobExecutionAbortion(r.jobExecution.Id,
@@ -231,7 +213,7 @@ func (r *LocalRunner) handleInterruption() {
 	r.stepExecutions = ses
 }
 
-func (r *LocalRunner) handleError(err error) {
+func (r *Runner) handleError(err error) {
 	r.log.Error("%v", err)
 
 	je, ses, err := r.runner.UpdateJobExecutionFailure(r.jobExecution.Id,
@@ -244,7 +226,7 @@ func (r *LocalRunner) handleError(err error) {
 	r.stepExecutions = ses
 }
 
-func (r *LocalRunner) initEnvironment() error {
+func (r *Runner) initEnvironment() error {
 	// Root directory
 	if err := os.RemoveAll(r.rootPath); err != nil {
 		if !errors.Is(err, fs.ErrNotExist) {
@@ -282,7 +264,7 @@ func (r *LocalRunner) initEnvironment() error {
 	return nil
 }
 
-func (r *LocalRunner) writeStepData(i int, step *Step, stepDirPath string) error {
+func (r *Runner) writeStepData(i int, step *eventline.Step, stepDirPath string) error {
 	if step.Code != "" || step.Script != nil {
 		var code string
 
@@ -293,7 +275,7 @@ func (r *LocalRunner) writeStepData(i int, step *Step, stepDirPath string) error
 		}
 
 		var buf bytes.Buffer
-		if !StartsWithShebang(code) {
+		if !eventline.StartsWithShebang(code) {
 			buf.WriteString(r.projectSettings.CodeHeader)
 		}
 		buf.WriteString(code)
@@ -330,7 +312,7 @@ func (r *LocalRunner) writeStepData(i int, step *Step, stepDirPath string) error
 	return nil
 }
 
-func (r *LocalRunner) clearEnvironment() {
+func (r *Runner) clearEnvironment() {
 	if err := os.RemoveAll(r.rootPath); err != nil {
 		if !errors.Is(err, fs.ErrNotExist) {
 			r.log.Error("cannot delete directory %q: %v", r.rootPath, err)
@@ -338,7 +320,7 @@ func (r *LocalRunner) clearEnvironment() {
 	}
 }
 
-func (r *LocalRunner) executeStep(i int, se *StepExecution) error {
+func (r *Runner) executeStep(i int, se *eventline.StepExecution) error {
 	// Interruption handling (i.e. when the server is being stopped while jobs
 	// are running).
 	ctx, cancel := context.WithCancel(context.Background())
@@ -433,14 +415,12 @@ func (r *LocalRunner) executeStep(i int, se *StepExecution) error {
 	return nil
 }
 
-func (r *LocalRunner) readOutput(se *StepExecution, output io.ReadCloser, name string, errChan chan<- error, wg *sync.WaitGroup) {
+func (r *Runner) readOutput(se *eventline.StepExecution, output io.ReadCloser, name string, errChan chan<- error, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	bufferedOutput := bufio.NewReader(output)
 
 	var line []byte
-
-	// TODO Only flush every X seconds
 
 	for {
 		data, isPrefix, err := bufferedOutput.ReadLine()
@@ -484,7 +464,7 @@ func (r *LocalRunner) readOutput(se *StepExecution, output io.ReadCloser, name s
 	}
 }
 
-func (r *LocalRunner) stepCommand(se *StepExecution, s *Step) (name string, args []string) {
+func (r *Runner) stepCommand(se *eventline.StepExecution, s *eventline.Step) (name string, args []string) {
 	switch {
 	case s.Code != "":
 		name = path.Join("steps", strconv.Itoa(se.Position))
@@ -508,7 +488,7 @@ func (r *LocalRunner) stepCommand(se *StepExecution, s *Step) (name string, args
 	return
 }
 
-func (r *LocalRunner) translateExitError(err *exec.ExitError) error {
+func (r *Runner) translateExitError(err *exec.ExitError) error {
 	state := err.ProcessState
 	status := state.Sys().(syscall.WaitStatus)
 
