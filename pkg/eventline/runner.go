@@ -1,10 +1,12 @@
 package eventline
 
 import (
+	"errors"
 	"fmt"
 	"sync"
 	"time"
 
+	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/pg"
@@ -12,6 +14,22 @@ import (
 )
 
 var RunnerDefs = map[string]*RunnerDef{}
+
+type StepFailureError struct {
+	err error
+}
+
+func NewStepFailureError(err error) *StepFailureError {
+	return &StepFailureError{err: err}
+}
+
+func (err *StepFailureError) Error() string {
+	return err.err.Error()
+}
+
+func (err *StepFailureError) Unwrap() error {
+	return err.err
+}
 
 type RunnerCfg interface {
 	check.Object
@@ -45,7 +63,10 @@ type RunnerData struct {
 }
 
 type RunnerBehaviour interface {
-	Start() error
+	Init() error
+	Terminate()
+
+	ExecuteStep(*StepExecution, *Step) error
 }
 
 type Runner struct {
@@ -92,7 +113,138 @@ func NewRunner(data RunnerInitData) *Runner {
 }
 
 func (r *Runner) Start() error {
-	return r.Behaviour.Start()
+	r.Wg.Add(1)
+	go r.main()
+
+	return nil
+}
+
+func (r *Runner) Stopping() bool {
+	select {
+	case <-r.StopChan:
+		return true
+	default:
+		return false
+	}
+}
+
+func (r *Runner) main() {
+	defer r.Wg.Done()
+	defer r.Behaviour.Terminate()
+
+	var cse *StepExecution
+
+	jeId := r.JobExecution.Id
+
+	defer func() {
+		if value := recover(); value != nil {
+			msg, trace := utils.RecoverValueData(value)
+			r.Log.Error("panic: %s\n%s", msg, trace)
+
+			panicErr := fmt.Errorf("panic: %s", msg)
+
+			if cse != nil {
+				_, _, err := r.updateStepExecutionFailure(jeId, cse.Id,
+					panicErr, r.Scope)
+				if err != nil {
+					r.handleError(fmt.Errorf("cannot update step %d: %w",
+						cse.Position, err))
+					return
+				}
+			}
+
+			r.handleError(panicErr)
+		}
+	}()
+
+	if err := r.Behaviour.Init(); err != nil {
+		r.handleError(err)
+		return
+	}
+
+	r.Log.Info("starting execution")
+
+	for i, se := range r.StepExecutions {
+		if r.Stopping() {
+			r.handleInterruption()
+			return
+		}
+
+		step := r.JobExecution.JobSpec.Steps[i]
+
+		r.Log.Info("executing step %d", se.Position)
+
+		_, _, err := r.updateStepExecutionStart(jeId, se.Id, r.Scope)
+		if err != nil {
+			r.handleError(fmt.Errorf("cannot update step %d: %w",
+				se.Position, err))
+			return
+		}
+
+		cse = se
+
+		err = r.Behaviour.ExecuteStep(se, step)
+
+		var stepFailureErr *StepFailureError
+		if errors.As(err, &stepFailureErr) {
+			_, _, updateErr := r.updateStepExecutionFailure(jeId, se.Id, err,
+				r.Scope)
+			if updateErr != nil {
+				r.handleError(fmt.Errorf("cannot update step %d: %w",
+					se.Position, err))
+				return
+			}
+		}
+
+		if err != nil {
+			if stepFailureErr == nil || step.AbortOnFailure() {
+				r.handleError(fmt.Errorf("cannot execute step %d: %w",
+					se.Position, err))
+				return
+			}
+		}
+
+		if stepFailureErr == nil {
+			_, _, err := r.updateStepExecutionSuccess(jeId, se.Id, r.Scope)
+			if err != nil {
+				r.handleError(fmt.Errorf("cannot update step %d: %w",
+					se.Position, err))
+				return
+			}
+		}
+	}
+
+	r.Log.Info("execution finished")
+
+	if _, err := r.updateJobExecutionSuccess(jeId, r.Scope); err != nil {
+		r.Log.Error("cannot update job: %v", err)
+		return
+	}
+}
+
+func (r *Runner) handleInterruption() {
+	r.Log.Info("execution interrupted")
+
+	je, ses, err := r.updateJobExecutionAbortion(r.JobExecution.Id, r.Scope)
+	if err != nil {
+		r.Log.Error("%v", err)
+	}
+
+	r.JobExecution = je
+	r.StepExecutions = ses
+}
+
+func (r *Runner) handleError(err error) {
+	r.Log.Error("%v", err)
+
+	je, ses, err := r.updateJobExecutionFailure(r.JobExecution.Id, err,
+		r.Scope)
+	if err != nil {
+		r.Log.Error("%v", err)
+	}
+
+	r.JobExecution = je
+	r.StepExecutions = ses
 }
 
 func (rd *RunnerData) Environment() map[string]string {
@@ -119,7 +271,7 @@ func (rd *RunnerData) Environment() map[string]string {
 	return env
 }
 
-func (r *Runner) UpdateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution, error) {
+func (r *Runner) updateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution, error) {
 	var je JobExecution
 
 	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
@@ -150,7 +302,7 @@ func (r *Runner) UpdateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution,
 	return &je, nil
 }
 
-func (r *Runner) UpdateJobExecutionAbortion(jeId Id, scope Scope) (*JobExecution, StepExecutions, error) {
+func (r *Runner) updateJobExecutionAbortion(jeId Id, scope Scope) (*JobExecution, StepExecutions, error) {
 	var je JobExecution
 	var ses StepExecutions
 
@@ -200,7 +352,7 @@ func (r *Runner) UpdateJobExecutionAbortion(jeId Id, scope Scope) (*JobExecution
 	return &je, ses, nil
 }
 
-func (r *Runner) UpdateJobExecutionFailure(jeId Id, jeErr error, scope Scope) (*JobExecution, StepExecutions, error) {
+func (r *Runner) updateJobExecutionFailure(jeId Id, jeErr error, scope Scope) (*JobExecution, StepExecutions, error) {
 	var je JobExecution
 	var ses StepExecutions
 
@@ -251,7 +403,7 @@ func (r *Runner) UpdateJobExecutionFailure(jeId Id, jeErr error, scope Scope) (*
 	return &je, ses, nil
 }
 
-func (r *Runner) UpdateStepExecutionStart(jeId, seId Id, scope Scope) (*JobExecution, *StepExecution, error) {
+func (r *Runner) updateStepExecutionStart(jeId, seId Id, scope Scope) (*JobExecution, *StepExecution, error) {
 	return r.updateStepExecution(jeId, seId, func(se *StepExecution) {
 		now := time.Now().UTC()
 
@@ -262,7 +414,7 @@ func (r *Runner) UpdateStepExecutionStart(jeId, seId Id, scope Scope) (*JobExecu
 	}, scope)
 }
 
-func (r *Runner) UpdateStepExecutionAborted(jeId, seId Id, scope Scope) (*JobExecution, *StepExecution, error) {
+func (r *Runner) updateStepExecutionAborted(jeId, seId Id, scope Scope) (*JobExecution, *StepExecution, error) {
 	return r.updateStepExecution(jeId, seId, func(se *StepExecution) {
 		now := time.Now().UTC()
 
@@ -271,7 +423,7 @@ func (r *Runner) UpdateStepExecutionAborted(jeId, seId Id, scope Scope) (*JobExe
 	}, scope)
 }
 
-func (r *Runner) UpdateStepExecutionSuccess(jeId, seId Id, scope Scope) (*JobExecution, *StepExecution, error) {
+func (r *Runner) updateStepExecutionSuccess(jeId, seId Id, scope Scope) (*JobExecution, *StepExecution, error) {
 	return r.updateStepExecution(jeId, seId, func(se *StepExecution) {
 		now := time.Now().UTC()
 
@@ -280,7 +432,7 @@ func (r *Runner) UpdateStepExecutionSuccess(jeId, seId Id, scope Scope) (*JobExe
 	}, scope)
 }
 
-func (r *Runner) UpdateStepExecutionFailure(jeId, seId Id, err error, scope Scope) (*JobExecution, *StepExecution, error) {
+func (r *Runner) updateStepExecutionFailure(jeId, seId Id, err error, scope Scope) (*JobExecution, *StepExecution, error) {
 	return r.updateStepExecution(jeId, seId, func(se *StepExecution) {
 		now := time.Now().UTC()
 

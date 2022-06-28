@@ -22,22 +22,6 @@ import (
 	"github.com/exograd/go-log"
 )
 
-type StepFailureError struct {
-	err error
-}
-
-func NewStepFailureError(err error) *StepFailureError {
-	return &StepFailureError{err: err}
-}
-
-func (err *StepFailureError) Error() string {
-	return err.err.Error()
-}
-
-func (err *StepFailureError) Unwrap() error {
-	return err.err
-}
-
 type Runner struct {
 	runner *eventline.Runner
 	log    *log.Logger
@@ -88,145 +72,7 @@ func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
 	}
 }
 
-func (r *Runner) Start() error {
-	r.runner.Wg.Add(1)
-	go r.main()
-
-	return nil
-}
-
-func (r *Runner) Stopping() bool {
-	select {
-	case <-r.runner.StopChan:
-		return true
-	default:
-		return false
-	}
-}
-
-func (r *Runner) main() {
-	defer r.runner.Wg.Done()
-	defer r.clearEnvironment()
-
-	var currentStepExecution *eventline.StepExecution
-
-	jeId := r.jobExecution.Id
-
-	defer func() {
-		if value := recover(); value != nil {
-			msg, trace := utils.RecoverValueData(value)
-			r.log.Error("panic: %s\n%s", msg, trace)
-
-			panicErr := fmt.Errorf("panic: %s", msg)
-
-			if se := currentStepExecution; se != nil {
-				_, _, err := r.runner.UpdateStepExecutionFailure(jeId, se.Id,
-					panicErr, r.scope)
-				if err != nil {
-					r.handleError(fmt.Errorf("cannot update step %d: %w",
-						se.Position, err))
-					return
-				}
-			}
-
-			r.handleError(panicErr)
-		}
-	}()
-
-	r.log.Info("starting execution")
-
-	if err := r.initEnvironment(); err != nil {
-		r.handleError(fmt.Errorf("cannot initialize environment: %w", err))
-		return
-	}
-
-	for i, se := range r.stepExecutions {
-		if r.Stopping() {
-			r.handleInterruption()
-			return
-		}
-
-		step := r.jobExecution.JobSpec.Steps[i]
-
-		r.log.Info("executing step %d", se.Position)
-
-		_, _, err := r.runner.UpdateStepExecutionStart(jeId, se.Id, r.scope)
-		if err != nil {
-			r.handleError(fmt.Errorf("cannot update step %d: %w",
-				se.Position, err))
-			return
-		}
-
-		currentStepExecution = se
-
-		err = r.executeStep(i, se)
-
-		var stepFailureErr *StepFailureError
-		if errors.As(err, &stepFailureErr) {
-			_, _, updateErr := r.runner.UpdateStepExecutionFailure(jeId,
-				se.Id, err, r.scope)
-			if updateErr != nil {
-				r.handleError(fmt.Errorf("cannot update step %d: %w",
-					se.Position, err))
-				return
-			}
-		}
-
-		if err != nil {
-			if stepFailureErr == nil || step.AbortOnFailure() {
-				r.handleError(fmt.Errorf("cannot execute step %d: %w",
-					se.Position, err))
-				return
-			}
-		}
-
-		if stepFailureErr == nil {
-			_, _, err := r.runner.UpdateStepExecutionSuccess(jeId, se.Id,
-				r.scope)
-			if err != nil {
-				r.handleError(fmt.Errorf("cannot update step %d: %w",
-					se.Position, err))
-				return
-			}
-		}
-	}
-
-	r.log.Info("execution finished")
-
-	_, err := r.runner.UpdateJobExecutionSuccess(jeId, r.scope)
-	if err != nil {
-		r.log.Error("cannot update job: %v", err)
-		return
-	}
-}
-
-func (r *Runner) handleInterruption() {
-	r.log.Info("execution interrupted")
-
-	je, ses, err := r.runner.UpdateJobExecutionAbortion(r.jobExecution.Id,
-		r.scope)
-	if err != nil {
-		r.log.Error("%v", err)
-	}
-
-	r.jobExecution = je
-	r.stepExecutions = ses
-}
-
-func (r *Runner) handleError(err error) {
-	r.log.Error("%v", err)
-
-	je, ses, err := r.runner.UpdateJobExecutionFailure(r.jobExecution.Id,
-		err, r.scope)
-	if err != nil {
-		r.log.Error("%v", err)
-	}
-
-	r.jobExecution = je
-	r.stepExecutions = ses
-}
-
-func (r *Runner) initEnvironment() error {
+func (r *Runner) Init() error {
 	// Root directory
 	if err := os.RemoveAll(r.rootPath); err != nil {
 		if !errors.Is(err, fs.ErrNotExist) {
@@ -264,55 +110,7 @@ func (r *Runner) initEnvironment() error {
 	return nil
 }
 
-func (r *Runner) writeStepData(i int, step *eventline.Step, stepDirPath string) error {
-	if step.Code != "" || step.Script != nil {
-		var code string
-
-		if step.Code != "" {
-			code = step.Code
-		} else if step.Script != nil {
-			code = step.Script.Content
-		}
-
-		var buf bytes.Buffer
-		if !eventline.StartsWithShebang(code) {
-			buf.WriteString(r.projectSettings.CodeHeader)
-		}
-		buf.WriteString(code)
-
-		filePath := path.Join(stepDirPath, strconv.Itoa(i+1))
-		if err := os.WriteFile(filePath, buf.Bytes(), 0700); err != nil {
-			return fmt.Errorf("cannot write %q: %w", filePath, err)
-		}
-	} else if step.Bundle != nil {
-		bundlePath := path.Join(stepDirPath, strconv.Itoa(i+1))
-		if err := os.MkdirAll(bundlePath, 0700); err != nil {
-			return fmt.Errorf("cannot create directory %q: %w",
-				bundlePath, err)
-		}
-
-		for _, bundleFile := range step.Bundle.Files {
-			filePath := path.Join(bundlePath, bundleFile.Name)
-			fileDirPath := path.Dir(filePath)
-
-			if err := os.MkdirAll(fileDirPath, 0700); err != nil {
-				return fmt.Errorf("cannot create directory %q: %w",
-					fileDirPath, err)
-			}
-
-			content := []byte(bundleFile.Content)
-
-			err := os.WriteFile(filePath, content, bundleFile.Mode)
-			if err != nil {
-				return fmt.Errorf("cannot write %q: %w", filePath, err)
-			}
-		}
-	}
-
-	return nil
-}
-
-func (r *Runner) clearEnvironment() {
+func (r *Runner) Terminate() {
 	if err := os.RemoveAll(r.rootPath); err != nil {
 		if !errors.Is(err, fs.ErrNotExist) {
 			r.log.Error("cannot delete directory %q: %v", r.rootPath, err)
@@ -320,7 +118,7 @@ func (r *Runner) clearEnvironment() {
 	}
 }
 
-func (r *Runner) executeStep(i int, se *eventline.StepExecution) error {
+func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) error {
 	// Interruption handling (i.e. when the server is being stopped while jobs
 	// are running).
 	ctx, cancel := context.WithCancel(context.Background())
@@ -342,8 +140,7 @@ func (r *Runner) executeStep(i int, se *eventline.StepExecution) error {
 	}()
 
 	// Create the command
-	s := r.jobExecution.JobSpec.Steps[i]
-	cmdName, cmdArgs := r.stepCommand(se, s)
+	cmdName, cmdArgs := r.stepCommand(se, step)
 
 	cmd := exec.CommandContext(ctx, cmdName, cmdArgs...)
 
@@ -406,10 +203,58 @@ func (r *Runner) executeStep(i int, se *eventline.StepExecution) error {
 		var exitErr *exec.ExitError
 
 		if errors.As(err, &exitErr) {
-			return NewStepFailureError(r.translateExitError(exitErr))
+			return eventline.NewStepFailureError(r.translateExitError(exitErr))
 		}
 
 		return err
+	}
+
+	return nil
+}
+
+func (r *Runner) writeStepData(i int, step *eventline.Step, stepDirPath string) error {
+	if step.Code != "" || step.Script != nil {
+		var code string
+
+		if step.Code != "" {
+			code = step.Code
+		} else if step.Script != nil {
+			code = step.Script.Content
+		}
+
+		var buf bytes.Buffer
+		if !eventline.StartsWithShebang(code) {
+			buf.WriteString(r.projectSettings.CodeHeader)
+		}
+		buf.WriteString(code)
+
+		filePath := path.Join(stepDirPath, strconv.Itoa(i+1))
+		if err := os.WriteFile(filePath, buf.Bytes(), 0700); err != nil {
+			return fmt.Errorf("cannot write %q: %w", filePath, err)
+		}
+	} else if step.Bundle != nil {
+		bundlePath := path.Join(stepDirPath, strconv.Itoa(i+1))
+		if err := os.MkdirAll(bundlePath, 0700); err != nil {
+			return fmt.Errorf("cannot create directory %q: %w",
+				bundlePath, err)
+		}
+
+		for _, bundleFile := range step.Bundle.Files {
+			filePath := path.Join(bundlePath, bundleFile.Name)
+			fileDirPath := path.Dir(filePath)
+
+			if err := os.MkdirAll(fileDirPath, 0700); err != nil {
+				return fmt.Errorf("cannot create directory %q: %w",
+					fileDirPath, err)
+			}
+
+			content := []byte(bundleFile.Content)
+
+			err := os.WriteFile(filePath, content, bundleFile.Mode)
+			if err != nil {
+				return fmt.Errorf("cannot write %q: %w", filePath, err)
+			}
+		}
 	}
 
 	return nil
