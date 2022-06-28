@@ -218,6 +218,8 @@ class EvTimeGraph extends EvGraph {
     }
 
     this.options.updateXScale = function (points) {
+      if (!points) { points = []; }
+
       const interval = (() => {
         switch (this.timeRange) {
         case "30d": return d3.utcDay;

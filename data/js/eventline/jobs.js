@@ -161,6 +161,8 @@ function evSetupJobStatusCountMetrics(jobId) {
     },
 
     updateYScale: function (points) {
+      if (!points) { points = []; }
+
       const counts = points.map(p => p[1]);
       const maxY = (counts.length>0) ? d3.max(counts) : 100;
 
@@ -172,6 +174,8 @@ function evSetupJobStatusCountMetrics(jobId) {
     },
 
     renderData: function (points) {
+      if (!points) { points = []; }
+
       points.forEach((p) => p[0] = new Date(p[0]*1000));
       points.sort((a, b) => a[0] - b[0]);
 
@@ -268,6 +272,8 @@ function evSetupJobRunningTimeMetrics(jobId) {
     },
 
     updateYScale: function (points) {
+      if (!points) { points = []; }
+
       const maxDurations = points.map(p => d3.max([p[1], p[2], p[3]]));
       const maxDuration = (maxDurations.length>0) ? d3.max(maxDurations) : 3600;
 
@@ -281,6 +287,8 @@ function evSetupJobRunningTimeMetrics(jobId) {
     },
 
     renderData: function (points) {
+      if (!points) { points = []; }
+
       points.forEach((p) => p[0] = new Date(p[0]*1000));
       points.sort((a, b) => a[0] - b[0]);
 
