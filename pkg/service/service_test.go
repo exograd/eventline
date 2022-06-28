@@ -38,13 +38,16 @@ func setTestDirectory() {
 	// current file. We can then get the path of the root directory of the
 	// project by looking for the configuration file, and change the current
 	// directory.
+
+	cfgFileName := "eventline-test.yaml"
+
 	_, filePath, _, _ := runtime.Caller(0)
 
 	dirPath := path.Dir(filePath)
-	for dirPath != "" {
+	for dirPath != "/" {
 		dirPath = path.Join(dirPath, "..")
 
-		filePath := path.Join(dirPath, "eventline.yaml")
+		filePath := path.Join(dirPath, cfgFileName)
 
 		_, err := os.Stat(filePath)
 		if errors.Is(err, os.ErrNotExist) {
@@ -54,6 +57,10 @@ func setTestDirectory() {
 		}
 
 		break
+	}
+
+	if dirPath == "/" {
+		utils.Abort("%q not found", cfgFileName)
 	}
 
 	if err := os.Chdir(dirPath); err != nil {
@@ -86,7 +93,12 @@ GRANT ALL ON SCHEMA public TO eventline;
 }
 
 func initTestService() {
-	testService = NewService()
+	sdata := ServiceData{
+		Connectors: Connectors,
+		Runners:    Runners,
+	}
+
+	testService = NewService(sdata)
 
 	readyChan := make(chan struct{})
 

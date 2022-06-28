@@ -94,10 +94,9 @@ runner:
   name: "does_not_exist_either"
 steps: []
 `
-	if assertInvalid(data, 3) {
+	if assertInvalid(data, 2) {
 		assertError(0, "/trigger/connector", "unknown_connector")
 		assertError(1, "/runner/name", "invalid_value")
-		assertError(2, "/runner/parameters", "missing_value")
 	}
 
 	// Trigger with mandatory parameters
