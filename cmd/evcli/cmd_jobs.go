@@ -51,7 +51,7 @@ func cmdListJobs(p *program.Program) {
 		p.Fatal("cannot fetch jobs: %v", err)
 	}
 
-	header := []string{"id", "name", "event", "runtime"}
+	header := []string{"id", "name", "event", "runner"}
 	table := NewTable(header)
 
 	for _, j := range jobs {
@@ -64,7 +64,7 @@ func cmdListJobs(p *program.Program) {
 			j.Id,
 			j.Spec.Name,
 			triggerName,
-			j.Spec.Runtime.Name,
+			j.Spec.Runner.Name,
 		}
 
 		table.AddRow(row)

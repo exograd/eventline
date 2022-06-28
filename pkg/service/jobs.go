@@ -107,10 +107,10 @@ func (c *JobSpecChecker) checkIdentityName(token interface{}, name string) {
 }
 
 func (s *Service) CreateOrUpdateJob(conn pg.Conn, spec *eventline.JobSpec, scope eventline.Scope) (*eventline.Job, bool, error) {
-	if spec.Runtime == nil {
-		spec.Runtime = &eventline.Runtime{
+	if spec.Runner == nil {
+		spec.Runner = &eventline.JobRunner{
 			Name:       "local",
-			Parameters: &eventline.LocalRuntime{},
+			Parameters: &eventline.LocalRunnerParameters{},
 		}
 	}
 

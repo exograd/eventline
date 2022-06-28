@@ -90,14 +90,14 @@ func TestCheckJobSpec(t *testing.T) {
 name: "foo"
 trigger:
   connector: "does_not_exist"
-runtime:
+runner:
   name: "does_not_exist_either"
 steps: []
 `
 	if assertInvalid(data, 3) {
 		assertError(0, "/trigger/connector", "unknown_connector")
-		assertError(1, "/runtime/name", "invalid_value")
-		assertError(2, "/runtime/parameters", "missing_value")
+		assertError(1, "/runner/name", "invalid_value")
+		assertError(2, "/runner/parameters", "missing_value")
 	}
 
 	// Trigger with mandatory parameters
@@ -126,7 +126,7 @@ parameters:
 	data = fmt.Sprintf(`
 ---
 name: "foo"
-runtime:
+runner:
   name: "local"
   parameters: {}
 identities: ["foo", %q, "bar"]
@@ -141,7 +141,7 @@ identities: ["foo", %q, "bar"]
 	data = `
 ---
 name: "foo"
-runtime:
+runner:
   name: "local"
   parameters: {}
 steps:

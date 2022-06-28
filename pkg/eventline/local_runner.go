@@ -61,17 +61,25 @@ type LocalRunner struct {
 	rootPath string
 }
 
+type LocalRunnerParameters struct {
+}
+
+func (r *LocalRunnerParameters) Check(c *check.Checker) {
+}
+
 func LocalRunnerDef() *RunnerDef {
 	return &RunnerDef{
 		Name: "local",
 		Cfg: &LocalRunnerCfg{
 			RootDirectory: "tmp/local-execution",
 		},
-		InstantiateRuntimeParameters: func() RuntimeParameters {
-			return &LocalRuntime{}
-		},
-		InstantiateBehaviour: NewLocalRunner,
+		InstantiateParameters: NewLocalParameters,
+		InstantiateBehaviour:  NewLocalRunner,
 	}
+}
+
+func NewLocalParameters() RunnerParameters {
+	return &LocalRunnerParameters{}
 }
 
 func NewLocalRunner(r *Runner) RunnerBehaviour {

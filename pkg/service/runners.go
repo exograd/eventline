@@ -12,15 +12,15 @@ type Runner interface {
 }
 
 func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
-	name := data.JobExecution.JobSpec.Runtime.Name
+	name := data.JobExecution.JobSpec.Runner.Name
 
 	def, found := s.runnerDefs[name]
 	if !found {
-		return nil, fmt.Errorf("no runner found for runtime %q", name)
+		return nil, fmt.Errorf("unknown runner %q", name)
 	}
 
 	logger := s.Log.Child("runner", log.Data{
-		"runtime":       "local",
+		"runner":        "local",
 		"job_execution": data.JobExecution.Id.String(),
 	})
 

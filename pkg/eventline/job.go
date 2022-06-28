@@ -78,14 +78,24 @@ type JobSpec struct {
 	Trigger    *Trigger   `json:"trigger,omitempty"`
 	Parameters Parameters `json:"parameters,omitempty"`
 
-	Runtime    *Runtime `json:"runtime"`
-	Concurrent bool     `json:"concurrent,omitempty"`
+	Runner     *JobRunner `json:"runner"`
+	Concurrent bool       `json:"concurrent,omitempty"`
 
 	Retention int `json:"retention,omitempty"` // days
 
 	Identities  []string          `json:"identities,omitempty"`
 	Environment map[string]string `json:"environment,omitempty"`
 	Steps       Steps             `json:"steps"`
+}
+
+type JobRunner struct {
+	Name          string           `json:"name"`
+	Parameters    RunnerParameters `json:"-"`
+	RawParameters json.RawMessage  `json:"parameters"`
+}
+
+type RunnerParameters interface {
+	check.Object
 }
 
 type Trigger struct {
@@ -164,7 +174,7 @@ func (spec JobSpec) Check(c *check.Checker) {
 	c.CheckOptionalObject("trigger", spec.Trigger)
 	c.CheckObjectArray("parameters", spec.Parameters)
 
-	c.CheckOptionalObject("runtime", spec.Runtime)
+	c.CheckOptionalObject("runner", spec.Runner)
 
 	if spec.Retention != 0 {
 		c.CheckIntMin("retention", spec.Retention, 1)
@@ -182,6 +192,60 @@ func (spec JobSpec) Check(c *check.Checker) {
 			s.Label = "Step " + strconv.Itoa(i+1)
 		}
 	}
+}
+
+func (r *JobRunner) Check(c *check.Checker) {
+	runnerNames := make([]string, 0, len(RunnerDefs))
+	for name := range RunnerDefs {
+		runnerNames = append(runnerNames, name)
+	}
+
+	if c.CheckStringValue("name", r.Name, runnerNames) {
+		c.CheckObject("parameters", r.Parameters)
+	}
+}
+
+func (pr *JobRunner) MarshalJSON() ([]byte, error) {
+	type JobRunner2 JobRunner
+
+	r := JobRunner2(*pr)
+
+	params, err := json.Marshal(r.Parameters)
+	if err != nil {
+		return nil, fmt.Errorf("cannot encode parameters: %w", err)
+	}
+
+	r.RawParameters = params
+
+	return json.Marshal(r)
+}
+
+func (pr *JobRunner) UnmarshalJSON(data []byte) error {
+	type JobRunner2 JobRunner
+
+	r := JobRunner2(*pr)
+	if err := json.Unmarshal(data, &r); err != nil {
+		return err
+	}
+
+	if def, found := RunnerDefs[r.Name]; found {
+		params := def.InstantiateParameters()
+
+		// Note that at this moment, Check has not been called yet, so the
+		// runner name may be invalid. It is better to let Check validate it
+		// so that users get full validation errors.
+
+		if r.RawParameters != nil {
+			if err := json.Unmarshal(r.RawParameters, params); err != nil {
+				return fmt.Errorf("invalid runner parameters: %w", err)
+			}
+		}
+
+		r.Parameters = params
+	}
+
+	*pr = JobRunner(r)
+	return nil
 }
 
 func (t *Trigger) Check(c *check.Checker) {
