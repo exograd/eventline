@@ -68,10 +68,11 @@ func LocalRunnerDef() *RunnerDef {
 		Cfg: &LocalRunnerCfg{
 			RootDirectory: "tmp/local-execution",
 		},
+		Instantiate: NewLocalRunner,
 	}
 }
 
-func NewLocalRunner(r *Runner) *LocalRunner {
+func NewLocalRunner(r *Runner) RunnerBehaviour {
 	cfg := r.cfg.(*LocalRunnerCfg)
 
 	je := r.jobExecution

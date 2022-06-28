@@ -5,7 +5,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/pg"
@@ -19,14 +18,16 @@ type RunnerCfg interface {
 }
 
 type RunnerDef struct {
-	Name string
-	Cfg  RunnerCfg
+	Name        string
+	Cfg         RunnerCfg
+	Instantiate func(*Runner) RunnerBehaviour
 }
 
 type RunnerInitData struct {
 	Log    *log.Logger
 	Daemon *daemon.Daemon
 
+	Def  *RunnerDef
 	Cfg  RunnerCfg
 	Data *RunnerData
 
@@ -84,14 +85,7 @@ func NewRunner(data RunnerInitData) *Runner {
 		wg:       data.Wg,
 	}
 
-	runtimeName := data.Data.JobExecution.JobSpec.Runtime.Name
-	switch runtimeName {
-	case "local":
-		r.behaviour = NewLocalRunner(r)
-
-	default:
-		utils.Panicf("unhandled runtime %q", runtimeName)
-	}
+	r.behaviour = data.Def.Instantiate(r)
 
 	return r
 }

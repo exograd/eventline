@@ -28,6 +28,7 @@ func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
 		Log:    logger,
 		Daemon: s.Daemon,
 
+		Def:  def,
 		Cfg:  def.Cfg,
 		Data: data,
 
