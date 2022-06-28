@@ -27,13 +27,6 @@ type Runner struct {
 	log    *log.Logger
 	daemon *daemon.Daemon
 
-	jobExecution     *eventline.JobExecution
-	stepExecutions   eventline.StepExecutions
-	executionContext *eventline.ExecutionContext
-	project          *eventline.Project
-	projectSettings  *eventline.ProjectSettings
-	scope            eventline.Scope
-
 	rootPath string
 }
 
@@ -61,13 +54,6 @@ func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
 		log:    r.Log,
 		daemon: r.Daemon,
 
-		jobExecution:     je,
-		stepExecutions:   r.StepExecutions,
-		executionContext: r.ExecutionContext,
-		project:          r.Project,
-		projectSettings:  r.ProjectSettings,
-		scope:            r.Scope,
-
 		rootPath: rootPath,
 	}
 }
@@ -88,7 +74,7 @@ func (r *Runner) Init() error {
 	// Execution context file
 	ectxPath := path.Join(r.rootPath, "context.json")
 
-	if err := r.executionContext.WriteFile(ectxPath); err != nil {
+	if err := r.runner.ExecutionContext.WriteFile(ectxPath); err != nil {
 		return fmt.Errorf("cannot write execution context to %q: %w",
 			ectxPath, err)
 	}
@@ -100,7 +86,7 @@ func (r *Runner) Init() error {
 		return fmt.Errorf("cannot create directory %q: %w", stepDirPath, err)
 	}
 
-	for i, step := range r.jobExecution.JobSpec.Steps {
+	for i, step := range r.runner.JobExecution.JobSpec.Steps {
 		if err := r.writeStepData(i, step, stepDirPath); err != nil {
 			return fmt.Errorf("cannot write data for step %d: %w",
 				i+1, err)
@@ -224,7 +210,7 @@ func (r *Runner) writeStepData(i int, step *eventline.Step, stepDirPath string) 
 
 		var buf bytes.Buffer
 		if !eventline.StartsWithShebang(code) {
-			buf.WriteString(r.projectSettings.CodeHeader)
+			buf.WriteString(r.runner.ProjectSettings.CodeHeader)
 		}
 		buf.WriteString(code)
 
