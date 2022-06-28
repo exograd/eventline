@@ -210,12 +210,18 @@ func (pr *JobRunner) MarshalJSON() ([]byte, error) {
 
 	r := JobRunner2(*pr)
 
-	params, err := json.Marshal(r.Parameters)
-	if err != nil {
-		return nil, fmt.Errorf("cannot encode parameters: %w", err)
-	}
+	// Careful here: in evcli, we do not have access to runner definitions, so
+	// we cannot decode runner parameters. We want to be able to read them
+	// into RawParameters and send them as-is to the server.
 
-	r.RawParameters = params
+	if r.RawParameters == nil {
+		params, err := json.Marshal(r.Parameters)
+		if err != nil {
+			return nil, fmt.Errorf("cannot encode parameters: %w", err)
+		}
+
+		r.RawParameters = params
+	}
 
 	return json.Marshal(r)
 }
