@@ -67,7 +67,10 @@ func LocalRunnerDef() *RunnerDef {
 		Cfg: &LocalRunnerCfg{
 			RootDirectory: "tmp/local-execution",
 		},
-		Instantiate: NewLocalRunner,
+		InstantiateRuntimeParameters: func() RuntimeParameters {
+			return &LocalRuntime{}
+		},
+		InstantiateBehaviour: NewLocalRunner,
 	}
 }
 

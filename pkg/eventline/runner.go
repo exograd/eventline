@@ -18,9 +18,10 @@ type RunnerCfg interface {
 }
 
 type RunnerDef struct {
-	Name        string
-	Cfg         RunnerCfg
-	Instantiate func(*Runner) RunnerBehaviour
+	Name                         string
+	Cfg                          RunnerCfg
+	InstantiateRuntimeParameters func() RuntimeParameters
+	InstantiateBehaviour         func(*Runner) RunnerBehaviour
 }
 
 type RunnerInitData struct {
@@ -85,7 +86,7 @@ func NewRunner(data RunnerInitData) *Runner {
 		Wg:       data.Wg,
 	}
 
-	r.Behaviour = data.Def.Instantiate(r)
+	r.Behaviour = data.Def.InstantiateBehaviour(r)
 
 	return r
 }

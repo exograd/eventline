@@ -51,24 +51,21 @@ func (pr *Runtime) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	var params RuntimeParameters
+	if def, found := RunnerDefs[r.Name]; found {
+		params := def.InstantiateRuntimeParameters()
 
-	switch r.Name {
-	case "local":
-		params = &LocalRuntime{}
-	}
+		// Note that at this moment, Check has not been called yet, so the
+		// runtime name may be invalid. It is better to let Check validate it
+		// so that users get full validation errors.
 
-	// Note that at this moment, Check has not been called yet, so the runtime
-	// name may be invalid. It is better to let Check validate it so that
-	// users get full validation errors.
-
-	if params != nil && r.RawParameters != nil {
-		if err := json.Unmarshal(r.RawParameters, &params); err != nil {
-			return fmt.Errorf("invalid runtime parameters: %w", err)
+		if r.RawParameters != nil {
+			if err := json.Unmarshal(r.RawParameters, params); err != nil {
+				return fmt.Errorf("invalid runtime parameters: %w", err)
+			}
 		}
-	}
 
-	r.Parameters = params
+		r.Parameters = params
+	}
 
 	*pr = Runtime(r)
 	return nil
