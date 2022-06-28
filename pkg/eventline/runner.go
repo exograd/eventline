@@ -473,3 +473,10 @@ func (r *Runner) updateStepExecution(jeId, seId Id, fn func(*StepExecution), sco
 
 	return &je, &se, nil
 }
+
+func (r *Runner) UpdateStepExecutionOutput(se *StepExecution, data []byte) error {
+	return r.Daemon.Pg.WithConn(func(conn pg.Conn) (err error) {
+		err = se.UpdateOutput(conn, data)
+		return
+	})
+}

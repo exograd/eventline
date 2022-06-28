@@ -17,15 +17,12 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-log"
 )
 
 type Runner struct {
 	runner *eventline.Runner
 	log    *log.Logger
-	daemon *daemon.Daemon
 
 	rootPath string
 }
@@ -52,7 +49,6 @@ func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
 	return &Runner{
 		runner: r,
 		log:    r.Log,
-		daemon: r.Daemon,
 
 		rootPath: rootPath,
 	}
@@ -275,10 +271,7 @@ func (r *Runner) readOutput(se *eventline.StepExecution, output io.ReadCloser, n
 		// execution later.
 
 		if len(line) > 0 {
-			err = r.daemon.Pg.WithConn(func(conn pg.Conn) (err error) {
-				err = se.UpdateOutput(conn, append(line, '\n'))
-				return
-			})
+			err = r.runner.UpdateStepExecutionOutput(se, append(line, '\n'))
 			if err != nil {
 				err = fmt.Errorf("cannot update step execution %q: %v",
 					se.Id, err)
