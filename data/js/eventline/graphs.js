@@ -190,8 +190,12 @@ class EvGraph {
       .enter()
       .append("text")
       .attr("x", e => entryTextOffset)
-      .attr("y", (e, i) => i*entryHeight + entryHeight/2)
+      .attr("y", (e, i) => i*entryHeight + entryHeight/2) // [1]
       .text(e => e.label);
+
+    // [1] This should vertically align the label on the circle. It works on
+    // Chromium, but not in Firefox. If someone knows why, please mail me or
+    // open a GitHub issue.
 
     const texts = Array.from(legend.node().querySelectorAll("text"));
     const maxX = d3.max(texts.map((e) => {
