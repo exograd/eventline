@@ -72,31 +72,31 @@ func LocalRunnerDef() *RunnerDef {
 }
 
 func NewLocalRunner(r *Runner) RunnerBehaviour {
-	cfg := r.cfg.(*LocalRunnerCfg)
+	cfg := r.Cfg.(*LocalRunnerCfg)
 
-	je := r.jobExecution
+	je := r.JobExecution
 
 	rootDirPath := cfg.RootDirectory
 	rootPath := path.Join(rootDirPath, je.Id.String())
 
 	return &LocalRunner{
 		runner: r,
-		log:    r.log,
-		daemon: r.daemon,
+		log:    r.Log,
+		daemon: r.Daemon,
 
 		jobExecution:     je,
-		stepExecutions:   r.stepExecutions,
-		executionContext: r.executionContext,
-		project:          r.project,
-		projectSettings:  r.projectSettings,
-		scope:            r.scope,
+		stepExecutions:   r.StepExecutions,
+		executionContext: r.ExecutionContext,
+		project:          r.Project,
+		projectSettings:  r.ProjectSettings,
+		scope:            r.Scope,
 
 		rootPath: rootPath,
 	}
 }
 
 func (r *LocalRunner) Start() error {
-	r.runner.wg.Add(1)
+	r.runner.Wg.Add(1)
 	go r.main()
 
 	return nil
@@ -104,7 +104,7 @@ func (r *LocalRunner) Start() error {
 
 func (r *LocalRunner) Stopping() bool {
 	select {
-	case <-r.runner.stopChan:
+	case <-r.runner.StopChan:
 		return true
 	default:
 		return false
@@ -112,7 +112,7 @@ func (r *LocalRunner) Stopping() bool {
 }
 
 func (r *LocalRunner) main() {
-	defer r.runner.wg.Done()
+	defer r.runner.Wg.Done()
 	defer r.clearEnvironment()
 
 	var currentStepExecution *StepExecution
@@ -337,7 +337,7 @@ func (r *LocalRunner) executeStep(i int, se *StepExecution) error {
 
 	go func() {
 		select {
-		case <-r.runner.stopChan:
+		case <-r.runner.StopChan:
 			r.log.Info("interrupting job")
 			cancel()
 			return
@@ -356,8 +356,8 @@ func (r *LocalRunner) executeStep(i int, se *StepExecution) error {
 
 	cmd.Dir = r.rootPath
 
-	cmd.Env = make([]string, 0, len(r.runner.environment))
-	for k, v := range r.runner.environment {
+	cmd.Env = make([]string, 0, len(r.runner.Environment))
+	for k, v := range r.runner.Environment {
 		cmd.Env = append(cmd.Env, k+"="+v)
 	}
 

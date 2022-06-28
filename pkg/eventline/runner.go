@@ -48,50 +48,50 @@ type RunnerBehaviour interface {
 }
 
 type Runner struct {
-	log       *log.Logger
-	daemon    *daemon.Daemon
-	cfg       RunnerCfg
-	behaviour RunnerBehaviour
+	Log       *log.Logger
+	Daemon    *daemon.Daemon
+	Cfg       RunnerCfg
+	Behaviour RunnerBehaviour
 
-	jobExecution     *JobExecution
-	stepExecutions   StepExecutions
-	executionContext *ExecutionContext
-	project          *Project
-	projectSettings  *ProjectSettings
+	JobExecution     *JobExecution
+	StepExecutions   StepExecutions
+	ExecutionContext *ExecutionContext
+	Project          *Project
+	ProjectSettings  *ProjectSettings
 
-	environment map[string]string
-	scope       Scope
+	Environment map[string]string
+	Scope       Scope
 
-	stopChan <-chan struct{}
-	wg       *sync.WaitGroup
+	StopChan <-chan struct{}
+	Wg       *sync.WaitGroup
 }
 
 func NewRunner(data RunnerInitData) *Runner {
 	r := &Runner{
-		log:    data.Log,
-		daemon: data.Daemon,
-		cfg:    data.Cfg,
+		Log:    data.Log,
+		Daemon: data.Daemon,
+		Cfg:    data.Cfg,
 
-		jobExecution:     data.Data.JobExecution,
-		stepExecutions:   data.Data.StepExecutions,
-		executionContext: data.Data.ExecutionContext,
-		project:          data.Data.Project,
-		projectSettings:  data.Data.ProjectSettings,
+		JobExecution:     data.Data.JobExecution,
+		StepExecutions:   data.Data.StepExecutions,
+		ExecutionContext: data.Data.ExecutionContext,
+		Project:          data.Data.Project,
+		ProjectSettings:  data.Data.ProjectSettings,
 
-		environment: data.Data.Environment(),
-		scope:       NewProjectScope(data.Data.Project.Id),
+		Environment: data.Data.Environment(),
+		Scope:       NewProjectScope(data.Data.Project.Id),
 
-		stopChan: data.StopChan,
-		wg:       data.Wg,
+		StopChan: data.StopChan,
+		Wg:       data.Wg,
 	}
 
-	r.behaviour = data.Def.Instantiate(r)
+	r.Behaviour = data.Def.Instantiate(r)
 
 	return r
 }
 
 func (r *Runner) Start() error {
-	return r.behaviour.Start()
+	return r.Behaviour.Start()
 }
 
 func (rd *RunnerData) Environment() map[string]string {
@@ -121,7 +121,7 @@ func (rd *RunnerData) Environment() map[string]string {
 func (r *Runner) UpdateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution, error) {
 	var je JobExecution
 
-	err := r.daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, jeId, scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
@@ -153,7 +153,7 @@ func (r *Runner) UpdateJobExecutionAbortion(jeId Id, scope Scope) (*JobExecution
 	var je JobExecution
 	var ses StepExecutions
 
-	err := r.daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, jeId, scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
@@ -203,7 +203,7 @@ func (r *Runner) UpdateJobExecutionFailure(jeId Id, jeErr error, scope Scope) (*
 	var je JobExecution
 	var ses StepExecutions
 
-	err := r.daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, jeId, scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
@@ -293,7 +293,7 @@ func (r *Runner) updateStepExecution(jeId, seId Id, fn func(*StepExecution), sco
 	var je JobExecution
 	var se StepExecution
 
-	err := r.daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, jeId, scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
