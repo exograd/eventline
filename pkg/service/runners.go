@@ -7,10 +7,6 @@ import (
 	"github.com/exograd/go-log"
 )
 
-type RunnersCfg struct {
-	//Local LocalRunnerCfg `json:"local"`
-}
-
 type Runner interface {
 	Start() error
 }
