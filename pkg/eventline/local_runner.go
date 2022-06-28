@@ -58,8 +58,7 @@ type LocalRunner struct {
 	projectSettings  *ProjectSettings
 	scope            Scope
 
-	rootPath    string
-	environment map[string]string
+	rootPath string
 }
 
 func LocalRunnerDef() *RunnerDef {
@@ -357,7 +356,7 @@ func (r *LocalRunner) executeStep(i int, se *StepExecution) error {
 
 	cmd.Dir = r.rootPath
 
-	cmd.Env = make([]string, 0, len(r.environment))
+	cmd.Env = make([]string, 0, len(r.runner.environment))
 	for k, v := range r.runner.environment {
 		cmd.Env = append(cmd.Env, k+"="+v)
 	}
