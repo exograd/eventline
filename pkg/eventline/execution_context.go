@@ -35,6 +35,11 @@ func (ctx *ExecutionContext) Load(conn pg.Conn, je *JobExecution) error {
 		return fmt.Errorf("cannot load identities: %w", err)
 	}
 
+	ctx.Identities = make(map[string]IdentityData)
+	for _, identity := range identities {
+		ctx.Identities[identity.Name] = identity.Data
+	}
+
 	return nil
 }
 

@@ -335,7 +335,17 @@ func (rd *RunnerData) FileSet() (*FileSet, error) {
 	}
 
 	// Identity fields
-	// TODO
+	for iname, identity := range rd.ExecutionContext.Identities {
+		identityFields, err := JSONFields(identity)
+		if err != nil {
+			return nil, fmt.Errorf("cannot extract identity fields: %w", err)
+		}
+
+		for name, value := range identityFields {
+			filePath := path.Join("identities", iname, name)
+			fs.AddFile(filePath, []byte(value), 0600)
+		}
+	}
 
 	return fs, nil
 }
