@@ -269,7 +269,7 @@ func (rd *RunnerData) Environment() map[string]string {
 	}
 
 	for _, i := range rd.ExecutionContext.Identities {
-		for name, value := range i.Environment() {
+		for name, value := range i.Data.Environment() {
 			env[name] = value
 		}
 	}
@@ -336,7 +336,7 @@ func (rd *RunnerData) FileSet() (*FileSet, error) {
 
 	// Identity fields
 	for iname, identity := range rd.ExecutionContext.Identities {
-		identityFields, err := JSONFields(identity)
+		identityFields, err := JSONFields(identity.Data)
 		if err != nil {
 			return nil, fmt.Errorf("cannot extract identity fields: %w", err)
 		}

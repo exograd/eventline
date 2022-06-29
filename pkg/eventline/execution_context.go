@@ -10,9 +10,9 @@ import (
 )
 
 type ExecutionContext struct {
-	Event      *Event                  `json:"event,omitempty"`
-	Parameters map[string]interface{}  `json:"parameters,omitempty"`
-	Identities map[string]IdentityData `json:"identities,omitempty"`
+	Event      *Event                 `json:"event,omitempty"`
+	Parameters map[string]interface{} `json:"parameters,omitempty"`
+	Identities map[string]*Identity   `json:"identities,omitempty"`
 }
 
 func (ctx *ExecutionContext) Load(conn pg.Conn, je *JobExecution) error {
@@ -35,9 +35,9 @@ func (ctx *ExecutionContext) Load(conn pg.Conn, je *JobExecution) error {
 		return fmt.Errorf("cannot load identities: %w", err)
 	}
 
-	ctx.Identities = make(map[string]IdentityData)
+	ctx.Identities = make(map[string]*Identity)
 	for _, identity := range identities {
-		ctx.Identities[identity.Name] = identity.Data
+		ctx.Identities[identity.Name] = identity
 	}
 
 	return nil
