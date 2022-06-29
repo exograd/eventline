@@ -121,6 +121,7 @@ func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) 
 	// until both stdout and stderr have been closed (see the documentation of
 	// the os/exec package).
 	errChan := make(chan error, 2)
+	defer close(errChan)
 
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -131,18 +132,14 @@ func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) 
 
 	// Now that output readers are terminated, check the error channel for any
 	// output error.
-	var outputErr error
-
 	select {
-	case outputErr = <-errChan:
+	case outputErr := <-errChan:
 		if outputErr != nil {
 			cmd.Wait()
-			close(errChan)
 			return outputErr
 		}
 
 	default:
-		close(errChan)
 	}
 
 	// Wait for the command termination status
