@@ -324,7 +324,15 @@ func (rd *RunnerData) FileSet() (*FileSet, error) {
 	}
 
 	// Event fields
-	// TODO
+	eventFields, err := JSONFields(rd.ExecutionContext.Event.Data)
+	if err != nil {
+		return nil, fmt.Errorf("cannot extract event fields: %w", err)
+	}
+
+	for name, value := range eventFields {
+		filePath := path.Join("event", name)
+		fs.AddFile(filePath, []byte(value), 0600)
+	}
 
 	// Identity fields
 	// TODO
