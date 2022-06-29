@@ -20,7 +20,7 @@ func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
 	}
 
 	logger := s.Log.Child("runner", log.Data{
-		"runner":        "local",
+		"runner":        name,
 		"job_execution": data.JobExecution.Id.String(),
 	})
 
