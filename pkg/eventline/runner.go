@@ -1,8 +1,11 @@
 package eventline
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"path"
+	"strconv"
 	"sync"
 	"time"
 
@@ -82,13 +85,19 @@ type Runner struct {
 	ProjectSettings  *ProjectSettings
 
 	Environment map[string]string
+	FileSet     *FileSet
 	Scope       Scope
 
 	StopChan <-chan struct{}
 	Wg       *sync.WaitGroup
 }
 
-func NewRunner(data RunnerInitData) *Runner {
+func NewRunner(data RunnerInitData) (*Runner, error) {
+	fileSet, err := data.Data.FileSet()
+	if err != nil {
+		return nil, fmt.Errorf("cannot create file set: %w", err)
+	}
+
 	r := &Runner{
 		Log:    data.Log,
 		Daemon: data.Daemon,
@@ -101,6 +110,7 @@ func NewRunner(data RunnerInitData) *Runner {
 		ProjectSettings:  data.Data.ProjectSettings,
 
 		Environment: data.Data.Environment(),
+		FileSet:     fileSet,
 		Scope:       NewProjectScope(data.Data.Project.Id),
 
 		StopChan: data.StopChan,
@@ -109,7 +119,7 @@ func NewRunner(data RunnerInitData) *Runner {
 
 	r.Behaviour = data.Def.InstantiateBehaviour(r)
 
-	return r
+	return r, nil
 }
 
 func (r *Runner) Start() error {
@@ -269,6 +279,57 @@ func (rd *RunnerData) Environment() map[string]string {
 	}
 
 	return env
+}
+
+func (rd *RunnerData) FileSet() (*FileSet, error) {
+	fs := NewFileSet()
+
+	// Execution context
+	ectxData, err := rd.ExecutionContext.Encode()
+	if err != nil {
+		return nil, fmt.Errorf("cannot encode execution context: %w", err)
+	}
+	fs.AddFile("context.json", ectxData, 0600)
+
+	// Step files
+	for i, step := range rd.JobExecution.JobSpec.Steps {
+		if step.Code != "" || step.Script != nil {
+			var code string
+
+			if step.Code != "" {
+				code = step.Code
+			} else if step.Script != nil {
+				code = step.Script.Content
+			}
+
+			var buf bytes.Buffer
+			if !StartsWithShebang(code) {
+				buf.WriteString(rd.ProjectSettings.CodeHeader)
+			}
+			buf.WriteString(code)
+
+			filePath := path.Join("steps", strconv.Itoa(i+1))
+
+			fs.AddFile(filePath, buf.Bytes(), 0700)
+		} else if step.Bundle != nil {
+			bundlePath := path.Join("steps", strconv.Itoa(i+1))
+
+			for _, bundleFile := range step.Bundle.Files {
+				filePath := path.Join(bundlePath, bundleFile.Name)
+				content := []byte(bundleFile.Content)
+
+				fs.AddFile(filePath, content, bundleFile.Mode)
+			}
+		}
+	}
+
+	// Event fields
+	// TODO
+
+	// Identity fields
+	// TODO
+
+	return fs, nil
 }
 
 func (r *Runner) updateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution, error) {

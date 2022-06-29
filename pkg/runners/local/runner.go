@@ -2,7 +2,6 @@ package local
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -55,38 +54,8 @@ func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
 }
 
 func (r *Runner) Init() error {
-	// Root directory
-	if err := os.RemoveAll(r.rootPath); err != nil {
-		if !errors.Is(err, fs.ErrNotExist) {
-			return fmt.Errorf("cannot delete directory %q: %w",
-				r.rootPath, err)
-		}
-	}
-
-	if err := os.MkdirAll(r.rootPath, 0700); err != nil {
-		return fmt.Errorf("cannot create directory %q: %w", r.rootPath, err)
-	}
-
-	// Execution context file
-	ectxPath := path.Join(r.rootPath, "context.json")
-
-	if err := r.runner.ExecutionContext.WriteFile(ectxPath); err != nil {
-		return fmt.Errorf("cannot write execution context to %q: %w",
-			ectxPath, err)
-	}
-
-	// Step scripts
-	stepDirPath := path.Join(r.rootPath, "steps")
-
-	if err := os.MkdirAll(stepDirPath, 0700); err != nil {
-		return fmt.Errorf("cannot create directory %q: %w", stepDirPath, err)
-	}
-
-	for i, step := range r.runner.JobExecution.JobSpec.Steps {
-		if err := r.writeStepData(i, step, stepDirPath); err != nil {
-			return fmt.Errorf("cannot write data for step %d: %w",
-				i+1, err)
-		}
+	if err := r.runner.FileSet.Write(r.rootPath); err != nil {
+		return err
 	}
 
 	return nil
@@ -189,54 +158,6 @@ func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) 
 		}
 
 		return err
-	}
-
-	return nil
-}
-
-func (r *Runner) writeStepData(i int, step *eventline.Step, stepDirPath string) error {
-	if step.Code != "" || step.Script != nil {
-		var code string
-
-		if step.Code != "" {
-			code = step.Code
-		} else if step.Script != nil {
-			code = step.Script.Content
-		}
-
-		var buf bytes.Buffer
-		if !eventline.StartsWithShebang(code) {
-			buf.WriteString(r.runner.ProjectSettings.CodeHeader)
-		}
-		buf.WriteString(code)
-
-		filePath := path.Join(stepDirPath, strconv.Itoa(i+1))
-		if err := os.WriteFile(filePath, buf.Bytes(), 0700); err != nil {
-			return fmt.Errorf("cannot write %q: %w", filePath, err)
-		}
-	} else if step.Bundle != nil {
-		bundlePath := path.Join(stepDirPath, strconv.Itoa(i+1))
-		if err := os.MkdirAll(bundlePath, 0700); err != nil {
-			return fmt.Errorf("cannot create directory %q: %w",
-				bundlePath, err)
-		}
-
-		for _, bundleFile := range step.Bundle.Files {
-			filePath := path.Join(bundlePath, bundleFile.Name)
-			fileDirPath := path.Dir(filePath)
-
-			if err := os.MkdirAll(fileDirPath, 0700); err != nil {
-				return fmt.Errorf("cannot create directory %q: %w",
-					fileDirPath, err)
-			}
-
-			content := []byte(bundleFile.Content)
-
-			err := os.WriteFile(filePath, content, bundleFile.Mode)
-			if err != nil {
-				return fmt.Errorf("cannot write %q: %w", filePath, err)
-			}
-		}
 	}
 
 	return nil

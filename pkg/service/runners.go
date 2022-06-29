@@ -36,7 +36,10 @@ func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
 		Wg:       &s.runnerWg,
 	}
 
-	runner := eventline.NewRunner(initData)
+	runner, err := eventline.NewRunner(initData)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := runner.Start(); err != nil {
 		return nil, err

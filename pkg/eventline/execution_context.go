@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/exograd/go-daemon/pg"
 )
@@ -46,12 +45,12 @@ func (ctx *ExecutionContext) Write(w io.Writer) error {
 	return e.Encode(ctx)
 }
 
-func (ctx *ExecutionContext) WriteFile(filePath string) error {
+func (ctx *ExecutionContext) Encode() ([]byte, error) {
 	var buf bytes.Buffer
 
 	if err := ctx.Write(&buf); err != nil {
-		return fmt.Errorf("cannot encode context: %w", err)
+		return nil, err
 	}
 
-	return os.WriteFile(filePath, buf.Bytes(), 0600)
+	return buf.Bytes(), nil
 }
