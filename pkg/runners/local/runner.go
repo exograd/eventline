@@ -89,7 +89,7 @@ func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) 
 	}()
 
 	// Create the command
-	cmdName, cmdArgs := r.runner.StepCommand(se, step)
+	cmdName, cmdArgs := r.runner.StepCommand(se, step, ".")
 
 	cmd := exec.CommandContext(ctx, cmdName, cmdArgs...)
 

@@ -352,21 +352,22 @@ func (rd *RunnerData) FileSet() (*FileSet, error) {
 	return fs, nil
 }
 
-func (r *Runner) StepCommand(se *StepExecution, s *Step) (name string, args []string) {
+func (r *Runner) StepCommand(se *StepExecution, s *Step, rootPath string) (name string, args []string) {
 	switch {
 	case s.Code != "":
-		name = path.Join("steps", strconv.Itoa(se.Position))
+		name = path.Join(rootPath, "steps", strconv.Itoa(se.Position))
 
 	case s.Command != nil:
 		name = s.Command.Name
 		args = s.Command.Arguments
 
 	case s.Script != nil:
-		name = path.Join("steps", strconv.Itoa(se.Position))
+		name = path.Join(rootPath, "steps", strconv.Itoa(se.Position))
 		args = s.Script.Arguments
 
 	case s.Bundle != nil:
-		name = path.Join("steps", strconv.Itoa(se.Position), s.Bundle.Command)
+		name = path.Join(rootPath, "steps", strconv.Itoa(se.Position),
+			s.Bundle.Command)
 		args = s.Bundle.Arguments
 
 	default:
