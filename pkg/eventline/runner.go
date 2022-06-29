@@ -157,18 +157,18 @@ func (r *Runner) main() {
 				_, _, err := r.updateStepExecutionFailure(jeId, cse.Id,
 					panicErr, r.Scope)
 				if err != nil {
-					r.handleError(fmt.Errorf("cannot update step %d: %w",
+					r.HandleError(fmt.Errorf("cannot update step %d: %w",
 						cse.Position, err))
 					return
 				}
 			}
 
-			r.handleError(panicErr)
+			r.HandleError(panicErr)
 		}
 	}()
 
 	if err := r.Behaviour.Init(); err != nil {
-		r.handleError(err)
+		r.HandleError(err)
 		return
 	}
 
@@ -176,7 +176,7 @@ func (r *Runner) main() {
 
 	for i, se := range r.StepExecutions {
 		if r.Stopping() {
-			r.handleInterruption()
+			r.HandleInterruption()
 			return
 		}
 
@@ -186,7 +186,7 @@ func (r *Runner) main() {
 
 		_, _, err := r.updateStepExecutionStart(jeId, se.Id, r.Scope)
 		if err != nil {
-			r.handleError(fmt.Errorf("cannot update step %d: %w",
+			r.HandleError(fmt.Errorf("cannot update step %d: %w",
 				se.Position, err))
 			return
 		}
@@ -200,7 +200,7 @@ func (r *Runner) main() {
 			_, _, updateErr := r.updateStepExecutionFailure(jeId, se.Id, err,
 				r.Scope)
 			if updateErr != nil {
-				r.handleError(fmt.Errorf("cannot update step %d: %w",
+				r.HandleError(fmt.Errorf("cannot update step %d: %w",
 					se.Position, err))
 				return
 			}
@@ -208,7 +208,7 @@ func (r *Runner) main() {
 
 		if err != nil {
 			if stepFailureErr == nil || step.AbortOnFailure() {
-				r.handleError(fmt.Errorf("cannot execute step %d: %w",
+				r.HandleError(fmt.Errorf("cannot execute step %d: %w",
 					se.Position, err))
 				return
 			}
@@ -217,7 +217,7 @@ func (r *Runner) main() {
 		if stepFailureErr == nil {
 			_, _, err := r.updateStepExecutionSuccess(jeId, se.Id, r.Scope)
 			if err != nil {
-				r.handleError(fmt.Errorf("cannot update step %d: %w",
+				r.HandleError(fmt.Errorf("cannot update step %d: %w",
 					se.Position, err))
 				return
 			}
@@ -232,7 +232,7 @@ func (r *Runner) main() {
 	}
 }
 
-func (r *Runner) handleInterruption() {
+func (r *Runner) HandleInterruption() {
 	r.Log.Info("execution interrupted")
 
 	je, ses, err := r.updateJobExecutionAbortion(r.JobExecution.Id, r.Scope)
@@ -244,7 +244,7 @@ func (r *Runner) handleInterruption() {
 	r.StepExecutions = ses
 }
 
-func (r *Runner) handleError(err error) {
+func (r *Runner) HandleError(err error) {
 	r.Log.Error("%v", err)
 
 	je, ses, err := r.updateJobExecutionFailure(r.JobExecution.Id, err,
