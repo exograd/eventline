@@ -10,12 +10,10 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"strconv"
 	"sync"
 	"syscall"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-log"
 )
 
@@ -91,7 +89,7 @@ func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) 
 	}()
 
 	// Create the command
-	cmdName, cmdArgs := r.stepCommand(se, step)
+	cmdName, cmdArgs := r.runner.StepCommand(se, step)
 
 	cmd := exec.CommandContext(ctx, cmdName, cmdArgs...)
 
@@ -204,30 +202,6 @@ func (r *Runner) readOutput(se *eventline.StepExecution, output io.ReadCloser, n
 			break
 		}
 	}
-}
-
-func (r *Runner) stepCommand(se *eventline.StepExecution, s *eventline.Step) (name string, args []string) {
-	switch {
-	case s.Code != "":
-		name = path.Join("steps", strconv.Itoa(se.Position))
-
-	case s.Command != nil:
-		name = s.Command.Name
-		args = s.Command.Arguments
-
-	case s.Script != nil:
-		name = path.Join("steps", strconv.Itoa(se.Position))
-		args = s.Script.Arguments
-
-	case s.Bundle != nil:
-		name = path.Join("steps", strconv.Itoa(se.Position), s.Bundle.Command)
-		args = s.Bundle.Arguments
-
-	default:
-		utils.Panicf("unhandled step %#v", s)
-	}
-
-	return
 }
 
 func (r *Runner) translateExitError(err *exec.ExitError) error {

@@ -352,6 +352,30 @@ func (rd *RunnerData) FileSet() (*FileSet, error) {
 	return fs, nil
 }
 
+func (r *Runner) StepCommand(se *StepExecution, s *Step) (name string, args []string) {
+	switch {
+	case s.Code != "":
+		name = path.Join("steps", strconv.Itoa(se.Position))
+
+	case s.Command != nil:
+		name = s.Command.Name
+		args = s.Command.Arguments
+
+	case s.Script != nil:
+		name = path.Join("steps", strconv.Itoa(se.Position))
+		args = s.Script.Arguments
+
+	case s.Bundle != nil:
+		name = path.Join("steps", strconv.Itoa(se.Position), s.Bundle.Command)
+		args = s.Bundle.Arguments
+
+	default:
+		utils.Panicf("unhandled step %#v", s)
+	}
+
+	return
+}
+
 func (r *Runner) updateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution, error) {
 	var je JobExecution
 
