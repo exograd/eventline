@@ -37,6 +37,13 @@ func NewConnector() *Connector {
 	def.AddIdentity(OAuth2IdentityDef())
 
 	def.AddEvent(RawEventDef())
+	def.AddEvent(RepositoryCreationEventDef())
+	def.AddEvent(RepositoryDeletionEventDef())
+	def.AddEvent(TagCreationEventDef())
+	def.AddEvent(TagDeletionEventDef())
+	def.AddEvent(BranchCreationEventDef())
+	def.AddEvent(BranchDeletionEventDef())
+	def.AddEvent(PushEventDef())
 
 	return &Connector{
 		Def: def,
