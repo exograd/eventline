@@ -66,6 +66,8 @@ type RunnerData struct {
 }
 
 type RunnerBehaviour interface {
+	DirPath() string
+
 	Init() error
 	Terminate()
 
@@ -118,6 +120,8 @@ func NewRunner(data RunnerInitData) (*Runner, error) {
 	}
 
 	r.Behaviour = data.Def.InstantiateBehaviour(r)
+
+	r.Environment["EVENTLINE_DIR"] = r.Behaviour.DirPath()
 
 	return r, nil
 }

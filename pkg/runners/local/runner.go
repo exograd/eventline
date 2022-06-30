@@ -51,6 +51,10 @@ func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
 	}
 }
 
+func (r *Runner) DirPath() string {
+	return r.rootPath
+}
+
 func (r *Runner) Init() error {
 	if err := r.runner.FileSet.Write(r.rootPath); err != nil {
 		return err
