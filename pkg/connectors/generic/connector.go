@@ -53,14 +53,3 @@ func (c *Connector) Init(ccfg eventline.ConnectorCfg, initData eventline.Connect
 
 func (c *Connector) Terminate() {
 }
-
-func ConnectorDef() *eventline.ConnectorDef {
-	def := eventline.NewConnectorDef("generic")
-
-	def.AddIdentity(PasswordIdentityDef())
-	def.AddIdentity(APIKeyIdentityDef())
-	def.AddIdentity(SSHKeyIdentityDef())
-	def.AddIdentity(OAuth2IdentityDef())
-
-	return def
-}
