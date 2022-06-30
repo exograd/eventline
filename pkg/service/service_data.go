@@ -6,6 +6,7 @@ import (
 	cgithub "github.com/exograd/eventline/pkg/connectors/github"
 	ctime "github.com/exograd/eventline/pkg/connectors/time"
 	"github.com/exograd/eventline/pkg/eventline"
+	rdocker "github.com/exograd/eventline/pkg/runners/docker"
 	rlocal "github.com/exograd/eventline/pkg/runners/local"
 )
 
@@ -22,5 +23,6 @@ var Connectors = []eventline.Connector{
 }
 
 var Runners = []*eventline.RunnerDef{
+	rdocker.RunnerDef(),
 	rlocal.RunnerDef(),
 }
