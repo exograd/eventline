@@ -8,7 +8,7 @@ import (
 
 type Parameters struct {
 	Organization string `json:"organization"`
-	Repository   string `json:"repository,omitempty"` // optional
+	Repository   string `json:"repository,omitempty"`
 }
 
 func (p *Parameters) Check(c *check.Checker) {

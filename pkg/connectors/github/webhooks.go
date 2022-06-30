@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
@@ -166,7 +167,115 @@ func (c *Connector) processWebhookEventRepositoryDeleted(e *github.RepositoryEve
 }
 
 func (c *Connector) processWebhookEventPush(e *github.PushEvent, params *Parameters) error {
-	// TODO
+	const tagsRefPrefix = "refs/tags/"
+	const headsRefPrefix = "refs/heads/"
+	const zeroHash = "0000000000000000000000000000000000000000"
+
+	if e.Organization == nil {
+		return NewInvalidWebhookEventError("missing organization")
+	}
+
+	if e.Organization.Login == nil {
+		return NewInvalidWebhookEventError("missing organization login")
+	}
+
+	if e.Repo == nil {
+		return NewInvalidWebhookEventError("missing repository")
+	}
+
+	if e.Repo.Name == nil {
+		return NewInvalidWebhookEventError("missing repository name")
+	}
+
+	if e.Ref == nil {
+		return NewInvalidWebhookEventError("missing ref")
+	}
+
+	if e.Before == nil {
+		return NewInvalidWebhookEventError("missing before hash")
+	}
+
+	if e.After == nil {
+		return NewInvalidWebhookEventError("missing after hash")
+	}
+
+	ref := *e.Ref
+
+	created := e.Created != nil && *e.Created == true
+	deleted := e.Deleted != nil && *e.Deleted == true
+
+	switch {
+	case strings.HasPrefix(ref, tagsRefPrefix) && created:
+		eventData := TagCreationEvent{
+			Organization: *e.Organization.Login,
+			Repository:   *e.Repo.Name,
+			Tag:          ref[len(tagsRefPrefix):],
+			Revision:     *e.After,
+		}
+
+		err := c.CreateEvents("tag_creation", nil, &eventData, params)
+		if err != nil {
+			return fmt.Errorf("cannot create event: %w", err)
+		}
+
+	case strings.HasPrefix(ref, tagsRefPrefix) && deleted:
+		eventData := TagDeletionEvent{
+			Organization: *e.Organization.Login,
+			Repository:   *e.Repo.Name,
+			Tag:          ref[len(tagsRefPrefix):],
+			Revision:     *e.Before,
+		}
+
+		err := c.CreateEvents("tag_deletion", nil, &eventData, params)
+		if err != nil {
+			return fmt.Errorf("cannot create event: %w", err)
+		}
+
+	case strings.HasPrefix(ref, headsRefPrefix) && created:
+		eventData := BranchCreationEvent{
+			Organization: *e.Organization.Login,
+			Repository:   *e.Repo.Name,
+			Branch:       ref[len(headsRefPrefix):],
+			Revision:     *e.After,
+		}
+
+		err := c.CreateEvents("branch_creation", nil, &eventData, params)
+		if err != nil {
+			return fmt.Errorf("cannot create event: %w", err)
+		}
+
+	case strings.HasPrefix(ref, headsRefPrefix) && deleted:
+		eventData := BranchDeletionEvent{
+			Organization: *e.Organization.Login,
+			Repository:   *e.Repo.Name,
+			Branch:       ref[len(headsRefPrefix):],
+			Revision:     *e.Before,
+		}
+
+		err := c.CreateEvents("branch_deletion", nil, &eventData, params)
+		if err != nil {
+			return fmt.Errorf("cannot create event: %w", err)
+		}
+
+	case strings.HasPrefix(ref, headsRefPrefix) && !created && !deleted:
+		eventData := PushEvent{
+			Organization: *e.Organization.Login,
+			Repository:   *e.Repo.Name,
+			Branch:       ref[len(headsRefPrefix):],
+			NewRevision:  *e.After,
+		}
+
+		// The first push in a new repository does not have a previous
+		// revision.
+		if *e.Before != zeroHash {
+			eventData.OldRevision = *e.Before
+		}
+
+		err := c.CreateEvents("push", nil, &eventData, params)
+		if err != nil {
+			return fmt.Errorf("cannot create event: %w", err)
+		}
+	}
 
 	return nil
 }
