@@ -3,6 +3,7 @@ package service
 import (
 	cgithub "github.com/exograd/eventline/pkg/connectors/github"
 	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/google/go-github/v45/github"
 )
 
 func (s *WebHTTPServer) setupExternalRoutes() {
@@ -28,6 +29,10 @@ func (s *WebHTTPServer) hExtConnectorsGithubOAuth2GET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hExtConnectorsGithubHooksPOST(h *HTTPHandler) {
+	if deliveryId := github.DeliveryID(h.Request); deliveryId != "" {
+		h.Log.Data["github_delivery_id"] = deliveryId
+	}
+
 	target := h.RouteVariable("*")
 
 	var params cgithub.Parameters
