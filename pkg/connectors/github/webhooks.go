@@ -48,7 +48,7 @@ func (c *Connector) ProcessWebhookRequest(req *http.Request, params *Parameters)
 	rawEventData := RawEvent{
 		DeliveryId: github.DeliveryID(req),
 		EventType:  github.WebHookType(req),
-		Message:    rawMsg,
+		Event:      rawMsg,
 	}
 
 	if err := c.CreateEvents("raw", nil, &rawEventData, params); err != nil {

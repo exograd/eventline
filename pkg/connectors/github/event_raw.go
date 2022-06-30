@@ -5,9 +5,9 @@ import (
 )
 
 type RawEvent struct {
-	EventType  string      `json:"event_type"`
 	DeliveryId string      `json:"delivery_id"`
-	Message    interface{} `json:"message"`
+	EventType  string      `json:"event_type"`
+	Event      interface{} `json:"event"`
 }
 
 func RawEventDef() *eventline.EventDef {
