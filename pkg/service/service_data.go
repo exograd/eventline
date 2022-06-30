@@ -1,6 +1,7 @@
 package service
 
 import (
+	cdockerhub "github.com/exograd/eventline/pkg/connectors/dockerhub"
 	cgeneric "github.com/exograd/eventline/pkg/connectors/generic"
 	cgithub "github.com/exograd/eventline/pkg/connectors/github"
 	ctime "github.com/exograd/eventline/pkg/connectors/time"
@@ -14,6 +15,7 @@ type ServiceData struct {
 }
 
 var Connectors = []eventline.Connector{
+	cdockerhub.NewConnector(),
 	cgeneric.NewConnector(),
 	cgithub.NewConnector(),
 	ctime.NewConnector(),
