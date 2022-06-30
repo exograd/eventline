@@ -245,6 +245,7 @@ SELECT 1
              FROM jobs
              WHERE %s
                AND (spec->'trigger'->>'identity' = $1
+                    OR spec->'runner'->>'identity' = $1
                     OR spec->'identities' ? $1));
 `, scope.SQLCondition())
 

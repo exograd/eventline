@@ -92,6 +92,7 @@ type JobRunner struct {
 	Name          string           `json:"name"`
 	Parameters    RunnerParameters `json:"-"`
 	RawParameters json.RawMessage  `json:"parameters"`
+	Identity      string           `json:"identity,omitempty"`
 }
 
 type RunnerParameters interface {
@@ -262,7 +263,6 @@ func (t *Trigger) Check(c *check.Checker) {
 	c.CheckOptionalObject("parameters", t.Parameters)
 
 	c.CheckObjectArray("filters", t.Filters)
-
 }
 
 func (pt *Trigger) MarshalJSON() ([]byte, error) {
@@ -392,6 +392,10 @@ func (spec *JobSpec) IdentityNames() []string {
 		names = append(names, spec.Trigger.Identity)
 	}
 
+	if spec.Runner != nil && spec.Runner.Identity != "" {
+		names = append(names, spec.Runner.Identity)
+	}
+
 	names = append(names, spec.Identities...)
 
 	return names
@@ -448,7 +452,9 @@ func (js *Jobs) LoadByIdentityName(conn pg.Conn, name string, scope Scope) error
 SELECT id, project_id, creation_time, update_time, disabled, spec
   FROM jobs
   WHERE %s
-    AND (spec->'trigger'->>'identity' = $1 OR spec->'identities' ? $1)
+    AND (spec->'trigger'->>'identity' = $1
+         OR spec->'runner'->>'identity' = $1
+         OR spec->'identities' ? $1)
   ORDER BY id
 `, scope.SQLCondition())
 

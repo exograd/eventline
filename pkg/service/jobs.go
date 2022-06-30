@@ -78,6 +78,14 @@ func (c *JobSpecChecker) checkJobSpec() error {
 		})
 	}
 
+	if runner := c.JobSpec.Runner; runner != nil {
+		c.Checker.WithChild("runner", func() {
+			if iname := runner.Identity; iname != "" {
+				c.checkIdentityName("identity", iname)
+			}
+		})
+	}
+
 	c.Checker.WithChild("identities", func() {
 		for idx, iname := range c.JobSpec.Identities {
 			c.checkIdentityName(idx, iname)
