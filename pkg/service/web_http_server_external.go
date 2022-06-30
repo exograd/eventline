@@ -42,7 +42,7 @@ func (s *WebHTTPServer) hExtConnectorsGithubHooksPOST(h *HTTPHandler) {
 	c2 := c.(*cgithub.Connector)
 
 	if err := c2.ProcessWebhookRequest(h.Request, &params); err != nil {
-		s.Log.Error("cannot process request: %v", err)
+		h.Log.Error("cannot process request: %v", err)
 	}
 
 	h.ReplyEmpty(204)
