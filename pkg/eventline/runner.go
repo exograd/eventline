@@ -86,6 +86,8 @@ type Runner struct {
 	Project          *Project
 	ProjectSettings  *ProjectSettings
 
+	RunnerIdentity *Identity
+
 	Environment map[string]string
 	FileSet     *FileSet
 	Scope       Scope
@@ -117,6 +119,22 @@ func NewRunner(data RunnerInitData) (*Runner, error) {
 
 		StopChan: data.StopChan,
 		Wg:       data.Wg,
+	}
+
+	if runner := data.Data.JobExecution.JobSpec.Runner; runner != nil {
+		if iname := runner.Identity; iname != "" {
+			identities := data.Data.ExecutionContext.Identities
+
+			identity, found := identities[iname]
+			if !found {
+				// That should never happen since ExecutionContext.Load is
+				// supposed to load all identities referenced by the job
+				// specification.
+				return nil, fmt.Errorf("missing runner identity %q", iname)
+			}
+
+			r.RunnerIdentity = identity
+		}
 	}
 
 	r.Behaviour = data.Def.InstantiateBehaviour(r)
