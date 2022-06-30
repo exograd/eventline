@@ -52,7 +52,7 @@ func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
 }
 
 func (r *Runner) DirPath() string {
-	return r.rootPath
+	return "."
 }
 
 func (r *Runner) Init() error {
