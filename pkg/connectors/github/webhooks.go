@@ -62,7 +62,7 @@ func (c *Connector) CreateEvents(ename string, eventTime *time.Time, eventData e
 	return c.Daemon.Pg.WithTx(func(conn pg.Conn) error {
 		var subs eventline.Subscriptions
 
-		subs, err := LoadSubscriptionsByParams(conn, params)
+		subs, err := LoadSubscriptionsByParams(conn, ename, params)
 		if err != nil {
 			return fmt.Errorf("cannot load subscriptions: %w", err)
 		}
@@ -79,10 +79,10 @@ func (c *Connector) CreateEvents(ename string, eventTime *time.Time, eventData e
 	})
 }
 
-func LoadSubscriptionsByParams(conn pg.Conn, params *Parameters) (eventline.Subscriptions, error) {
+func LoadSubscriptionsByParams(conn pg.Conn, ename string, params *Parameters) (eventline.Subscriptions, error) {
 	repoCond := "TRUE"
 	if params.Repository != "" {
-		repoCond = "gs.repository = $2"
+		repoCond = "gs.repository = $3"
 	}
 
 	query := fmt.Sprintf(`
@@ -91,11 +91,13 @@ SELECT es.id, es.project_id, es.job_id, es.identity_id, es.connector, es.event,
        es.last_update, es.next_update
   FROM subscriptions AS es
   JOIN c_github_subscriptions AS gs ON gs.id = es.id
-  WHERE gs.organization = $1
+  WHERE es.connector = 'github'
+    AND es.event = $1
+    AND gs.organization = $2
     AND %s
 `, repoCond)
 
-	args := []interface{}{params.Organization}
+	args := []interface{}{ename, params.Organization}
 	if params.Repository != "" {
 		args = append(args, params.Repository)
 	}
