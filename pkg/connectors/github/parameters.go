@@ -7,8 +7,8 @@ import (
 )
 
 type Parameters struct {
-	Organization string
-	Repository   string // optional
+	Organization string `json:"organization"`
+	Repository   string `json:"repository,omitempty"` // optional
 }
 
 func (p *Parameters) Check(c *check.Checker) {
