@@ -1,6 +1,9 @@
 package docker
 
 import (
+	"fmt"
+
+	dockerclient "github.com/docker/docker/client"
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-log"
 )
@@ -8,6 +11,11 @@ import (
 type Runner struct {
 	runner *eventline.Runner
 	log    *log.Logger
+
+	client *dockerclient.Client
+
+	imageRef    string
+	containerId string
 }
 
 func RunnerDef() *eventline.RunnerDef {
@@ -33,13 +41,37 @@ func (r *Runner) DirPath() string {
 }
 
 func (r *Runner) Init() error {
-	// TODO
+	// Create the client
+	client, err := newClient()
+	if err != nil {
+		return fmt.Errorf("cannot create client: %w", err)
+	}
+
+	r.client = client
+
+	// Pull the image
+	if err := r.pullImage(); err != nil {
+		return fmt.Errorf("cannot pull image: %w", err)
+	}
+
+	// Create the container
+	if err := r.createContainer(); err != nil {
+		return fmt.Errorf("cannot create container: %w", err)
+	}
 
 	return nil
 }
 
 func (r *Runner) Terminate() {
-	// TODO
+	if r.client == nil {
+		return
+	}
+
+	if r.containerId != "" {
+		if err := r.deleteContainer(); err != nil {
+			r.log.Error("cannot delete container %q: %w", r.containerId, err)
+		}
+	}
 }
 
 func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) error {
