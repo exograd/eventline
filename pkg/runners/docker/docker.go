@@ -8,8 +8,10 @@ import (
 	"io"
 
 	dockertypes "github.com/docker/docker/api/types"
+	dockercontainer "github.com/docker/docker/api/types/container"
 	dockerclient "github.com/docker/docker/client"
 	dockerjsonmessage "github.com/docker/docker/pkg/jsonmessage"
+	"github.com/exograd/eventline/pkg/utils"
 )
 
 func newClient() (*dockerclient.Client, error) {
@@ -93,13 +95,76 @@ func (r *Runner) pullImage() error {
 }
 
 func (r *Runner) createContainer() error {
-	// TODO
+	ctx := context.Background()
+
+	je := r.runner.JobExecution
+	params := je.JobSpec.Runner.Parameters.(*RunnerParameters)
+
+	env := make([]string, 0, len(r.runner.Environment))
+	for k, v := range r.runner.Environment {
+		env = append(env, k+"="+v)
+	}
+
+	labels := map[string]string{
+		"net.eventline.project-id":       r.runner.Project.Id.String(),
+		"net.eventline.job-name":         je.JobSpec.Name,
+		"net.eventline.job-execution-id": je.Id.String(),
+	}
+
+	containerName := "eventline-job-" + je.Id.String()
+
+	containerCfg := dockercontainer.Config{
+		Hostname: containerName,
+		Image:    params.Image,
+		Env:      env,
+		Cmd:      []string{"sleep", "86400"},
+
+		Labels:      labels,
+		StopTimeout: utils.Ref(1), // seconds
+	}
+
+	vcpu := 1      // TODO
+	memory := 1000 // TODO
+	maxNbPids := int64(4096)
+
+	hostCfg := dockercontainer.HostConfig{
+		Resources: dockercontainer.Resources{
+			NanoCPUs:  int64(vcpu) * 1_000_000_000,
+			Memory:    int64(memory) * 1_000_000,
+			PidsLimit: utils.Ref(maxNbPids),
+		},
+	}
+
+	res, err := r.client.ContainerCreate(ctx, &containerCfg, &hostCfg, nil,
+		nil, containerName)
+	if err != nil {
+		return fmt.Errorf("cannot create container: %w", err)
+	}
+
+	r.containerId = res.ID
+
+	statusChan, errChan := r.client.ContainerWait(ctx, r.containerId,
+		"created")
+	select {
+	case <-statusChan:
+
+	case err := <-errChan:
+		return fmt.Errorf("container error: %w", err)
+
+	case <-r.runner.StopChan:
+		return fmt.Errorf("container creation interrupted")
+	}
 
 	return nil
 }
 
 func (r *Runner) deleteContainer() error {
-	// TODO
+	ctx := context.Background()
 
-	return nil
+	options := dockertypes.ContainerRemoveOptions{
+		RemoveVolumes: true,
+		Force:         true,
+	}
+
+	return r.client.ContainerRemove(ctx, r.containerId, options)
 }
