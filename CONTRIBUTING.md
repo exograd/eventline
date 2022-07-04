@@ -1,5 +1,5 @@
 # Contributing to Eventline
-Eventline is primarily developed by [Exograd](https://exograd). But Eventline
+Eventline is primarily developed by [Exograd](https://exograd.com). But Eventline
 is also open source software, and you can help us make it better:
 
 - Report and triage bugs.
