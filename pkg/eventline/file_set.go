@@ -32,6 +32,16 @@ func (s *FileSet) AddFile(filePath string, content []byte, mode os.FileMode) {
 	}
 }
 
+func (s *FileSet) AddPrefix(prefix string) {
+	files := make(map[string]*FileSetFile, len(s.Files))
+
+	for filePath, file := range s.Files {
+		files[path.Join(prefix, filePath)] = file
+	}
+
+	s.Files = files
+}
+
 func (s *FileSet) Write(rootPath string) error {
 	if err := os.RemoveAll(rootPath); err != nil {
 		if !errors.Is(err, fs.ErrNotExist) {

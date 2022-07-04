@@ -65,7 +65,9 @@ func (r *Runner) Init() error {
 	}
 
 	// Start the container
-	// TODO
+	if err := r.startContainer(); err != nil {
+		return fmt.Errorf("cannot start container: %w", err)
+	}
 
 	return nil
 }
@@ -83,7 +85,5 @@ func (r *Runner) Terminate() {
 }
 
 func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) error {
-	// TODO
-
-	return nil
+	return r.exec(se, step)
 }
