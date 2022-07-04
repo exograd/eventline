@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/docker/docker v20.10.17+incompatible
-	github.com/exograd/go-daemon v0.0.0-20220624103558-016ac7a7b219
+	github.com/exograd/go-daemon v0.0.0-20220704182853-d3ca64642f14
 	github.com/exograd/go-log v0.0.0-20220624102840-d28c3e9f8c96
 	github.com/exograd/go-oauth2c v0.0.0-20220525082142-bca244aafbca
 	github.com/exograd/go-program v0.0.0-20220116124618-691d97553601
@@ -19,6 +19,7 @@ require (
 )
 
 require (
+	github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 // indirect
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect

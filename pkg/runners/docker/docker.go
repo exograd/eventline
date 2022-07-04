@@ -130,16 +130,18 @@ func (r *Runner) createContainer() error {
 		StopTimeout: utils.Ref(1), // seconds
 	}
 
-	vcpu := 1      // TODO
-	memory := 1000 // TODO
-	maxNbPids := int64(4096)
+	var resources dockercontainer.Resources
+
+	if limit := params.CPULimit; limit != 0 {
+		resources.NanoCPUs = int64(limit * 1e9)
+	}
+
+	if limit := params.MemoryLimit; limit != 0 {
+		resources.Memory = int64(limit * 1_000_000)
+	}
 
 	hostCfg := dockercontainer.HostConfig{
-		Resources: dockercontainer.Resources{
-			NanoCPUs:  int64(vcpu) * 1_000_000_000,
-			Memory:    int64(memory) * 1_000_000,
-			PidsLimit: utils.Ref(maxNbPids),
-		},
+		Resources: resources,
 	}
 
 	res, err := r.client.ContainerCreate(ctx, &containerCfg, &hostCfg, nil,
