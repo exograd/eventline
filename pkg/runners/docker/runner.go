@@ -59,6 +59,14 @@ func (r *Runner) Init() error {
 		return fmt.Errorf("cannot create container: %w", err)
 	}
 
+	// Copy files to the container
+	if err := r.copyFiles(); err != nil {
+		return fmt.Errorf("cannot copy files: %w", err)
+	}
+
+	// Start the container
+	// TODO
+
 	return nil
 }
 

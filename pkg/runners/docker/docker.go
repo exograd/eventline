@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -167,4 +168,21 @@ func (r *Runner) deleteContainer() error {
 	}
 
 	return r.client.ContainerRemove(ctx, r.containerId, options)
+}
+
+func (r *Runner) copyFiles() error {
+	ctx := context.Background()
+
+	options := dockertypes.CopyToContainerOptions{
+		AllowOverwriteDirWithFile: true,
+	}
+
+	var buf bytes.Buffer
+	if err := r.runner.FileSet.TarArchive(&buf); err != nil {
+		return fmt.Errorf("cannot generate tar archive: %w", err)
+	}
+
+	dirPath := "/eventline"
+
+	return r.client.CopyToContainer(ctx, r.containerId, dirPath, &buf, options)
 }

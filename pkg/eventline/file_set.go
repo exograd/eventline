@@ -1,6 +1,8 @@
 package eventline
 
 import (
+	"archive/tar"
+	"bytes"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -54,6 +56,42 @@ func (s *FileSet) Write(rootPath string) error {
 			os.RemoveAll(rootPath) // best effort
 			return fmt.Errorf("cannot write %q: %w", fullFilePath, err)
 		}
+	}
+
+	return nil
+}
+
+func (s *FileSet) TarArchive(buf *bytes.Buffer) error {
+	w := tar.NewWriter(buf)
+
+	for filePath, file := range s.Files {
+		typeFlag := tar.TypeReg
+
+		var mode int64
+		if file.Mode == 0 {
+			mode = 0600
+		} else {
+			mode = int64(file.Mode)
+		}
+
+		header := tar.Header{
+			Typeflag: byte(typeFlag),
+			Name:     filePath,
+			Size:     int64(len(file.Content)),
+			Mode:     mode,
+		}
+
+		if err := w.WriteHeader(&header); err != nil {
+			return fmt.Errorf("cannot write header: %w", err)
+		}
+
+		if _, err := w.Write(file.Content); err != nil {
+			return fmt.Errorf("cannot write content: %w", err)
+		}
+	}
+
+	if err := w.Close(); err != nil {
+		return fmt.Errorf("cannot close archive: %w", err)
 	}
 
 	return nil
