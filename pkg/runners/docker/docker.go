@@ -1,13 +1,14 @@
 package docker
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"os"
+	"sync"
 
 	dockertypes "github.com/docker/docker/api/types"
 	dockercontainer "github.com/docker/docker/api/types/container"
@@ -244,29 +245,61 @@ func (r *Runner) exec(se *eventline.StepExecution, step *eventline.Step) error {
 	}
 	defer startRes.Close()
 
-	// Read the output until the process terminates
-	errChan := make(chan error)
+	// Create pipes used to transport stdout and stderr
+	stdoutRead, stdoutWrite := io.Pipe()
+	stderrRead, stderrWrite := io.Pipe()
 
-	output := os.Stdout // TODO
+	// Start output readers
+	errChan := make(chan error, 2)
+	defer close(errChan)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go r.readOutput(se, stdoutRead, "stdout", errChan, &wg)
+	go r.readOutput(se, stderrRead, "stderr", errChan, &wg)
+
+	// Read the output until the process terminates
+	copyChan := make(chan error)
 
 	go func() {
-		defer close(errChan)
+		defer close(copyChan)
 
-		_, err := dockerstdcopy.StdCopy(output, output, startRes.Reader)
+		_, err := dockerstdcopy.StdCopy(stdoutWrite, stderrWrite,
+			startRes.Reader)
 		if err != nil {
-			errChan <- fmt.Errorf("cannot read process output: %w", err)
+			copyChan <- fmt.Errorf("cannot read process output: %w", err)
 			return
 		}
 	}()
 
 	select {
-	case err := <-errChan:
+	case err := <-copyChan:
 		if err != nil {
 			return err
 		}
 
 	case <-ctx.Done():
-		return ctx.Err()
+		stdoutRead.Close()
+		stderrRead.Close()
+
+		return fmt.Errorf("job interrupted")
+	}
+
+	// Stop readers
+	stdoutRead.Close()
+	stderrRead.Close()
+
+	wg.Wait()
+
+	// Check the error channel; in practice, the only possible error is an
+	// unability to update the step execution.
+	select {
+	case outputErr := <-errChan:
+		if outputErr != nil {
+			return outputErr
+		}
+
+	default:
 	}
 
 	// Check execution status
@@ -282,4 +315,44 @@ func (r *Runner) exec(se *eventline.StepExecution, step *eventline.Step) error {
 	}
 
 	return nil
+}
+
+func (r *Runner) readOutput(se *eventline.StepExecution, output io.ReadCloser, name string, errChan chan<- error, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	bufferedOutput := bufio.NewReader(output)
+
+	var line []byte
+
+	for {
+		data, isPrefix, err := bufferedOutput.ReadLine()
+		if err != nil && !errors.Is(err, io.ErrClosedPipe) {
+			err = fmt.Errorf("cannot read command output %q: %v", name, err)
+			errChan <- err
+			return
+		}
+
+		if err == nil {
+			line = append(line, data...)
+			if isPrefix {
+				continue
+			}
+		}
+
+		if len(line) > 0 {
+			err = r.runner.UpdateStepExecutionOutput(se, append(line, '\n'))
+			if err != nil {
+				err = fmt.Errorf("cannot update step execution %q: %v",
+					se.Id, err)
+				errChan <- err
+				return
+			}
+
+			line = nil
+		}
+
+		if errors.Is(err, io.ErrClosedPipe) {
+			break
+		}
+	}
 }

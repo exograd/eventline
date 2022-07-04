@@ -79,7 +79,7 @@ func (r *Runner) Terminate() {
 
 	if r.containerId != "" {
 		if err := r.deleteContainer(); err != nil {
-			r.log.Error("cannot delete container %q: %w", r.containerId, err)
+			r.log.Error("cannot delete container %q: %v", r.containerId, err)
 		}
 	}
 }
