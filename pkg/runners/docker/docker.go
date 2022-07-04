@@ -85,6 +85,8 @@ func (r *Runner) pullImage() error {
 			err := decoder.Decode(&msg)
 			if errors.Is(err, io.EOF) {
 				break
+			} else if errors.Is(err, context.Canceled) {
+				decodeChan <- fmt.Errorf("execution interrupted")
 			} else if err != nil {
 				decodeChan <- fmt.Errorf("cannot decode message: %w", err)
 				return
@@ -282,7 +284,7 @@ func (r *Runner) exec(se *eventline.StepExecution, step *eventline.Step) error {
 		stdoutRead.Close()
 		stderrRead.Close()
 
-		return fmt.Errorf("job interrupted")
+		return fmt.Errorf("execution interrupted")
 	}
 
 	// Stop readers
