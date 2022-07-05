@@ -2,6 +2,7 @@ package service
 
 import (
 	cdockerhub "github.com/exograd/eventline/pkg/connectors/dockerhub"
+	ceventline "github.com/exograd/eventline/pkg/connectors/eventline"
 	cgeneric "github.com/exograd/eventline/pkg/connectors/generic"
 	cgithub "github.com/exograd/eventline/pkg/connectors/github"
 	cpostgresql "github.com/exograd/eventline/pkg/connectors/postgresql"
@@ -18,6 +19,7 @@ type ServiceData struct {
 
 var Connectors = []eventline.Connector{
 	cdockerhub.NewConnector(),
+	ceventline.NewConnector(),
 	cgeneric.NewConnector(),
 	cgithub.NewConnector(),
 	cpostgresql.NewConnector(),

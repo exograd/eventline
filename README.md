@@ -24,6 +24,7 @@ Eventline supports multiple connectors, and we intend to add a lot more.
 
 | Connector    | Description                   | Availability |
 |--------------|-------------------------------|--------------|
+| `eventline`  | Eventline identities.         | Eventline    |
 | `generic`    | Various generic identities.   | Eventline    |
 | `time`       | Recurring events.             | Eventline    |
 | `dockerhub`  | DockerHub identities.         | Eventline    |
