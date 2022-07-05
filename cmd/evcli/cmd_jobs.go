@@ -36,6 +36,15 @@ func addJobCommands() {
 
 	c.AddArgument("path", "the path of the job specification file")
 
+	// deploy-jobs
+	c = p.AddCommand("deploy-jobs",
+		"create or update jobs from specification files",
+		cmdDeployJobs)
+
+	c.AddFlag("n", "dry-run", "validate jobs but do not deploy them")
+
+	c.AddTrailingArgument("path", "the paths of job specification files")
+
 	// delete-job
 	c = p.AddCommand("delete-job", "delete a job",
 		cmdDeleteJob)
@@ -132,6 +141,45 @@ func cmdDeployJob(p *program.Program) {
 		p.Info("job validated successfully")
 	} else {
 		p.Info("job %q deployed", job.Id)
+	}
+}
+
+func cmdDeployJobs(p *program.Program) {
+	app.IdentifyCurrentProject()
+
+	filePaths := p.TrailingArgumentValues("path")
+	dryRun := p.IsOptionSet("dry-run")
+
+	app.IdentifyCurrentProject()
+
+	for _, filePath := range filePaths {
+		spec, err := LoadJobFile(filePath)
+		if err != nil {
+			p.Fatal("cannot load %q: %v", filePath, err)
+		}
+
+		p.Info("deploying job %q (%q)", spec.Name, filePath)
+
+		if _, err := app.Client.DeployJob(spec, dryRun); err != nil {
+			if dryRun {
+				p.Fatal("invalid job %q (%q): %v",
+					spec.Name, filePath, err)
+			} else {
+				p.Fatal("cannot deploy job %q (%q): %v",
+					spec.Name, filePath, err)
+			}
+		}
+	}
+
+	if dryRun {
+		p.Info("jobs validated successfully")
+	} else {
+		plural := ""
+		if len(filePaths) > 1 {
+			plural = "s"
+		}
+
+		p.Info("%d job%s deployed", len(filePaths), plural)
 	}
 }
 
