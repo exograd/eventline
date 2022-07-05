@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
+	"path"
 
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-program"
@@ -21,6 +21,8 @@ func addJobCommands() {
 	// export-job
 	c = p.AddCommand("export-job", "export a job specification",
 		cmdExportJob)
+
+	c.AddOption("d", "directory", "path", ".", "the directory to write to")
 
 	c.AddArgument("name", "the name of the job")
 
@@ -87,6 +89,7 @@ func cmdExportJob(p *program.Program) {
 
 	name := p.ArgumentValue("name")
 
+	dirPath := p.OptionValue("directory")
 	useJSON := p.IsOptionSet("json")
 
 	job, err := app.Client.FetchJobByName(name)
@@ -112,7 +115,20 @@ func cmdExportJob(p *program.Program) {
 		p.Fatal("cannot encode job specification: %w", err)
 	}
 
-	io.Copy(os.Stdout, bytes.NewReader(data))
+	extension := ".yaml"
+	if useJSON {
+		extension = ".json"
+	}
+
+	fileName := name + extension
+
+	filePath := path.Join(dirPath, fileName)
+
+	if err := os.WriteFile(filePath, data, 0600); err != nil {
+		p.Fatal("cannot write %q: %w", filePath, err)
+	}
+
+	p.Info("job %q exported to %q", name, filePath)
 }
 
 func cmdDeployJob(p *program.Program) {
