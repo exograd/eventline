@@ -333,15 +333,6 @@ func (rd *RunnerData) FileSet() (*FileSet, error) {
 			filePath := path.Join("steps", strconv.Itoa(i+1))
 
 			fs.AddFile(filePath, buf.Bytes(), 0700)
-		} else if step.Bundle != nil {
-			bundlePath := path.Join("steps", strconv.Itoa(i+1))
-
-			for _, bundleFile := range step.Bundle.Files {
-				filePath := path.Join(bundlePath, bundleFile.Name)
-				content := []byte(bundleFile.Content)
-
-				fs.AddFile(filePath, content, bundleFile.Mode)
-			}
 		}
 	}
 
@@ -386,11 +377,6 @@ func (r *Runner) StepCommand(se *StepExecution, s *Step, rootPath string) (name 
 	case s.Script != nil:
 		name = path.Join(rootPath, "steps", strconv.Itoa(se.Position))
 		args = s.Script.Arguments
-
-	case s.Bundle != nil:
-		name = path.Join(rootPath, "steps", strconv.Itoa(se.Position),
-			s.Bundle.Command)
-		args = s.Bundle.Arguments
 
 	default:
 		utils.Panicf("unhandled step %#v", s)

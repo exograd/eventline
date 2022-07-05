@@ -142,13 +142,6 @@
             <pre><code>{{.Content}}</code></pre>
           </div>
           {{end}}
-
-          {{with .Bundle}}
-          <div class="block">
-            <h2 class="subtitle">Bundle</h2>
-            <pre><code>{{.PathAndCommand}}{{range .Arguments}} {{.}}{{end}}</pre>
-          </div>
-          {{end}}
         </div>
         {{end}}
 

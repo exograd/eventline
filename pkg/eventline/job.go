@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
-	"path"
 	"strconv"
 	"time"
 
@@ -114,7 +112,6 @@ type Step struct {
 	Code    string       `json:"code,omitempty"`
 	Command *StepCommand `json:"command,omitempty"`
 	Script  *StepScript  `json:"script,omitempty"`
-	Bundle  *StepBundle  `json:"bundle,omitempty"`
 
 	OnFailure StepFailureAction `json:"on_failure,omitempty"`
 }
@@ -131,26 +128,6 @@ type StepScript struct {
 	Arguments []string `json:"arguments,omitempty"`
 
 	Content string `json:"content"` // content of the script file
-}
-
-type StepBundle struct {
-	Path      string   `json:"path"`
-	Exclude   []string `json:"exclude,omitempty"`
-	Command   string   `json:"command"`
-	Arguments []string `json:"arguments,omitempty"`
-
-	Files []StepBundleFile `json:"files,omitempty"`
-}
-
-func (sb *StepBundle) PathAndCommand() string {
-	// Used in templates
-	return path.Join(sb.Path, sb.Command)
-}
-
-type StepBundleFile struct {
-	Name    string      `json:"name"`
-	Mode    os.FileMode `json:"mode"`
-	Content string      `json:"content"`
 }
 
 func (j *Job) SortKey(sort string) (key string) {
@@ -320,24 +297,20 @@ func (s *Step) Check(c *check.Checker) {
 	if s.Command != nil {
 		n += 1
 	}
-	if s.Bundle != nil {
-		n += 1
-	}
 	if s.Script != nil {
 		n += 1
 	}
 
 	if n == 0 {
 		c.AddError(djson.Pointer{}, "missing_step_content",
-			"missing code, command, bundle or script member")
+			"missing code, command or script member")
 	} else if n > 1 {
 		c.AddError(djson.Pointer{}, "multiple_step_contents",
-			"multiple code, command, bundle or script members")
+			"multiple code, command or script members")
 	}
 
 	c.CheckOptionalObject("command", s.Command)
 	c.CheckOptionalObject("script", s.Script)
-	c.CheckOptionalObject("bundle", s.Bundle)
 }
 
 func (s *StepCommand) Check(c *check.Checker) {
@@ -346,18 +319,6 @@ func (s *StepCommand) Check(c *check.Checker) {
 
 func (s *StepScript) Check(c *check.Checker) {
 	c.CheckStringNotEmpty("path", s.Path)
-}
-
-func (s *StepBundle) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("path", s.Path)
-
-	c.WithChild("exclude", func() {
-		for i, pattern := range s.Exclude {
-			c.CheckStringNotEmpty(i, pattern)
-		}
-	})
-
-	c.CheckStringNotEmpty("command", s.Command)
 }
 
 func (spec *JobSpec) ParseYAML(data []byte) error {
