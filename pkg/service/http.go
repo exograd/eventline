@@ -138,7 +138,7 @@ type HTTPContext struct {
 
 func (ctx *HTTPContext) AccountScope() eventline.Scope {
 	if ctx.AccountId == nil {
-		return eventline.NewGlobalScope()
+		panic("missing account id in http context")
 	}
 
 	return eventline.NewAccountScope(*ctx.AccountId)
@@ -146,22 +146,22 @@ func (ctx *HTTPContext) AccountScope() eventline.Scope {
 
 func (ctx *HTTPContext) ProjectScope() eventline.Scope {
 	if ctx.ProjectId == nil {
-		return eventline.NewGlobalScope()
+		panic("missing project id in http context")
 	}
 
 	return eventline.NewProjectScope(*ctx.ProjectId)
 }
 
 func (ctx *HTTPContext) AccountProjectScope() eventline.Scope {
-	if ctx.ProjectId != nil && ctx.AccountId != nil {
-		return eventline.NewAccountProjectScope(*ctx.AccountId, *ctx.ProjectId)
-	} else if ctx.ProjectId != nil {
-		return eventline.NewProjectScope(*ctx.ProjectId)
-	} else if ctx.AccountId != nil {
-		return eventline.NewAccountScope(*ctx.AccountId)
+	if ctx.AccountId == nil {
+		panic("missing account id in http context")
 	}
 
-	return eventline.NewGlobalScope()
+	if ctx.ProjectId == nil {
+		panic("missing project id in http context")
+	}
+
+	return eventline.NewAccountProjectScope(*ctx.AccountId, *ctx.ProjectId)
 }
 
 func (s *Service) WrapRoute(fn HTTPRouteFunc, options HTTPRouteOptions, iface HTTPInterface) dhttp.RouteFunc {
