@@ -70,11 +70,6 @@
             <div class="dropdown-menu">
               <div class="dropdown-content">
                 <a class="dropdown-item"
-                   href="/identities/id/{{.Id}}/logs">
-                  Logs
-                </a>
-
-                <a class="dropdown-item"
                    href="/identities/id/{{.Id}}/configuration">
                   Configure
                 </a>
