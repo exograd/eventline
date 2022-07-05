@@ -4,6 +4,7 @@ import (
 	cdockerhub "github.com/exograd/eventline/pkg/connectors/dockerhub"
 	cgeneric "github.com/exograd/eventline/pkg/connectors/generic"
 	cgithub "github.com/exograd/eventline/pkg/connectors/github"
+	cpostgresql "github.com/exograd/eventline/pkg/connectors/postgresql"
 	ctime "github.com/exograd/eventline/pkg/connectors/time"
 	"github.com/exograd/eventline/pkg/eventline"
 	rdocker "github.com/exograd/eventline/pkg/runners/docker"
@@ -19,6 +20,7 @@ var Connectors = []eventline.Connector{
 	cdockerhub.NewConnector(),
 	cgeneric.NewConnector(),
 	cgithub.NewConnector(),
+	cpostgresql.NewConnector(),
 	ctime.NewConnector(),
 }
 
