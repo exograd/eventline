@@ -1,9 +1,11 @@
 package eventline
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
 	"path"
 	"strconv"
 	"sync"
@@ -71,7 +73,7 @@ type RunnerBehaviour interface {
 	Init() error
 	Terminate()
 
-	ExecuteStep(*StepExecution, *Step) error
+	ExecuteStep(*StepExecution, *Step, io.WriteCloser, io.WriteCloser) error
 }
 
 type Runner struct {
@@ -215,34 +217,9 @@ func (r *Runner) main() {
 
 		cse = se
 
-		err = r.Behaviour.ExecuteStep(se, step)
-
-		var stepFailureErr *StepFailureError
-		if errors.As(err, &stepFailureErr) {
-			_, _, updateErr := r.updateStepExecutionFailure(jeId, se.Id, err,
-				r.Scope)
-			if updateErr != nil {
-				r.HandleError(fmt.Errorf("cannot update step %d: %w",
-					se.Position, err))
-				return
-			}
-		}
-
-		if err != nil {
-			if stepFailureErr == nil || step.AbortOnFailure() {
-				r.HandleError(fmt.Errorf("cannot execute step %d: %w",
-					se.Position, err))
-				return
-			}
-		}
-
-		if stepFailureErr == nil {
-			_, _, err := r.updateStepExecutionSuccess(jeId, se.Id, r.Scope)
-			if err != nil {
-				r.HandleError(fmt.Errorf("cannot update step %d: %w",
-					se.Position, err))
-				return
-			}
+		if err := r.executeStep(se, step); err != nil {
+			r.HandleError(err)
+			return
 		}
 	}
 
@@ -251,6 +228,113 @@ func (r *Runner) main() {
 	if _, err := r.updateJobExecutionSuccess(jeId, r.Scope); err != nil {
 		r.Log.Error("cannot update job: %v", err)
 		return
+	}
+}
+
+func (r *Runner) executeStep(se *StepExecution, step *Step) error {
+	jeId := r.JobExecution.Id
+
+	// Create pipes used to read the output of the executed program
+	stdoutRead, stdoutWrite := io.Pipe()
+	stderrRead, stderrWrite := io.Pipe()
+
+	// Create output readers
+	errChan := make(chan error, 2)
+	defer close(errChan)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+	go r.readOutput(se, stdoutRead, "stdout", errChan, &wg)
+	go r.readOutput(se, stderrRead, "stderr", errChan, &wg)
+
+	// Execute the step
+	err := r.Behaviour.ExecuteStep(se, step, stdoutWrite, stderrWrite)
+
+	// Close pipes and wait for output readers to terminate
+	stdoutRead.Close()
+	stderrRead.Close()
+
+	wg.Wait()
+
+	// Check for reader errors; in practice, the only possible error is an
+	// unability to update the step execution.
+	select {
+	case outputErr := <-errChan:
+		if outputErr != nil {
+			return outputErr
+		}
+
+	default:
+	}
+
+	// Handle the execution result
+	var stepFailureErr *StepFailureError
+	if errors.As(err, &stepFailureErr) {
+		_, _, updateErr := r.updateStepExecutionFailure(jeId, se.Id, err,
+			r.Scope)
+		if updateErr != nil {
+			return fmt.Errorf("cannot update step %d: %w", se.Position, err)
+		}
+	}
+
+	if err != nil {
+		if stepFailureErr == nil || step.AbortOnFailure() {
+			return fmt.Errorf("cannot execute step %d: %w", se.Position, err)
+		}
+	}
+
+	if stepFailureErr == nil {
+		_, _, err := r.updateStepExecutionSuccess(jeId, se.Id, r.Scope)
+		if err != nil {
+			return fmt.Errorf("cannot update step %d: %w", se.Position, err)
+		}
+	}
+
+	return nil
+}
+
+func (r *Runner) readOutput(se *StepExecution, output io.ReadCloser, name string, errChan chan<- error, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	bufferedOutput := bufio.NewReader(output)
+
+	var line []byte
+
+	for {
+		data, isPrefix, err := bufferedOutput.ReadLine()
+		if err != nil && !errors.Is(err, io.ErrClosedPipe) {
+			errChan <- fmt.Errorf("cannot read command output %q: %v",
+				name, err)
+			return
+		}
+
+		if err == nil {
+			line = append(line, data...)
+			if isPrefix {
+				continue
+			}
+		}
+
+		// There is no point in updating se.Output because we are not going to
+		// read it in the runner, so we may as well avoid allocating and
+		// copying data. This only works because se.Update does not modify the
+		// output column, so it will not be erased when updating the step
+		// execution later.
+
+		if len(line) > 0 {
+			err = r.UpdateStepExecutionOutput(se, append(line, '\n'))
+			if err != nil {
+				errChan <- fmt.Errorf("cannot update step execution %q: %v",
+					se.Id, err)
+				return
+			}
+
+			line = nil
+		}
+
+		if errors.Is(err, io.EOF) || errors.Is(err, io.ErrClosedPipe) {
+			break
+		}
 	}
 }
 

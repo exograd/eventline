@@ -1,7 +1,6 @@
 package local
 
 import (
-	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -10,7 +9,6 @@ import (
 	"os"
 	"os/exec"
 	"path"
-	"sync"
 	"syscall"
 
 	"github.com/exograd/eventline/pkg/eventline"
@@ -71,7 +69,7 @@ func (r *Runner) Terminate() {
 	}
 }
 
-func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) error {
+func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step, stdout, stderr io.WriteCloser) error {
 	// Interruption handling (i.e. when the server is being stopped while jobs
 	// are running).
 	ctx, cancel := context.WithCancel(context.Background())
@@ -104,108 +102,20 @@ func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) 
 		cmd.Env = append(cmd.Env, k+"="+v)
 	}
 
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return fmt.Errorf("cannot create stdout pipe: %w", err)
-	}
+	cmd.Stdout = stdout
+	cmd.Stderr = stderr
 
-	stderr, err := cmd.StderrPipe()
-	if err != nil {
-		return fmt.Errorf("cannot create stderr pipe: %w", err)
-	}
-
-	// Start the command
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("cannot start commande: %w", err)
-	}
-
-	// Start readers for output pipes; note that we must not call Command.Wait
-	// until both stdout and stderr have been closed (see the documentation of
-	// the os/exec package).
-	errChan := make(chan error, 2)
-	defer close(errChan)
-
-	var wg sync.WaitGroup
-	wg.Add(2)
-	go r.readOutput(se, stdout, "stdout", errChan, &wg)
-	go r.readOutput(se, stderr, "stderr", errChan, &wg)
-
-	wg.Wait()
-
-	// Now that output readers are terminated, check the error channel for any
-	// output error.
-	select {
-	case outputErr := <-errChan:
-		if outputErr != nil {
-			cmd.Wait()
-			return outputErr
-		}
-
-	default:
-	}
-
-	// Wait for the command termination status
-	err = cmd.Wait()
+	// Run the command
+	err := cmd.Run()
 
 	// Handle the error if there is one. We translate it to get nice error
 	// messages.
-	if err != nil {
-		var exitErr *exec.ExitError
-
-		if errors.As(err, &exitErr) {
-			return eventline.NewStepFailureError(r.translateExitError(exitErr))
-		}
-
-		return err
+	var exitErr *exec.ExitError
+	if errors.As(err, &exitErr) {
+		return eventline.NewStepFailureError(r.translateExitError(exitErr))
 	}
 
-	return nil
-}
-
-func (r *Runner) readOutput(se *eventline.StepExecution, output io.ReadCloser, name string, errChan chan<- error, wg *sync.WaitGroup) {
-	defer wg.Done()
-
-	bufferedOutput := bufio.NewReader(output)
-
-	var line []byte
-
-	for {
-		data, isPrefix, err := bufferedOutput.ReadLine()
-		if err != nil && err != io.EOF {
-			err = fmt.Errorf("cannot read command output %q: %v", name, err)
-			errChan <- err
-			return
-		}
-
-		if err == nil {
-			line = append(line, data...)
-			if isPrefix {
-				continue
-			}
-		}
-
-		// There is no point in updating se.Output because we are not going to
-		// read it in the runner, so we may as well avoid allocating and
-		// copying data. This only works because se.Update does not modify the
-		// output column, so it will not be erased when updating the step
-		// execution later.
-
-		if len(line) > 0 {
-			err = r.runner.UpdateStepExecutionOutput(se, append(line, '\n'))
-			if err != nil {
-				err = fmt.Errorf("cannot update step execution %q: %v",
-					se.Id, err)
-				errChan <- err
-				return
-			}
-
-			line = nil
-		}
-
-		if err == io.EOF {
-			break
-		}
-	}
+	return err
 }
 
 func (r *Runner) translateExitError(err *exec.ExitError) error {

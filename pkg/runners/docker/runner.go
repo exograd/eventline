@@ -2,6 +2,7 @@ package docker
 
 import (
 	"fmt"
+	"io"
 
 	dockerclient "github.com/docker/docker/client"
 	"github.com/exograd/eventline/pkg/eventline"
@@ -84,6 +85,6 @@ func (r *Runner) Terminate() {
 	}
 }
 
-func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step) error {
-	return r.exec(se, step)
+func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step, stdout, stderr io.WriteCloser) error {
+	return r.exec(se, step, stdout, stderr)
 }
