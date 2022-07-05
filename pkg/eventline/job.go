@@ -127,7 +127,7 @@ type StepScript struct {
 	Path      string   `json:"path"`
 	Arguments []string `json:"arguments,omitempty"`
 
-	Content string `json:"content"` // content of the script file
+	Content string `json:"content,omitempty"` // content of the script file
 }
 
 func (j *Job) SortKey(sort string) (key string) {

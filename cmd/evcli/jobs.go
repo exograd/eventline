@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/eventline/pkg/utils"
 )
 
 func LoadJobFile(filePath string) (*eventline.JobSpec, error) {
@@ -124,4 +125,31 @@ func findJobFiles(dirPath, curDirPath string, ignoreSet *IgnoreSet) ([]string, e
 	}
 
 	return filePaths, nil
+}
+
+func ExportJob(spec *eventline.JobSpec, dirPath string) (string, error) {
+	for _, step := range spec.Steps {
+		if script := step.Script; script != nil {
+			scriptPath := path.Join(dirPath, script.Path)
+
+			err := os.WriteFile(scriptPath, []byte(script.Content), 0700)
+			if err != nil {
+				return "", fmt.Errorf("cannot write %q: %w", scriptPath, err)
+			}
+
+			script.Content = ""
+		}
+	}
+
+	specData, err := utils.YAMLEncode(spec)
+	if err != nil {
+		return "", fmt.Errorf("cannot encode job specification: %w", err)
+	}
+
+	filePath := path.Join(dirPath, spec.Name+".yaml")
+	if err := os.WriteFile(filePath, specData, 0600); err != nil {
+		return "", fmt.Errorf("cannot write %q: %w", filePath, err)
+	}
+
+	return filePath, nil
 }

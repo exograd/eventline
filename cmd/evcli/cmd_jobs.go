@@ -1,13 +1,8 @@
 package main
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"os"
-	"path"
 
-	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-program"
 )
 
@@ -25,9 +20,6 @@ func addJobCommands() {
 	c.AddOption("d", "directory", "path", ".", "the directory to write to")
 
 	c.AddArgument("name", "the name of the job")
-
-	c.AddFlag("", "json",
-		"encode the specification using json instead of yaml")
 
 	// deploy-job
 	c = p.AddCommand("deploy-job",
@@ -88,44 +80,16 @@ func cmdExportJob(p *program.Program) {
 	app.IdentifyCurrentProject()
 
 	name := p.ArgumentValue("name")
-
 	dirPath := p.OptionValue("directory")
-	useJSON := p.IsOptionSet("json")
 
 	job, err := app.Client.FetchJobByName(name)
 	if err != nil {
 		p.Fatal("cannot fetch job: %v", err)
 	}
 
-	var data []byte
-
-	if useJSON {
-		var buf bytes.Buffer
-
-		encoder := json.NewEncoder(&buf)
-		encoder.SetIndent("", "  ")
-
-		err = encoder.Encode(job.Spec)
-		data = buf.Bytes()
-	} else {
-		data, err = utils.YAMLEncode(job.Spec)
-	}
-
+	filePath, err := ExportJob(job.Spec, dirPath)
 	if err != nil {
-		p.Fatal("cannot encode job specification: %w", err)
-	}
-
-	extension := ".yaml"
-	if useJSON {
-		extension = ".json"
-	}
-
-	fileName := name + extension
-
-	filePath := path.Join(dirPath, fileName)
-
-	if err := os.WriteFile(filePath, data, 0600); err != nil {
-		p.Fatal("cannot write %q: %w", filePath, err)
+		p.Fatal("cannot export job %q: %v", name, err)
 	}
 
 	p.Info("job %q exported to %q", name, filePath)
