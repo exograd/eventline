@@ -31,7 +31,8 @@ type ServiceCfg struct {
 
 	Workers map[string]eventline.WorkerCfg `json:"workers"`
 
-	JobRetention int `json:"job_retention"` // days
+	MaxParallelJobs int `json:"max_parallel_jobs"`
+	JobRetention    int `json:"job_retention"` // days
 
 	Runners map[string]json.RawMessage `json:"runners"`
 }

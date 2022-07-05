@@ -1,6 +1,7 @@
 package eventline
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -255,6 +256,24 @@ SELECT id, project_id, job_id, job_spec, event_id, parameters,
 	}
 
 	return jes.Page(cursor), nil
+}
+
+func CountStartedJobExecutions(conn pg.Conn, scope Scope) (int64, error) {
+	ctx := context.Background()
+
+	query := fmt.Sprintf(`
+SELECT COUNT(*)
+  FROM job_executions
+  WHERE %s AND status = 'started';
+`, scope.SQLCondition())
+
+	var count int64
+	err := conn.QueryRow(ctx, query).Scan(&count)
+	if err != nil {
+		return -1, err
+	}
+
+	return count, nil
 }
 
 func (je *JobExecution) Insert(conn pg.Conn) error {

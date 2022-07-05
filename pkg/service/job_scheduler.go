@@ -52,6 +52,17 @@ func (js *JobScheduler) ProcessJob() (bool, error) {
 
 		scope := eventline.NewProjectScope(je.ProjectId)
 
+		if max := js.Service.Cfg.MaxParallelJobs; max > 0 {
+			n, err := eventline.CountStartedJobExecutions(conn, scope)
+			if err != nil {
+				return fmt.Errorf("cannot count job executions: %w", err)
+			}
+
+			if n >= int64(max) {
+				return nil
+			}
+		}
+
 		if err := js.Service.StartJobExecution(conn, je, scope); err != nil {
 			return fmt.Errorf("cannot start job execution %q: %w",
 				je.Id, err)
