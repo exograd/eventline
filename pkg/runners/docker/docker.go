@@ -241,7 +241,15 @@ func (r *Runner) exec(ctx context.Context, se *eventline.StepExecution, step *ev
 	}
 
 	if code := inspectRes.ExitCode; code != 0 {
-		return fmt.Errorf("container terminated with exit code %d", code)
+		var err error
+
+		if code < 128 {
+			err = fmt.Errorf("program exited with status %d", code)
+		} else {
+			err = fmt.Errorf("program killed by signal %d", code-128)
+		}
+
+		return eventline.NewStepFailureError(err)
 	}
 
 	return nil
