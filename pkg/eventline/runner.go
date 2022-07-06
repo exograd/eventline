@@ -343,7 +343,7 @@ func (r *Runner) executeStep(se *StepExecution, step *Step) error {
 					se.Position, err)
 			}
 
-			return err
+			return nil
 
 		default:
 			// Even if the job is supposed to continue (i.e. if the step has
