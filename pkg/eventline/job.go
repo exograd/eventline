@@ -98,8 +98,7 @@ type RunnerParameters interface {
 }
 
 type Trigger struct {
-	Connector     string                 `json:"connector"`
-	Event         string                 `json:"event"`
+	Event         EventRef               `json:"event"`
 	Parameters    SubscriptionParameters `json:"-"`
 	RawParameters json.RawMessage        `json:"parameters,omitempty"`
 	Identity      string                 `json:"identity,omitempty"`
@@ -233,9 +232,7 @@ func (pr *JobRunner) UnmarshalJSON(data []byte) error {
 }
 
 func (t *Trigger) Check(c *check.Checker) {
-	if CheckConnectorName(c, "connector", t.Connector) {
-		CheckEventName(c, "event", t.Connector, t.Event)
-	}
+	CheckEventRef(c, "event", t.Event)
 
 	c.CheckOptionalObject("parameters", t.Parameters)
 
@@ -269,9 +266,8 @@ func (pt *Trigger) UnmarshalJSON(data []byte) error {
 
 	// If the connector or event are invalid, let validation
 	// (Trigger.Check) signal the error.
-	if t.RawParameters != nil && EventExists(t.Connector, t.Event) {
-		cdef := GetConnectorDef(t.Connector)
-		edef := cdef.Event(t.Event)
+	if t.RawParameters != nil && EventDefExists(t.Event) {
+		edef := GetEventDef(t.Event)
 
 		parameters, err := edef.DecodeSubscriptionParameters(t.RawParameters)
 		if err != nil {

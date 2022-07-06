@@ -75,11 +75,20 @@ func EventExists(cname, name string) bool {
 	return cdef.EventExists(name)
 }
 
-func CheckEventName(c *check.Checker, token string, cname, name string) {
-	c.CheckStringNotEmpty(token, name)
+func EventDefExists(ref EventRef) bool {
+	return EventExists(ref.Connector, ref.Event)
+}
 
-	if name != "" {
-		c.Check(token, EventExists(cname, name),
-			"unknown_event", "unknown event %q in connector %q", name, cname)
+func GetEventDef(ref EventRef) *EventDef {
+	cdef := GetConnectorDef(ref.Connector)
+	return cdef.Event(ref.Event)
+}
+
+func CheckEventName(c *check.Checker, token string, cname, name string) bool {
+	if c.CheckStringNotEmpty(token, name) == false {
+		return false
 	}
+
+	return c.Check(token, EventExists(cname, name),
+		"unknown_event", "unknown event %q in connector %q", name, cname)
 }

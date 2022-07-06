@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/exograd/go-program"
 )
 
@@ -60,7 +58,7 @@ func cmdListJobs(p *program.Program) {
 	for _, j := range jobs {
 		var triggerName string
 		if t := j.Spec.Trigger; t != nil {
-			triggerName = fmt.Sprintf("%s/%s", t.Connector, t.Event)
+			triggerName = t.Event.String()
 		}
 
 		row := []interface{}{

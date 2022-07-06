@@ -31,8 +31,8 @@ func (s *Service) CreateSubscription(conn pg.Conn, job *eventline.Job, scope eve
 		ProjectId:    &projectId,
 		JobId:        &job.Id,
 		IdentityId:   identityId,
-		Connector:    triggerData.Connector,
-		Event:        triggerData.Event,
+		Connector:    triggerData.Event.Connector,
+		Event:        triggerData.Event.Event,
 		Parameters:   triggerData.Parameters, // should be a deep copy
 		CreationTime: now,
 		Status:       eventline.SubscriptionStatusInactive,
