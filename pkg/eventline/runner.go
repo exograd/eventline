@@ -3,6 +3,7 @@ package eventline
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -70,7 +71,7 @@ type RunnerData struct {
 type RunnerBehaviour interface {
 	DirPath() string
 
-	Init() error
+	Init(ctx context.Context) error
 	Terminate()
 
 	ExecuteStep(*StepExecution, *Step, io.WriteCloser, io.WriteCloser) error
@@ -191,7 +192,7 @@ func (r *Runner) main() {
 		}
 	}()
 
-	if err := r.Behaviour.Init(); err != nil {
+	if err := r.initExecution(); err != nil {
 		r.HandleError(err)
 		return
 	}
@@ -229,6 +230,35 @@ func (r *Runner) main() {
 		r.Log.Error("cannot update job: %v", err)
 		return
 	}
+}
+
+func (r *Runner) initExecution() error {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go func() {
+		select {
+		case <-r.StopChan:
+			cancel()
+
+		case <-ctx.Done():
+		}
+	}()
+
+	if err := r.Behaviour.Init(ctx); err != nil {
+		switch {
+		case errors.Is(err, context.Canceled):
+			return fmt.Errorf("initialization interrupted")
+
+		case errors.Is(err, context.DeadlineExceeded):
+			return fmt.Errorf("initialization timeout")
+
+		default:
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (r *Runner) executeStep(se *StepExecution, step *Step) error {

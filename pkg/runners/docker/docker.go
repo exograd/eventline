@@ -25,19 +25,7 @@ func newClient() (*dockerclient.Client, error) {
 	return dockerclient.NewClientWithOpts(opts...)
 }
 
-func (r *Runner) pullImage() error {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	go func() {
-		select {
-		case <-ctx.Done():
-
-		case <-r.runner.StopChan:
-			cancel()
-		}
-	}()
-
+func (r *Runner) pullImage(ctx context.Context) error {
 	je := r.runner.JobExecution
 	params := je.JobSpec.Runner.Parameters.(*RunnerParameters)
 
@@ -99,9 +87,7 @@ func (r *Runner) pullImage() error {
 	return err
 }
 
-func (r *Runner) createContainer() error {
-	ctx := context.Background()
-
+func (r *Runner) createContainer(ctx context.Context) error {
 	je := r.runner.JobExecution
 	params := je.JobSpec.Runner.Parameters.(*RunnerParameters)
 
@@ -152,14 +138,15 @@ func (r *Runner) createContainer() error {
 
 	statusChan, errChan := r.client.ContainerWait(ctx, r.containerId,
 		"created")
+
 	select {
 	case <-statusChan:
 
 	case err := <-errChan:
 		return fmt.Errorf("container error: %w", err)
 
-	case <-r.runner.StopChan:
-		return fmt.Errorf("container creation interrupted")
+	case <-ctx.Done():
+		return ctx.Err()
 	}
 
 	return nil
@@ -176,9 +163,7 @@ func (r *Runner) deleteContainer() error {
 	return r.client.ContainerRemove(ctx, r.containerId, options)
 }
 
-func (r *Runner) copyFiles() error {
-	ctx := context.Background()
-
+func (r *Runner) copyFiles(ctx context.Context) error {
 	options := dockertypes.CopyToContainerOptions{
 		AllowOverwriteDirWithFile: true,
 	}
@@ -193,9 +178,7 @@ func (r *Runner) copyFiles() error {
 	return r.client.CopyToContainer(ctx, r.containerId, "/", &buf, options)
 }
 
-func (r *Runner) startContainer() error {
-	ctx := context.Background()
-
+func (r *Runner) startContainer(ctx context.Context) error {
 	options := dockertypes.ContainerStartOptions{}
 
 	return r.client.ContainerStart(ctx, r.containerId, options)

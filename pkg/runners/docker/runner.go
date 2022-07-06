@@ -1,6 +1,7 @@
 package docker
 
 import (
+	"context"
 	"fmt"
 	"io"
 
@@ -41,7 +42,7 @@ func (r *Runner) DirPath() string {
 	return "/eventline"
 }
 
-func (r *Runner) Init() error {
+func (r *Runner) Init(ctx context.Context) error {
 	// Create the client
 	client, err := newClient()
 	if err != nil {
@@ -51,22 +52,22 @@ func (r *Runner) Init() error {
 	r.client = client
 
 	// Pull the image
-	if err := r.pullImage(); err != nil {
+	if err := r.pullImage(ctx); err != nil {
 		return fmt.Errorf("cannot pull image: %w", err)
 	}
 
 	// Create the container
-	if err := r.createContainer(); err != nil {
+	if err := r.createContainer(ctx); err != nil {
 		return fmt.Errorf("cannot create container: %w", err)
 	}
 
 	// Copy files to the container
-	if err := r.copyFiles(); err != nil {
+	if err := r.copyFiles(ctx); err != nil {
 		return fmt.Errorf("cannot copy files: %w", err)
 	}
 
 	// Start the container
-	if err := r.startContainer(); err != nil {
+	if err := r.startContainer(ctx); err != nil {
 		return fmt.Errorf("cannot start container: %w", err)
 	}
 

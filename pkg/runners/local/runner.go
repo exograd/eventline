@@ -53,7 +53,7 @@ func (r *Runner) DirPath() string {
 	return "."
 }
 
-func (r *Runner) Init() error {
+func (r *Runner) Init(ctx context.Context) error {
 	if err := r.runner.FileSet.Write(r.rootPath); err != nil {
 		return err
 	}
