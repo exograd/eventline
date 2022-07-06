@@ -41,6 +41,19 @@ func (js *JobScheduler) ProcessJob() (bool, error) {
 			return fmt.Errorf("cannot take advisory lock: %w", err)
 		}
 
+		if max := js.Service.Cfg.MaxParallelJobs; max > 0 {
+			globalScope := eventline.NewGlobalScope()
+
+			n, err := eventline.CountStartedJobExecutions(conn, globalScope)
+			if err != nil {
+				return fmt.Errorf("cannot count job executions: %w", err)
+			}
+
+			if n >= int64(max) {
+				return nil
+			}
+		}
+
 		je, err := eventline.LoadJobExecutionForScheduling(conn)
 		if err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
@@ -51,17 +64,6 @@ func (js *JobScheduler) ProcessJob() (bool, error) {
 		js.Log.Info("processing job execution %q", je.Id)
 
 		scope := eventline.NewProjectScope(je.ProjectId)
-
-		if max := js.Service.Cfg.MaxParallelJobs; max > 0 {
-			n, err := eventline.CountStartedJobExecutions(conn, scope)
-			if err != nil {
-				return fmt.Errorf("cannot count job executions: %w", err)
-			}
-
-			if n >= int64(max) {
-				return nil
-			}
-		}
 
 		if err := js.Service.StartJobExecution(conn, je, scope); err != nil {
 			return fmt.Errorf("cannot start job execution %q: %w",
