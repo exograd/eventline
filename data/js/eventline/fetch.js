@@ -66,7 +66,7 @@ function evFetch(uri, request, decodeFunc = JSON.parse, redirect = false) {
                 } else {
                   msg = `request failed with status ${status}`;
                   if (response.statusText) {
-                    msg += `: ${response.StatusText}`;
+                    msg += `: ${response.statusText}`;
                   }
                 }
 
