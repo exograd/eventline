@@ -69,27 +69,7 @@ func (r *Runner) Terminate() {
 	}
 }
 
-func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step, stdout, stderr io.WriteCloser) error {
-	// Interruption handling (i.e. when the server is being stopped while jobs
-	// are running).
-	ctx, cancel := context.WithCancel(context.Background())
-
-	endChan := make(chan struct{})
-	defer close(endChan)
-
-	go func() {
-		select {
-		case <-r.runner.StopChan:
-			r.log.Info("interrupting job")
-			cancel()
-			return
-
-		case <-endChan:
-			cancel()
-			return
-		}
-	}()
-
+func (r *Runner) ExecuteStep(ctx context.Context, se *eventline.StepExecution, step *eventline.Step, stdout, stderr io.WriteCloser) error {
 	// Create the command
 	cmdName, cmdArgs := r.runner.StepCommand(se, step, ".")
 

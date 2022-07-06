@@ -74,7 +74,7 @@ type RunnerBehaviour interface {
 	Init(ctx context.Context) error
 	Terminate()
 
-	ExecuteStep(*StepExecution, *Step, io.WriteCloser, io.WriteCloser) error
+	ExecuteStep(context.Context, *StepExecution, *Step, io.WriteCloser, io.WriteCloser) error
 }
 
 type Runner struct {
@@ -209,6 +209,10 @@ func (r *Runner) main() {
 
 		r.Log.Info("executing step %d", se.Position)
 
+		// We update the step execution here and not in Runner.executeStep
+		// because we want to set the current step execution (cse) after the
+		// start but before calling executeStep, to make sure the recovery
+		// function works as intended.
 		_, _, err := r.updateStepExecutionStart(jeId, se.Id, r.Scope)
 		if err != nil {
 			r.HandleError(fmt.Errorf("cannot update step %d: %w",
@@ -264,6 +268,18 @@ func (r *Runner) initExecution() error {
 func (r *Runner) executeStep(se *StepExecution, step *Step) error {
 	jeId := r.JobExecution.Id
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go func() {
+		select {
+		case <-r.StopChan:
+			cancel()
+
+		case <-ctx.Done():
+		}
+	}()
+
 	// Create pipes used to read the output of the executed program
 	stdoutRead, stdoutWrite := io.Pipe()
 	stderrRead, stderrWrite := io.Pipe()
@@ -278,7 +294,7 @@ func (r *Runner) executeStep(se *StepExecution, step *Step) error {
 	go r.readOutput(se, stderrRead, "stderr", errChan, &wg)
 
 	// Execute the step
-	err := r.Behaviour.ExecuteStep(se, step, stdoutWrite, stderrWrite)
+	err := r.Behaviour.ExecuteStep(ctx, se, step, stdoutWrite, stderrWrite)
 
 	// Close pipes and wait for output readers to terminate
 	stdoutRead.Close()
@@ -298,26 +314,50 @@ func (r *Runner) executeStep(se *StepExecution, step *Step) error {
 	}
 
 	// Handle the execution result
-	var stepFailureErr *StepFailureError
-	if errors.As(err, &stepFailureErr) {
-		_, _, updateErr := r.updateStepExecutionFailure(jeId, se.Id, err,
-			r.Scope)
-		if updateErr != nil {
-			return fmt.Errorf("cannot update step %d: %w", se.Position, err)
-		}
-	}
-
+	//
+	// We separate errors indicating that the command failed and errors
+	// associated with execution itself.
+	//
+	// We only handle the step execution; if this function returns an error,
+	// the caller will update the job execution.
 	if err != nil {
-		if stepFailureErr == nil || step.AbortOnFailure() {
+		var stepFailureErr *StepFailureError
+
+		switch {
+		case errors.Is(err, context.Canceled):
+			return fmt.Errorf("execution of step %d interrupted", se.Position)
+
+		case errors.Is(err, context.DeadlineExceeded):
+			return fmt.Errorf("execution of step %d timed out", se.Position)
+
+		case errors.As(err, &stepFailureErr):
+			_, _, updateErr := r.updateStepExecutionFailure(jeId, se.Id, err,
+				r.Scope)
+			if updateErr != nil {
+				return fmt.Errorf("cannot update step execution %q: %w",
+					se.Id, err)
+			}
+
+			if step.AbortOnFailure() {
+				return fmt.Errorf("cannot execute step %d: %w",
+					se.Position, err)
+			}
+
+			return err
+
+		default:
+			// Even if the job is supposed to continue (i.e. if the step has
+			// on_failure equal to 'continue'), an execution error always
+			// causes the job to fail: if we cannot execute a job, we probably
+			// will not be able to execute the next one.
 			return fmt.Errorf("cannot execute step %d: %w", se.Position, err)
 		}
 	}
 
-	if stepFailureErr == nil {
-		_, _, err := r.updateStepExecutionSuccess(jeId, se.Id, r.Scope)
-		if err != nil {
-			return fmt.Errorf("cannot update step %d: %w", se.Position, err)
-		}
+	// Mark the step as successful
+	_, _, err = r.updateStepExecutionSuccess(jeId, se.Id, r.Scope)
+	if err != nil {
+		return fmt.Errorf("cannot update step %d: %w", se.Position, err)
 	}
 
 	return nil

@@ -193,8 +193,9 @@ function evAutoRefresh() {
 
   // We use redirect=true so that we actually change the current page on a
   // redirect response. This is especially important for authentication
-  // errors: if our session expires, we want to be redirect to the login page,
-  // instead of staying on the same page with the content of the login page.
+  // errors: if our session expires, we want to be redirected to the login
+  // page, instead of staying on the same page with the content of the login
+  // page.
   evFetch(uri, request, decodeFunc = null, redirect = true)
     .then(response => {
       if (response.redirected) {

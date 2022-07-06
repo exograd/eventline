@@ -86,6 +86,6 @@ func (r *Runner) Terminate() {
 	}
 }
 
-func (r *Runner) ExecuteStep(se *eventline.StepExecution, step *eventline.Step, stdout, stderr io.WriteCloser) error {
-	return r.exec(se, step, stdout, stderr)
+func (r *Runner) ExecuteStep(ctx context.Context, se *eventline.StepExecution, step *eventline.Step, stdout, stderr io.WriteCloser) error {
+	return r.exec(ctx, se, step, stdout, stderr)
 }

@@ -184,26 +184,7 @@ func (r *Runner) startContainer(ctx context.Context) error {
 	return r.client.ContainerStart(ctx, r.containerId, options)
 }
 
-func (r *Runner) exec(se *eventline.StepExecution, step *eventline.Step, stdout, stderr io.WriteCloser) error {
-	// Interruption handling
-	ctx, cancel := context.WithCancel(context.Background())
-
-	endChan := make(chan struct{})
-	defer close(endChan)
-
-	go func() {
-		select {
-		case <-r.runner.StopChan:
-			r.log.Info("interrupting job")
-			cancel()
-			return
-
-		case <-endChan:
-			cancel()
-			return
-		}
-	}()
-
+func (r *Runner) exec(ctx context.Context, se *eventline.StepExecution, step *eventline.Step, stdout, stderr io.WriteCloser) error {
 	// Create an execution process
 	cmdName, cmdArgs := r.runner.StepCommand(se, step, "/eventline")
 	cmd := append([]string{cmdName}, cmdArgs...)
@@ -250,7 +231,7 @@ func (r *Runner) exec(se *eventline.StepExecution, step *eventline.Step, stdout,
 		}
 
 	case <-ctx.Done():
-		return fmt.Errorf("execution interrupted")
+		return ctx.Err()
 	}
 
 	// Check execution status
