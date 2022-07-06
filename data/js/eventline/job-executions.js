@@ -4,6 +4,7 @@ evOnPageLoaded("job_execution_view", evSetupJobExecutionView);
 evOnPageLoaded("job_execution", evSetupJobExecution);
 
 function evSetupJobExecutionView() {
+  window.lastUpdateViewError = null;
   window.evStepStates = new Map();
 
   const container = document.getElementById("ev-content-container");
@@ -23,7 +24,11 @@ function evUpdateJobExecutionView(jeId) {
       evRenderJobExecutionView(response.data);
     })
     .catch (e => {
-      evShowError(`cannot fetch content: ${e.message}`);
+      if (e.message != window.lastUpdateViewError) {
+        evShowError(`cannot fetch content: ${e.message}`);
+      }
+
+      window.lastUpdateViewError = e.message
     })
     .finally(() => {
       const je = document.getElementById("ev-job-execution");
