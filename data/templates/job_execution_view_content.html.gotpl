@@ -73,7 +73,7 @@
 {{with .FailureMessage}}
 <div class="block ev-block">
   <h1 class="title">Failure message</h1>
-  <p class="has-text-danger">{{.}}</p>
+  <p class="has-text-danger">{{. | toSentence}}</p>
 </div>
 {{end}}
 {{end}}
