@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -213,7 +214,27 @@ func cmdExecuteJob(p *program.Program) {
 
 	jobExecution, err := app.Client.ExecuteJob(job.Id.String(), &input)
 	if err != nil {
-		p.Fatal("cannot execute job: %v", err)
+		var apiErr *APIError
+
+		if errors.As(err, &apiErr) && apiErr.Code == "invalid_request_body" {
+			const prefix = "/parameters/"
+
+			data := apiErr.Data.(InvalidRequestBodyError)
+
+			for _, verr := range data.ValidationErrors {
+				pointer := verr.Pointer.String()
+				if strings.HasPrefix(pointer, prefix) {
+					name := pointer[len(prefix):]
+					p.Error("invalid parameter %q: %s", name, verr.Message)
+				} else {
+					p.Error("%s", verr)
+				}
+			}
+
+			p.Fatal("cannot execute job")
+		} else {
+			p.Fatal("cannot execute job: %v", err)
+		}
 	}
 
 	p.Info("job execution %q created", jobExecution.Id)
