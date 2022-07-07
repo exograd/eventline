@@ -138,13 +138,13 @@ func (ps Parameters) CheckValues(c *check.Checker, token string, values map[stri
 	})
 
 	for _, p := range ps {
-		if p.Default != nil {
-			continue
-		}
-
 		if _, found := values[p.Name]; !found {
-			c.AddError(token, "missing_parameter", "missing parameter %q",
-				p.Name)
+			if p.Default == nil {
+				c.AddError(token, "missing_parameter", "missing parameter %q",
+					p.Name)
+			} else {
+				values[p.Name] = p.Default
+			}
 		}
 	}
 }
