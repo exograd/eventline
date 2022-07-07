@@ -205,6 +205,10 @@ func (p *Parameter) checkValueString(c *check.Checker, token string, value inter
 	s, ok := value.(string)
 	c.Check(token, ok, "invalid_string", "value is not a string")
 
+	if p.Values != nil {
+		c.CheckStringValue(token, s, p.Values)
+	}
+
 	return s
 }
 
