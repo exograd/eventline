@@ -28,8 +28,10 @@ func TestAPIJobs(t *testing.T) {
 	jobSpec := eventline.JobSpec{
 		Name: jobName,
 		Trigger: &eventline.Trigger{
-			Connector: "time",
-			Event:     "tick",
+			Event: eventline.EventRef{
+				Connector: "time",
+				Event:     "tick",
+			},
 			Parameters: &ctime.Parameters{
 				Periodic: &period,
 			},

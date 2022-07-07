@@ -89,13 +89,13 @@ func TestCheckJobSpec(t *testing.T) {
 ---
 name: "foo"
 trigger:
-  connector: "does_not_exist"
+  event: "does_not_exist/hello"
 runner:
   name: "does_not_exist_either"
 steps: []
 `
 	if assertInvalid(data, 2) {
-		assertError(0, "/trigger/connector", "unknown_connector")
+		assertError(0, "/trigger/event", "unknown_connector")
 		assertError(1, "/runner/name", "invalid_value")
 	}
 
@@ -104,8 +104,7 @@ steps: []
 ---
 name: "foo"
 trigger:
-  connector: "time"
-  event: "tick"
+  event: "time/tick"
   data:
     periodic: 60
 parameters:
