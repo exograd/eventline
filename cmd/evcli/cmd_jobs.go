@@ -49,6 +49,12 @@ func addJobCommands() {
 
 	c.AddArgument("name", "the name of the job")
 
+	// describe-job
+	c = p.AddCommand("describe-job", "print information about a job",
+		cmdDescribeJob)
+
+	c.AddArgument("name", "the name of the job")
+
 	// execute-job
 	c = p.AddCommand("execute-job", "execute a job",
 		cmdExecuteJob)
@@ -190,6 +196,44 @@ func cmdDeleteJob(p *program.Program) {
 	}
 
 	p.Info("job %q deleted", job.Id)
+}
+
+func cmdDescribeJob(p *program.Program) {
+	app.IdentifyCurrentProject()
+
+	name := p.ArgumentValue("name")
+
+	job, err := app.Client.FetchJobByName(name)
+	if err != nil {
+		p.Fatal("cannot fetch job: %v", err)
+	}
+
+	fmt.Printf("%s %s\n",
+		Colorize(ColorYellow, "Name:"), job.Spec.Name)
+
+	if job.Spec.Description != "" {
+		fmt.Printf("%s %s\n",
+			Colorize(ColorYellow, "Description:"), job.Spec.Description)
+	}
+
+	if len(job.Spec.Parameters) > 0 {
+		fmt.Printf("%s\n", Colorize(ColorYellow, "Parameters:"))
+		for _, p := range job.Spec.Parameters {
+			fmt.Printf("  - %s: %s\n",
+				Colorize(ColorYellow, p.Name),
+				Colorize(ColorGreen, string(p.Type)))
+
+			if p.Description != "" {
+				fmt.Printf("    %s\n", p.Description)
+			}
+
+			if p.Default != nil {
+				defaultString := fmt.Sprintf("%v", p.Default)
+				fmt.Printf("    Default: %s\n",
+					Colorize(ColorRed, defaultString))
+			}
+		}
+	}
 }
 
 func cmdExecuteJob(p *program.Program) {
