@@ -10,6 +10,22 @@ type JobExecutionInput struct {
 	RawParameters json.RawMessage        `json:"parameters"`
 }
 
+func (pi *JobExecutionInput) MarshalJSON() ([]byte, error) {
+	type JobExecutionInput2 JobExecutionInput
+	i := JobExecutionInput2(*pi)
+
+	if i.RawParameters == nil {
+		data, err := json.Marshal(i.Parameters)
+		if err != nil {
+			return nil, err
+		}
+
+		i.RawParameters = data
+	}
+
+	return json.Marshal(i)
+}
+
 func (pi *JobExecutionInput) UnmarshalJSON(data []byte) error {
 	type JobExecutionInput2 JobExecutionInput
 	i := JobExecutionInput2(*pi)
