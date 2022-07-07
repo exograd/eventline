@@ -389,12 +389,6 @@ func (c *Client) DeployJob(spec *eventline.JobSpec, dryRun bool) (*eventline.Job
 
 }
 
-func (c *Client) DeleteJob(id string) error {
-	uri := NewURL("jobs", "id", id)
-
-	return c.SendRequest("DELETE", uri, nil, nil)
-}
-
 func (c *Client) DeployJobs(specs []*eventline.JobSpec, dryRun bool) ([]*eventline.Job, error) {
 	uri := NewURL("jobs")
 
@@ -410,4 +404,22 @@ func (c *Client) DeployJobs(specs []*eventline.JobSpec, dryRun bool) ([]*eventli
 	}
 
 	return jobs, nil
+}
+
+func (c *Client) DeleteJob(id string) error {
+	uri := NewURL("jobs", "id", id)
+
+	return c.SendRequest("DELETE", uri, nil, nil)
+}
+
+func (c *Client) ExecuteJob(id string, input *eventline.JobExecutionInput) (*eventline.JobExecution, error) {
+	uri := NewURL("jobs", "id", id, "execute")
+
+	var jobExecution eventline.JobExecution
+
+	if err := c.SendRequest("POST", uri, input, &jobExecution); err != nil {
+		return nil, err
+	}
+
+	return &jobExecution, nil
 }

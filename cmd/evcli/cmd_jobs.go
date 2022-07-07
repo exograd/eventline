@@ -1,6 +1,11 @@
 package main
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
+
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-program"
 )
 
@@ -42,6 +47,14 @@ func addJobCommands() {
 		cmdDeleteJob)
 
 	c.AddArgument("name", "the name of the job")
+
+	// execute-job
+	c = p.AddCommand("execute-job", "execute a job",
+		cmdExecuteJob)
+
+	c.AddArgument("name", "the name of the job")
+	c.AddTrailingArgument("parameter",
+		"a parameter passed to the command as <name>=<value>")
 }
 
 func cmdListJobs(p *program.Program) {
@@ -176,4 +189,115 @@ func cmdDeleteJob(p *program.Program) {
 	}
 
 	p.Info("job %q deleted", job.Id)
+}
+
+func cmdExecuteJob(p *program.Program) {
+	app.IdentifyCurrentProject()
+
+	name := p.ArgumentValue("name")
+	paramStrings := p.TrailingArgumentValues("parameter")
+
+	job, err := app.Client.FetchJobByName(name)
+	if err != nil {
+		p.Fatal("cannot fetch job: %v", err)
+	}
+
+	params, err := parseCommandParameters(paramStrings, job.Spec.Parameters)
+	if err != nil {
+		p.Fatal("%v", err)
+	}
+
+	input := eventline.JobExecutionInput{
+		Parameters: params,
+	}
+
+	jobExecution, err := app.Client.ExecuteJob(job.Id.String(), &input)
+	if err != nil {
+		p.Fatal("cannot execute job: %v", err)
+	}
+
+	p.Info("job execution %q created", jobExecution.Id)
+}
+
+func parseCommandParameters(ss []string, params eventline.Parameters) (map[string]interface{}, error) {
+	values := make(map[string]interface{})
+
+	for _, s := range ss {
+		name, value, err := parseCommandParameter(s, params)
+		if err != nil {
+			return nil, err
+		}
+
+		values[name] = value
+	}
+
+	for _, p := range params {
+		if p.Default != nil {
+			continue
+		}
+
+		if _, found := values[p.Name]; !found {
+			return nil, fmt.Errorf("missing parameter %q", p.Name)
+		}
+	}
+
+	return values, nil
+}
+
+func parseCommandParameter(s string, params eventline.Parameters) (string, interface{}, error) {
+	parts := strings.SplitN(s, "=", 2)
+	if len(parts) != 2 {
+		return "", nil, fmt.Errorf("invalid parameter format %q", s)
+	}
+
+	name := parts[0]
+	valueString := parts[1]
+
+	var p *eventline.Parameter
+	for _, pp := range params {
+		if pp.Name == name {
+			p = pp
+			break
+		}
+	}
+
+	if p == nil {
+		return "", nil, fmt.Errorf("unknown parameter %q", name)
+	}
+
+	var value interface{}
+
+	switch p.Type {
+	case "number":
+		var i int64
+		i, err := strconv.ParseInt(valueString, 10, 64)
+		if err == nil {
+			value = i
+		} else {
+			f, err := strconv.ParseFloat(valueString, 64)
+			if err == nil {
+				value = f
+			} else {
+				return "", nil,
+					fmt.Errorf("invalid number value %q", valueString)
+			}
+		}
+
+	case "string":
+		value = valueString
+
+	case "boolean":
+		valueString = strings.ToLower(valueString)
+
+		switch valueString {
+		case "true":
+			value = true
+		case "false":
+			value = false
+		default:
+			return "", nil, fmt.Errorf("invalid boolean value %q", valueString)
+		}
+	}
+
+	return name, value, nil
 }
