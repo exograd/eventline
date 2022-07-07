@@ -29,7 +29,6 @@ func main() {
 	addConfigCommands()
 	addUpdateCommand()
 	addProjectCommands()
-	addScratchpadCommands()
 	addEventCommands()
 	addJobCommands()
 
