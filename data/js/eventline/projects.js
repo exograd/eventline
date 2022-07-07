@@ -66,7 +66,7 @@ function evSetupProjects() {
     link.onclick = (ev) => evOnSelectProjectClicked(ev, true);
   });
 
-  const deleteButtonSelector = "#ev-projects button[name='delete']";
+  const deleteButtonSelector = "#ev-projects a[data-action='delete']";
   const deleteButtons = document.querySelectorAll(deleteButtonSelector);
   deleteButtons.forEach(button => {
     button.onclick = evOnDeleteProjectClicked;
@@ -114,9 +114,9 @@ function evOnSelectProjectClicked(event, redirect) {
 function evOnDeleteProjectClicked(event) {
   event.preventDefault();
 
-  const button = event.target;
-  const id = button.dataset.id;
-  const name = button.dataset.name;
+  const link = event.target;
+  const id = link.dataset.id;
+  const name = link.dataset.name;
 
   const modal = document.querySelector("#ev-delete-project-modal");
 

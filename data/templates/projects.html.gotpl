@@ -33,14 +33,29 @@
         </td>
 
         <td class="is-narrow">
-          <a class="button" href="/projects/id/{{.Id}}/configuration">
-            Configure
-          </a>
+          <div class="dropdown is-right">
+            <div class="dropdown-trigger">
+              <span class="tag">
+                <i class="mdi mdi-18px mdi-dots-horizontal"></i>
+              </span>
+            </div>
+            <div class="dropdown-menu">
+              <div class="dropdown-content">
+                <a class="dropdown-item"
+                   href="/projects/id/{{.Id}}/configuration">
+                  Configure
+                </a>
 
-          <button class="button is-danger" name="delete"
-                  data-id="{{.Id}}" data-name="{{.Name}}">
-            Delete
-          </button>
+                <hr class="dropdown-divider">
+
+                <a class="dropdown-item has-text-danger"
+                   data-id="{{.Id}}" data-name="{{.Name}}"
+                   data-action="delete">
+                  Delete
+                </a>
+              </div>
+            </div>
+          </div>
         </td>
       {{end}}
     </tbody>
