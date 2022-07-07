@@ -35,7 +35,7 @@ func addJobCommands() {
 
 	c.AddFlag("n", "dry-run", "validate jobs but do not deploy them")
 
-	c.AddTrailingArgument("path", "the paths of job specification files")
+	c.AddTrailingArgument("path", "the path of a job specification file")
 
 	// delete-job
 	c = p.AddCommand("delete-job", "delete a job",
