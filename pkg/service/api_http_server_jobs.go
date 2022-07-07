@@ -33,6 +33,9 @@ func (s *APIHTTPServer) setupJobRoutes() {
 
 	s.route("/jobs/id/{id}/disable", "POST", s.hJobsIdDisablePOST,
 		HTTPRouteOptions{Project: true})
+
+	s.route("/jobs/id/{id}/execute", "POST", s.hJobsIdExecutePOST,
+		HTTPRouteOptions{Project: true})
 }
 
 func (s *APIHTTPServer) hJobsGET(h *HTTPHandler) {
@@ -181,4 +184,23 @@ func (s *APIHTTPServer) hJobsIdDisablePOST(h *HTTPHandler) {
 	}
 
 	h.ReplyEmpty(204)
+}
+
+func (s *APIHTTPServer) hJobsIdExecutePOST(h *HTTPHandler) {
+	jobId, err := h.IdRouteVariable("id")
+	if err != nil {
+		return
+	}
+
+	var input eventline.JobExecutionInput
+	if err := h.JSONRequestData(&input); err != nil {
+		return
+	}
+
+	jobExecution, err := s.ExecuteJob(h, jobId, &input)
+	if err != nil {
+		return
+	}
+
+	h.ReplyJSON(200, jobExecution)
 }

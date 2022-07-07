@@ -7,7 +7,6 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
 )
 
@@ -344,8 +343,6 @@ func (s *WebHTTPServer) hJobsIdExecuteGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdExecutePOST(h *HTTPHandler) {
-	scope := h.Context.ProjectScope()
-
 	jobId, err := h.IdRouteVariable("id")
 	if err != nil {
 		return
@@ -356,30 +353,8 @@ func (s *WebHTTPServer) hJobsIdExecutePOST(h *HTTPHandler) {
 		return
 	}
 
-	var jobExecution *eventline.JobExecution
-
-	err = s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
-		var err error
-
-		jobExecution, err = s.Service.ExecuteJob(conn, jobId, &input, scope)
-		if err != nil {
-			return fmt.Errorf("cannot execute job: %w", err)
-		}
-
-		return nil
-	})
+	jobExecution, err := s.ExecuteJob(h, jobId, &input)
 	if err != nil {
-		var unknownJobErr *eventline.UnknownJobError
-		var validationErrors check.ValidationErrors
-
-		if errors.As(err, &unknownJobErr) {
-			h.ReplyError(404, "unknown_job", "%v", err)
-		} else if errors.As(err, &validationErrors) {
-			h.ReplyRequestBodyValidationErrors(validationErrors)
-		} else {
-			h.ReplyInternalError(500, "%v", err)
-		}
-
 		return
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
 )
 
@@ -141,4 +142,37 @@ func (s *HTTPServer) DisableJob(h *HTTPHandler, jobId eventline.Id) error {
 	}
 
 	return nil
+}
+
+func (s *HTTPServer) ExecuteJob(h *HTTPHandler, jobId eventline.Id, input *eventline.JobExecutionInput) (*eventline.JobExecution, error) {
+	scope := h.Context.ProjectScope()
+
+	var jobExecution *eventline.JobExecution
+
+	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+		var err error
+
+		jobExecution, err = s.Service.ExecuteJob(conn, jobId, input, scope)
+		if err != nil {
+			return fmt.Errorf("cannot execute job: %w", err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		var unknownJobErr *eventline.UnknownJobError
+		var validationErrors check.ValidationErrors
+
+		if errors.As(err, &unknownJobErr) {
+			h.ReplyError(404, "unknown_job", "%v", err)
+		} else if errors.As(err, &validationErrors) {
+			h.ReplyRequestBodyValidationErrors(validationErrors)
+		} else {
+			h.ReplyInternalError(500, "%v", err)
+		}
+
+		return nil, err
+	}
+
+	return jobExecution, nil
 }
