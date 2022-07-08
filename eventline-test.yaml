@@ -14,3 +14,8 @@ workers:
     disabled: true
   time-connector:
     disabled: true
+
+notifications:
+  smtp_server:
+    address: "localhost:1025"
+  subject_prefix: "[eventline/test] "
