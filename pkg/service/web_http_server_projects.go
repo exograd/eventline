@@ -153,7 +153,6 @@ func (s *WebHTTPServer) hProjectsIdConfigurationGET(h *HTTPHandler) {
 	var project eventline.Project
 	var projectSettings eventline.ProjectSettings
 	var projectNotificationSettings eventline.ProjectNotificationSettings
-	var accountMultiSelect web.MultiSelect
 
 	err = s.Pg.WithConn(func(conn pg.Conn) error {
 		if err := project.Load(conn, projectId); err != nil {
@@ -169,26 +168,6 @@ func (s *WebHTTPServer) hProjectsIdConfigurationGET(h *HTTPHandler) {
 			return fmt.Errorf("cannot load project notification settings: %w",
 				err)
 		}
-
-		var accounts eventline.Accounts
-		if err := accounts.LoadAll(conn); err != nil {
-			return fmt.Errorf("cannot load accounts: %w", err)
-		}
-
-		accountMultiSelect.Name =
-			"/project_notification_settings/recipient_account_ids"
-
-		accountMultiSelect.Options =
-			make([]web.MultiSelectOption, len(accounts))
-		for i, a := range accounts {
-			accountMultiSelect.Options[i] = web.MultiSelectOption{
-				Name:  a.Id.String(),
-				Label: a.Username,
-			}
-		}
-
-		accountMultiSelect.SelectedOptions =
-			projectNotificationSettings.RecipientAccountIds.Strings()
 
 		return nil
 	})
@@ -211,12 +190,10 @@ func (s *WebHTTPServer) hProjectsIdConfigurationGET(h *HTTPHandler) {
 		Project                     *eventline.Project
 		ProjectSettings             *eventline.ProjectSettings
 		ProjectNotificationSettings *eventline.ProjectNotificationSettings
-		AccountMultiSelect          *web.MultiSelect
 	}{
 		Project:                     &project,
 		ProjectSettings:             &projectSettings,
 		ProjectNotificationSettings: &projectNotificationSettings,
-		AccountMultiSelect:          &accountMultiSelect,
 	}
 
 	h.ReplyView(200, &web.View{

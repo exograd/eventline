@@ -39,6 +39,19 @@
 
     {{with .ProjectNotificationSettings}}
 
+    <label class="label">Recipient email addresses</label>
+
+    <div class="field">
+      <div class="control">
+        <input name="/project_notification_settings/email_addresses"
+               class="input ev-list-input"
+               {{with .EmailAddresses}}value="{{join . ","}}"{{end}}>
+      </div>
+      <p class="help">
+        Addresses must be separated by commas.
+      </p>
+    </div>
+
     <label class="label">Job completion</label>
 
     <div class="field">
@@ -97,16 +110,6 @@
           Receive notifications when an identity cannot be refreshed due to
           an OAuth2 authorization error.
         </label>
-      </div>
-    </div>
-    {{end}}
-
-    <label class="label">Recipient accounts</label>
-
-    {{with .AccountMultiSelect}}
-    <div class="field">
-      <div class="control">
-        {{template "multi_select.html" .}}
       </div>
     </div>
     {{end}}

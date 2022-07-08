@@ -69,8 +69,7 @@ func (s *Service) createProject(conn pg.Conn, newProject *eventline.NewProject, 
 		return nil, fmt.Errorf("cannot insert project settings: %w", err)
 	}
 
-	notificationSettings := DefaultProjectNotificationSettings(project,
-		accountId)
+	notificationSettings := DefaultProjectNotificationSettings(project)
 	if err := notificationSettings.Insert(conn); err != nil {
 		return nil, fmt.Errorf("cannot insert project notification "+
 			"settings: %w", err)
@@ -259,18 +258,11 @@ func DefaultProjectSettings(project *eventline.Project) *eventline.ProjectSettin
 	}
 }
 
-func DefaultProjectNotificationSettings(project *eventline.Project, accountId *eventline.Id) *eventline.ProjectNotificationSettings {
-	var recipientAccountIds eventline.Ids
-
-	if accountId != nil {
-		recipientAccountIds = append(recipientAccountIds, *accountId)
-	}
-
+func DefaultProjectNotificationSettings(project *eventline.Project) *eventline.ProjectNotificationSettings {
 	return &eventline.ProjectNotificationSettings{
 		Id:                     project.Id,
 		OnFailedJob:            true,
 		OnAbortedJob:           true,
 		OnIdentityRefreshError: true,
-		RecipientAccountIds:    recipientAccountIds,
 	}
 }
