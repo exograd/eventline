@@ -22,14 +22,15 @@ credentials, and for events used to trigger jobs.
 
 Eventline supports multiple connectors, and we intend to add a lot more.
 
-| Connector    | Description                   | Availability |
-|--------------|-------------------------------|--------------|
-| `eventline`  | Eventline identities.         | Eventline    |
-| `generic`    | Various generic identities.   | Eventline    |
-| `time`       | Recurring events.             | Eventline    |
-| `dockerhub`  | DockerHub identities.         | Eventline    |
-| `postgresql` | PostgreSQL identities.        | Eventline    |
-| `github`     | GitHub identities and events. | Eventline    |
+| Connector    | Description                   | Availability  |
+|--------------|-------------------------------|---------------|
+| `eventline`  | Eventline identities.         | Eventline     |
+| `generic`    | Various generic identities.   | Eventline     |
+| `time`       | Recurring events.             | Eventline     |
+| `dockerhub`  | DockerHub identities.         | Eventline     |
+| `postgresql` | PostgreSQL identities.        | Eventline     |
+| `github`     | GitHub identities and events. | Eventline     |
+| `slack`      | Slack identities.             | Eventline Pro |
 
 ## Example
 Eventline makes it trivial to write various kinds of jobs. For example:
