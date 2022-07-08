@@ -1,8 +1,6 @@
-package eventline
+package service
 
-import (
-	"github.com/exograd/go-daemon/check"
-)
+import "github.com/exograd/go-daemon/check"
 
 type NotificationsCfg struct {
 	SMTPServer    *SMTPServerCfg `json:"smtp_server"`

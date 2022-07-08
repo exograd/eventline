@@ -36,7 +36,7 @@ type ServiceCfg struct {
 
 	Runners map[string]json.RawMessage `json:"runners"`
 
-	Notifications *eventline.NotificationsCfg `json:"notifications"`
+	Notifications *NotificationsCfg `json:"notifications"`
 }
 
 func DefaultServiceCfg() ServiceCfg {
@@ -69,6 +69,6 @@ func DefaultServiceCfg() ServiceCfg {
 
 		WebHTTPServerURI: "http://localhost:8087",
 
-		Notifications: eventline.DefaultNotificationsCfg(),
+		Notifications: DefaultNotificationsCfg(),
 	}
 }
