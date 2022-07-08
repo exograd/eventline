@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -51,26 +50,16 @@ func (ir *IdentityRefresher) ProcessJob() (bool, error) {
 		// Refreshable identities always have a project id
 		scope := eventline.NewProjectScope(*identity.ProjectId)
 
-		err = ir.Service.refreshIdentity(conn, identity, scope)
-
-		if err != nil {
-			nerr := ir.sendErrorNotification(conn, identity, err, scope)
-			if nerr != nil {
-				return fmt.Errorf("cannot send notification: %w", nerr)
-			}
-		}
-
-		var externalErr *eventline.ExternalSubscriptionError
-		isExternalErr := errors.As(err, &externalErr)
-
-		if err != nil && !isExternalErr {
-			return fmt.Errorf("cannot refresh identity: %w", err)
-		}
-
-		if err != nil && isExternalErr {
-			refreshErr = err
-
+		// If the refresh fails, we update the refresh time to try again
+		// later.
+		refreshErr = ir.Service.refreshIdentity(conn, identity, scope)
+		if refreshErr != nil {
 			ir.Log.Error("cannot refresh identity: %v", err)
+
+			err := ir.sendErrorNotification(conn, identity, err, scope)
+			if err != nil {
+				ir.Log.Error("cannot send notification: %w", err)
+			}
 
 			delay := 600 * time.Second
 			refreshTime := identity.RefreshTime.Add(delay)
