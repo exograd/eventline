@@ -16,6 +16,7 @@ type NotificationsCfg struct {
 	SMTPServer    *SMTPServerCfg `json:"smtp_server"`
 	FromAddress   string         `json:"from_address"`
 	SubjectPrefix string         `json:"subject_prefix"`
+	Signature     string         `json:"signature"`
 }
 
 type SMTPServerCfg struct {
@@ -41,18 +42,23 @@ func DefaultNotificationsCfg() *NotificationsCfg {
 
 		FromAddress:   "no-reply@localhost",
 		SubjectPrefix: "[eventline] ",
+		Signature:     "This email is a notification sent by the Eventline job scheduling software.",
 	}
 }
 
 func (s *Service) CreateNotification(conn pg.Conn, recipients []string, subject, templateName string, templateData interface{}, scope eventline.Scope) error {
+	cfg := s.Cfg.Notifications
 	projectId := scope.(*eventline.ProjectScope).ProjectId
-
 	now := time.Now().UTC()
 
 	message, err := s.ComposeNotificationMessage(recipients, subject,
 		templateName, templateData)
 	if err != nil {
 		return fmt.Errorf("cannot compose message: %w", err)
+	}
+
+	if cfg.Signature != "" {
+		message = append(message, []byte("\n\n--\n"+cfg.Signature+"\n")...)
 	}
 
 	notification := eventline.Notification{
