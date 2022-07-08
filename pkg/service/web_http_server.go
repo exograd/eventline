@@ -6,6 +6,7 @@ import (
 	"path"
 	"strings"
 
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
 	"github.com/exograd/go-daemon/dhttp"
 )
@@ -13,7 +14,7 @@ import (
 type WebHTTPServer struct {
 	*HTTPServer
 
-	Template *template.Template
+	HTMLTemplate *template.Template
 }
 
 func NewWebHTTPServer(service *Service) (*WebHTTPServer, error) {
@@ -27,7 +28,7 @@ func NewWebHTTPServer(service *Service) (*WebHTTPServer, error) {
 		},
 	}
 
-	if err := s.initTemplate(); err != nil {
+	if err := s.initHTMLTemplate(); err != nil {
 		return nil, err
 	}
 
@@ -36,21 +37,21 @@ func NewWebHTTPServer(service *Service) (*WebHTTPServer, error) {
 	return s, nil
 }
 
-func (s *WebHTTPServer) initTemplate() error {
+func (s *WebHTTPServer) initHTMLTemplate() error {
 	dirPath := path.Join(s.Service.Cfg.DataDirectory, "templates")
 
-	tpl, err := web.LoadTemplates(dirPath)
+	template, err := eventline.LoadHTMLTemplates(dirPath)
 	if err != nil {
-		return fmt.Errorf("cannot load templates: %w", err)
+		return fmt.Errorf("cannot load html templates: %w", err)
 	}
 
-	s.Template = tpl
+	s.HTMLTemplate = template
 
 	return nil
 }
 
 func (s *WebHTTPServer) NewTemplate(name string, data interface{}) *web.Template {
-	return web.NewTemplate(s.Template, name, data)
+	return web.NewTemplate(s.HTMLTemplate, name, data)
 }
 
 func (s *WebHTTPServer) route(path, method string, fn HTTPRouteFunc, options HTTPRouteOptions) {

@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"path"
 	"sync"
+	"text/template"
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
@@ -29,9 +31,10 @@ type Service struct {
 	APIHTTPServer *APIHTTPServer
 	WebHTTPServer *WebHTTPServer
 
-	BuildIdHash string
-
+	BuildIdHash      string
 	WebHTTPServerURI *url.URL
+
+	TextTemplate *template.Template
 
 	workers                map[string]*eventline.Worker
 	workerStopChan         chan struct{}
@@ -102,6 +105,10 @@ func (s *Service) Init(d *daemon.Daemon) error {
 		return fmt.Errorf("missing or empty encryption key")
 	}
 
+	if err := s.initTextTemplate(); err != nil {
+		return err
+	}
+
 	if err := s.initWebHTTPServerURI(); err != nil {
 		return err
 	}
@@ -133,6 +140,19 @@ func (s *Service) Init(d *daemon.Daemon) error {
 	s.WebHTTPServer = webHTTPServer
 
 	s.initWorkers()
+
+	return nil
+}
+
+func (s *Service) initTextTemplate() error {
+	dirPath := path.Join(s.Cfg.DataDirectory, "templates")
+
+	template, err := eventline.LoadTextTemplates(dirPath)
+	if err != nil {
+		return fmt.Errorf("cannot load text templates: %w", err)
+	}
+
+	s.TextTemplate = template
 
 	return nil
 }
