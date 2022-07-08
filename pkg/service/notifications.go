@@ -9,6 +9,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/jhillyerd/enmime"
 )
 
 type NotificationsCfg struct {
@@ -43,14 +44,15 @@ func DefaultNotificationsCfg() *NotificationsCfg {
 	}
 }
 
-func (s *Service) CreateNotification(conn pg.Conn, recipients []string, templateName string, templateData interface{}, scope eventline.Scope) error {
+func (s *Service) CreateNotification(conn pg.Conn, recipients []string, subject, templateName string, templateData interface{}, scope eventline.Scope) error {
 	projectId := scope.(*eventline.ProjectScope).ProjectId
 
 	now := time.Now().UTC()
 
-	message, err := s.RenderNotificationMessage(templateName, templateData)
+	message, err := s.ComposeNotificationMessage(recipients, subject,
+		templateName, templateData)
 	if err != nil {
-		return fmt.Errorf("cannot render message: %w", err)
+		return fmt.Errorf("cannot compose message: %w", err)
 	}
 
 	notification := eventline.Notification{
@@ -69,7 +71,43 @@ func (s *Service) CreateNotification(conn pg.Conn, recipients []string, template
 	return nil
 }
 
-func (s *Service) RenderNotificationMessage(name string, data interface{}) ([]byte, error) {
+func (s *Service) ComposeNotificationMessage(recipients []string, subject, templateName string, templateData interface{}) ([]byte, error) {
+	cfg := s.Cfg.Notifications
+
+	builder := enmime.Builder()
+
+	builder.From("Eventline", cfg.FromAddress)
+
+	for _, recipient := range recipients {
+		builder.To("", recipient)
+	}
+
+	builder.Subject(cfg.SubjectPrefix + subject)
+
+	body, err := s.RenderNotificationText(templateName, templateData)
+	if err != nil {
+		return nil, fmt.Errorf("cannot render message: %w", err)
+	}
+	builder.Text(body)
+
+	if err := builder.Error(); err != nil {
+		return nil, err
+	}
+
+	part, err := builder.Build()
+	if err != nil {
+		return nil, fmt.Errorf("cannot build mime part: %w")
+	}
+
+	var buf bytes.Buffer
+	if err := part.Encode(&buf); err != nil {
+		return nil, fmt.Errorf("cannot encode part: %w", err)
+	}
+
+	return buf.Bytes(), err
+}
+
+func (s *Service) RenderNotificationText(name string, data interface{}) ([]byte, error) {
 	name = path.Join("notifications", name)
 
 	obj := struct {
