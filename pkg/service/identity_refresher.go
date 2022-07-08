@@ -56,7 +56,7 @@ func (ir *IdentityRefresher) ProcessJob() (bool, error) {
 		if refreshErr != nil {
 			ir.Log.Error("cannot refresh identity: %v", err)
 
-			err := ir.sendErrorNotification(conn, identity, err, scope)
+			err := ir.sendErrorNotification(conn, identity, refreshErr, scope)
 			if err != nil {
 				ir.Log.Error("cannot send notification: %w", err)
 			}

@@ -6,13 +6,14 @@ require (
 	github.com/docker/docker v20.10.17+incompatible
 	github.com/exograd/go-daemon v0.0.0-20220704182853-d3ca64642f14
 	github.com/exograd/go-log v0.0.0-20220624102840-d28c3e9f8c96
-	github.com/exograd/go-oauth2c v0.0.0-20220525082142-bca244aafbca
+	github.com/exograd/go-oauth2c v0.0.0-20220708172730-f3790ca07115
 	github.com/exograd/go-program v0.0.0-20220116124618-691d97553601
 	github.com/gobwas/glob v0.2.3
 	github.com/google/go-github/v40 v40.0.0
 	github.com/google/go-github/v45 v45.1.0
 	github.com/google/uuid v1.3.0
 	github.com/jackc/pgx/v4 v4.16.0
+	github.com/jhillyerd/enmime v0.9.4
 	github.com/stretchr/testify v1.7.1
 	golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
@@ -39,7 +40,6 @@ require (
 	github.com/jackc/pgtype v1.11.0 // indirect
 	github.com/jackc/puddle v1.2.1 // indirect
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7 // indirect
-	github.com/jhillyerd/enmime v0.9.4 // indirect
 	github.com/keybase/saltpack v0.0.0-20211122193250-350028a91799 // indirect
 	github.com/mattn/go-runewidth v0.0.12 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
