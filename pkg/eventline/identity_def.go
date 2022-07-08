@@ -58,6 +58,11 @@ func NewIdentityDef(typeName string, dataValue IdentityData) *IdentityDef {
 	}
 }
 
+func (idef *IdentityDef) IsOAuth2() bool {
+	_, ok := idef.Data.(OAuth2IdentityData)
+	return ok
+}
+
 func (idef *IdentityDef) DecodeData(data []byte) (IdentityData, error) {
 	idata := reflect.New(reflect.TypeOf(idef.Data).Elem()).Interface()
 	if err := json.Unmarshal(data, idata); err != nil {

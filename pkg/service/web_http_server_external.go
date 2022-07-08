@@ -1,31 +1,31 @@
 package service
 
 import (
+	"path"
+
 	cgithub "github.com/exograd/eventline/pkg/connectors/github"
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/google/go-github/v45/github"
 )
 
 func (s *WebHTTPServer) setupExternalRoutes() {
-	s.route("/ext/connectors/generic/oauth2", "GET",
-		s.hExtConnectorsGenericOAuth2GET,
-		HTTPRouteOptions{Public: true})
+	for _, c := range s.Service.Data.Connectors {
+		for iname, idef := range c.Definition().Identities {
+			if !idef.IsOAuth2() {
+				continue
+			}
 
-	s.route("/ext/connectors/github/oauth2", "GET",
-		s.hExtConnectorsGithubOAuth2GET,
-		HTTPRouteOptions{Public: true})
+			s.route(path.Join("/ext", "connectors", c.Name(), iname), "GET",
+				func(h *HTTPHandler) {
+					s.processOAuth2Request(h)
+				},
+				HTTPRouteOptions{Public: true})
+		}
+	}
 
 	s.route("/ext/connectors/github/hooks/*", "POST",
 		s.hExtConnectorsGithubHooksPOST,
 		HTTPRouteOptions{Public: true})
-}
-
-func (s *WebHTTPServer) hExtConnectorsGenericOAuth2GET(h *HTTPHandler) {
-	s.processOAuth2Request(h)
-}
-
-func (s *WebHTTPServer) hExtConnectorsGithubOAuth2GET(h *HTTPHandler) {
-	s.processOAuth2Request(h)
 }
 
 func (s *WebHTTPServer) hExtConnectorsGithubHooksPOST(h *HTTPHandler) {
