@@ -2,6 +2,8 @@ package service
 
 import (
 	"fmt"
+	"net/url"
+	"path"
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
@@ -97,9 +99,22 @@ func (ir *IdentityRefresher) sendErrorNotification(conn pg.Conn, identity *event
 		return nil
 	}
 
+	identityPath := path.Join("/identities", "id", identity.Id.String())
+	identityURI := ir.Service.WebHTTPServerURI.ResolveReference(
+		&url.URL{Path: identityPath})
+
 	subject := "identity refresh error"
+
 	templateName := "identity_refresh_error.txt"
-	templateData := struct{}{}
+	templateData := struct {
+		IdentityName string
+		IdentityURI  string
+		ErrorMessage string
+	}{
+		IdentityName: identity.Name,
+		IdentityURI:  identityURI.String(),
+		ErrorMessage: refreshErr.Error(),
+	}
 
 	return ir.Service.CreateNotification(conn, settings.EmailAddresses,
 		subject, templateName, templateData, scope)

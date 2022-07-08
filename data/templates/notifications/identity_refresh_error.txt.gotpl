@@ -1,3 +1,4 @@
+{{with .Data}}
 Identity {{.IdentityName}} could not be refreshed due to the following error:
 
 {{.ErrorMessage}}
@@ -10,3 +11,4 @@ The refresh process will continue trying at regular intervals. You can also
 manually trigger it using the "Refresh" button on the identity page:
 
 {{.IdentityURI}}
+{{end}}

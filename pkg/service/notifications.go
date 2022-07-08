@@ -74,21 +74,25 @@ func (s *Service) CreateNotification(conn pg.Conn, recipients []string, subject,
 func (s *Service) ComposeNotificationMessage(recipients []string, subject, templateName string, templateData interface{}) ([]byte, error) {
 	cfg := s.Cfg.Notifications
 
+	// Careful here, the enmime builder functions all create a new copy of the
+	// builder for *every single change*. Not much we can do about it
+	// infortunately.
+
 	builder := enmime.Builder()
 
-	builder.From("Eventline", cfg.FromAddress)
+	builder = builder.From("Eventline", cfg.FromAddress)
 
 	for _, recipient := range recipients {
-		builder.To("", recipient)
+		builder = builder.To("", recipient)
 	}
 
-	builder.Subject(cfg.SubjectPrefix + subject)
+	builder = builder.Subject(cfg.SubjectPrefix + subject)
 
 	body, err := s.RenderNotificationText(templateName, templateData)
 	if err != nil {
 		return nil, fmt.Errorf("cannot render message: %w", err)
 	}
-	builder.Text(body)
+	builder = builder.Text(body)
 
 	if err := builder.Error(); err != nil {
 		return nil, err
