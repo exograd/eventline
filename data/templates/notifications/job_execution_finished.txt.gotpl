@@ -7,7 +7,7 @@ Job {{ .JobSpec.Name }} has completed successfully.
 {{- else if eq .Status "failed" }}
 Job {{ .JobSpec.Name }} has failed:
 
-{{ .FailureMessage }}
+{{ .FailureMessage | toSentence }}
 {{- end -}}
 {{- end }}
 

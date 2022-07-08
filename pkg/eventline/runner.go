@@ -56,6 +56,8 @@ type RunnerInitData struct {
 	Cfg  RunnerCfg
 	Data *RunnerData
 
+	TerminationChan chan<- Id
+
 	StopChan <-chan struct{}
 	Wg       *sync.WaitGroup
 }
@@ -95,6 +97,8 @@ type Runner struct {
 	FileSet     *FileSet
 	Scope       Scope
 
+	terminationChan chan<- Id
+
 	StopChan <-chan struct{}
 	Wg       *sync.WaitGroup
 }
@@ -119,6 +123,8 @@ func NewRunner(data RunnerInitData) (*Runner, error) {
 		Environment: data.Data.Environment(),
 		FileSet:     fileSet,
 		Scope:       NewProjectScope(data.Data.Project.Id),
+
+		terminationChan: data.TerminationChan,
 
 		StopChan: data.StopChan,
 		Wg:       data.Wg,
@@ -170,6 +176,7 @@ func (r *Runner) main() {
 	var cse *StepExecution
 
 	jeId := r.JobExecution.Id
+	defer func() { r.terminationChan <- jeId }()
 
 	defer func() {
 		if value := recover(); value != nil {
@@ -561,6 +568,10 @@ func (r *Runner) updateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution,
 			return fmt.Errorf("cannot update job execution: %w", err)
 		}
 
+		// if err := s.SendJobExecutionNotification(conn, je); err != nil {
+		// 	return fmt.Errorf("cannot send notification: %w", err)
+		// }
+
 		return nil
 	})
 	if err != nil {
@@ -610,6 +621,10 @@ func (r *Runner) updateJobExecutionAbortion(jeId Id, scope Scope) (*JobExecution
 				}
 			}
 		}
+
+		// if err := s.SendJobExecutionNotification(conn, je); err != nil {
+		// 	return fmt.Errorf("cannot send notification: %w", err)
+		// }
 
 		return nil
 	})
@@ -661,6 +676,10 @@ func (r *Runner) updateJobExecutionFailure(jeId Id, jeErr error, scope Scope) (*
 				}
 			}
 		}
+
+		// if err := s.SendJobExecutionNotification(conn, je); err != nil {
+		// 	return fmt.Errorf("cannot send notification: %w", err)
+		// }
 
 		return nil
 	})

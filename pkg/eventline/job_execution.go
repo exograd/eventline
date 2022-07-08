@@ -143,6 +143,23 @@ SELECT id, project_id, job_id, job_spec, event_id, parameters,
 	return err
 }
 
+func (je *JobExecution) LoadNoScope(conn pg.Conn, id Id) error {
+	query := `
+SELECT id, project_id, job_id, job_spec, event_id, parameters,
+       creation_time, update_time, scheduled_time, status, start_time,
+       end_time, refresh_time, expiration_time, failure_message
+  FROM job_executions
+  WHERE id = $1;
+`
+
+	err := pg.QueryObject(conn, je, query, id)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return &UnknownJobExecutionError{Id: id}
+	}
+
+	return err
+}
+
 func (je *JobExecution) LoadForUpdate(conn pg.Conn, id Id, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, job_id, job_spec, event_id, parameters,

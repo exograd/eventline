@@ -46,6 +46,8 @@ type Service struct {
 	runnerDefs     map[string]*eventline.RunnerDef
 	runnerStopChan chan struct{}
 	runnerWg       sync.WaitGroup
+
+	jobExecutionTerminationChan chan eventline.Id
 }
 
 func NewService(data ServiceData) *Service {
@@ -66,6 +68,8 @@ func NewService(data ServiceData) *Service {
 
 		runnerDefs:     make(map[string]*eventline.RunnerDef),
 		runnerStopChan: make(chan struct{}),
+
+		jobExecutionTerminationChan: make(chan eventline.Id),
 	}
 
 	return s
@@ -138,6 +142,8 @@ func (s *Service) Init(d *daemon.Daemon) error {
 		return err
 	}
 	s.WebHTTPServer = webHTTPServer
+
+	s.initJobExecutionTerminationWatcher()
 
 	s.initWorkers()
 
@@ -275,6 +281,17 @@ func (s *Service) initWebHTTPServerURI() error {
 	return nil
 }
 
+func (s *Service) initJobExecutionTerminationWatcher() {
+	go func() {
+		for jeId := range s.jobExecutionTerminationChan {
+			if err := s.handleJobExecutionTermination(jeId); err != nil {
+				s.Log.Error("cannot handle termination of job execution "+
+					"%q: %v", jeId, err)
+			}
+		}
+	}()
+}
+
 func (s *Service) initWorkers() {
 	init := func(name string, behaviour eventline.WorkerBehaviour, notificationChan chan interface{}) {
 		cfg, found := s.Cfg.Workers[name]
@@ -337,12 +354,17 @@ func (s *Service) Start(d *daemon.Daemon) error {
 }
 
 func (s *Service) Stop(d *daemon.Daemon) {
+	// Note that we do *not* close the job execution termination chan until
+	// all runners have terminated. If we did, they would crash when writing
+	// the job execution id at the end.
 	close(s.runnerStopChan)
 	s.runnerWg.Wait()
 
 	for _, c := range s.connectors {
 		c.Terminate()
 	}
+
+	close(s.jobExecutionTerminationChan)
 
 	close(s.workerStopChan)
 	s.workerWg.Wait()

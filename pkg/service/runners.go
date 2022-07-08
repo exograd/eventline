@@ -32,6 +32,8 @@ func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
 		Cfg:  def.Cfg,
 		Data: data,
 
+		TerminationChan: s.jobExecutionTerminationChan,
+
 		StopChan: s.runnerStopChan,
 		Wg:       &s.runnerWg,
 	}

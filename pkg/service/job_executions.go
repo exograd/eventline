@@ -126,10 +126,6 @@ func (s *Service) AbortJobExecution(jeId eventline.Id, scope eventline.Scope) (*
 			}
 		}
 
-		if err := s.SendJobExecutionNotification(conn, &je); err != nil {
-			return fmt.Errorf("cannot send notification: %w", err)
-		}
-
 		return nil
 	})
 	if err != nil {
@@ -195,6 +191,21 @@ func (s *Service) RestartJobExecution(jeId eventline.Id, scope eventline.Scope) 
 	}
 
 	return &je, nil
+}
+
+func (s *Service) handleJobExecutionTermination(jeId eventline.Id) error {
+	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+		var je eventline.JobExecution
+		if err := je.LoadNoScope(conn, jeId); err != nil {
+			return fmt.Errorf("cannot load job execution: %w", err)
+		}
+
+		if err := s.SendJobExecutionNotification(conn, &je); err != nil {
+			return fmt.Errorf("cannot send notification: %w", err)
+		}
+
+		return nil
+	})
 }
 
 func (s *Service) SendJobExecutionNotification(conn pg.Conn, je *eventline.JobExecution) error {
