@@ -53,6 +53,13 @@ func (ir *IdentityRefresher) ProcessJob() (bool, error) {
 
 		err = ir.Service.refreshIdentity(conn, identity, scope)
 
+		if err != nil {
+			nerr := ir.sendErrorNotification(conn, identity, err, scope)
+			if nerr != nil {
+				return fmt.Errorf("cannot send notification: %w", nerr)
+			}
+		}
+
 		var externalErr *eventline.ExternalSubscriptionError
 		isExternalErr := errors.As(err, &externalErr)
 
@@ -87,4 +94,24 @@ func (ir *IdentityRefresher) ProcessJob() (bool, error) {
 	}
 
 	return processed, nil
+}
+
+func (ir *IdentityRefresher) sendErrorNotification(conn pg.Conn, identity *eventline.Identity, refreshErr error, scope eventline.Scope) error {
+	projectId := scope.(*eventline.ProjectScope).ProjectId
+
+	var settings eventline.ProjectNotificationSettings
+	if err := settings.Load(conn, projectId); err != nil {
+		return fmt.Errorf("cannot load notification settings: %w", err)
+	}
+
+	if !settings.OnIdentityRefreshError {
+		return nil
+	}
+
+	subject := "identity refresh error"
+	templateName := "identity_refresh_error.txt"
+	templateData := struct{}{}
+
+	return ir.Service.CreateNotification(conn, settings.EmailAddresses,
+		subject, templateName, templateData, scope)
 }

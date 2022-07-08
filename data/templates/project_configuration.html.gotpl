@@ -107,8 +107,7 @@
           <input name="/project_notification_settings/on_identity_refresh_error"
                  type="checkbox"
                  {{if .OnIdentityRefreshError}}checked{{end}}>
-          Receive notifications when an identity cannot be refreshed due to
-          an OAuth2 authorization error.
+          Receive notifications when an OAuth2 identity cannot be refreshed.
         </label>
       </div>
     </div>
