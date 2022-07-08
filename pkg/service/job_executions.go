@@ -262,7 +262,7 @@ func (s *Service) SendJobExecutionNotification(conn pg.Conn, je *eventline.JobEx
 		subjectStatusPart = "failed"
 	}
 
-	subject := fmt.Sprintf("Job %s has %s", je.JobSpec.Name, subjectStatusPart)
+	subject := fmt.Sprintf("Job %q has %s", je.JobSpec.Name, subjectStatusPart)
 
 	templateName := "job_execution_finished.txt"
 	templateData := struct {

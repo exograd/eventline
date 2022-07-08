@@ -1,11 +1,11 @@
 {{- with .Data -}}
 {{- with .JobExecution -}}
 {{- if eq .Status "aborted" -}}
-Job {{ .JobSpec.Name }} has been aborted.
+Job {{ .JobSpec.Name | quoteString }} has been aborted.
 {{- else if eq .Status "successful" }}
-Job {{ .JobSpec.Name }} has completed successfully.
+Job {{ .JobSpec.Name | quoteString }} has completed successfully.
 {{- else if eq .Status "failed" }}
-Job {{ .JobSpec.Name }} has failed:
+Job {{ .JobSpec.Name | quoteString }} has failed:
 
 {{ .FailureMessage | toSentence }}
 {{- end -}}

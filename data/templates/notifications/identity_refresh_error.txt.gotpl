@@ -1,15 +1,11 @@
 {{- with .Data -}}
-Identity {{ .IdentityName }} could not be refreshed due to the following
-error:
+Identity {{ .IdentityName | quoteString }} could not be refreshed due to the following error:
 
 {{ .ErrorMessage }}
 
-You may need to check that the data contained by the identity are still valid.
-Alternatively, something may have changed on the platform the identity is
-associated with.
+You may need to check that the data contained by the identity are still valid. Alternatively, something may have changed on the platform the identity is associated with.
 
-The refresh process will continue trying at regular intervals. You can also
-manually trigger it using the "Refresh" button on the identity page:
+The refresh process will continue trying at regular intervals. You can also manually trigger it using the "Refresh" button on the identity page:
 
 {{ .IdentityURI -}}
 {{- end -}}

@@ -34,6 +34,10 @@ var TemplateFuncMap = map[string]interface{}{
 
 		return false
 	},
+
+	"quoteString": func(s string) string {
+		return fmt.Sprintf("%q", s)
+	},
 }
 
 func LoadTextTemplates(dirPath string) (*texttemplate.Template, error) {
