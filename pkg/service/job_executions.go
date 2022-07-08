@@ -2,6 +2,8 @@ package service
 
 import (
 	"fmt"
+	"net/url"
+	"path"
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
@@ -124,6 +126,10 @@ func (s *Service) AbortJobExecution(jeId eventline.Id, scope eventline.Scope) (*
 			}
 		}
 
+		if err := s.SendJobExecutionNotification(conn, &je); err != nil {
+			return fmt.Errorf("cannot send notification: %w", err)
+		}
+
 		return nil
 	})
 	if err != nil {
@@ -189,4 +195,75 @@ func (s *Service) RestartJobExecution(jeId eventline.Id, scope eventline.Scope) 
 	}
 
 	return &je, nil
+}
+
+func (s *Service) SendJobExecutionNotification(conn pg.Conn, je *eventline.JobExecution) error {
+	var settings eventline.ProjectNotificationSettings
+	if err := settings.Load(conn, je.ProjectId); err != nil {
+		return fmt.Errorf("cannot load notification settings: %w", err)
+	}
+
+	sendNotification := false
+
+	switch je.Status {
+	case eventline.JobExecutionStatusAborted:
+		sendNotification = settings.OnAbortedJob
+
+	case eventline.JobExecutionStatusSuccessful:
+		if settings.OnSuccessfulJob {
+			sendNotification = true
+		} else if settings.OnFirstSuccessfulJob {
+			lastJe, err := eventline.LoadLastJobExecutionFinishedBefore(conn,
+				je)
+			if err != nil {
+				return fmt.Errorf("cannot load job execution: %w", err)
+			}
+
+			if lastJe != nil {
+				sendNotification =
+					(lastJe.Status == eventline.JobExecutionStatusFailed) ||
+						(lastJe.Status == eventline.JobExecutionStatusAborted)
+			}
+		}
+
+	case eventline.JobExecutionStatusFailed:
+		sendNotification = settings.OnFailedJob
+
+	default:
+		return fmt.Errorf("cannot send notification for unfinished " +
+			"job execution")
+	}
+
+	if !sendNotification {
+		return nil
+	}
+
+	jePath := path.Join("/job_executions", "id", je.Id.String())
+	jeURI := s.WebHTTPServerURI.ResolveReference(&url.URL{Path: jePath})
+
+	var subjectStatusPart string
+	switch je.Status {
+	case eventline.JobExecutionStatusAborted:
+		subjectStatusPart = "been aborted"
+	case eventline.JobExecutionStatusSuccessful:
+		subjectStatusPart = "succeeded"
+	case eventline.JobExecutionStatusFailed:
+		subjectStatusPart = "failed"
+	}
+
+	subject := fmt.Sprintf("Job %s has %s", je.JobSpec.Name, subjectStatusPart)
+
+	templateName := "job_execution_finished.txt"
+	templateData := struct {
+		JobExecution    *eventline.JobExecution
+		JobExecutionURI string
+	}{
+		JobExecution:    je,
+		JobExecutionURI: jeURI.String(),
+	}
+
+	scope := eventline.NewProjectScope(je.ProjectId)
+
+	return s.CreateNotification(conn, settings.EmailAddresses, subject,
+		templateName, templateData, scope)
 }

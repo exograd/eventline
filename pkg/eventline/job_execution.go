@@ -161,6 +161,28 @@ SELECT id, project_id, job_id, job_spec, event_id, parameters,
 	return err
 }
 
+func LoadLastJobExecutionFinishedBefore(conn pg.Conn, je *JobExecution) (*JobExecution, error) {
+	query := `
+SELECT id, project_id, job_id, job_spec, event_id, parameters,
+       creation_time, update_time, scheduled_time, status, start_time,
+       end_time, refresh_time, expiration_time, failure_message
+  FROM job_executions
+  WHERE job_id = $1
+    AND id <> $2
+    AND (status = 'aborted' OR status = 'successful' OR status = 'failed')
+    ORDER BY id DESC
+    LIMIT 1;
+`
+
+	var lastJe JobExecution
+	err := pg.QueryObject(conn, &lastJe, query, je.JobId, je.Id)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+
+	return &lastJe, nil
+}
+
 func LoadJobExecutionForScheduling(conn pg.Conn) (*JobExecution, error) {
 	query := `
 SELECT je1.id, je1.project_id, je1.job_id, je1.job_spec, je1.event_id,
