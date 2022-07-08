@@ -60,7 +60,10 @@ func (ir *IdentityRefresher) ProcessJob() (bool, error) {
 
 			err := ir.sendErrorNotification(conn, identity, refreshErr, scope)
 			if err != nil {
-				ir.Log.Error("cannot send notification: %v", err)
+				// It would be nice to be able to continue and update the
+				// identity, but if we cannot insert the notification, commit
+				// will fail.
+				return fmt.Errorf("cannot send notification: %v", err)
 			}
 
 			delay := 600 * time.Second
