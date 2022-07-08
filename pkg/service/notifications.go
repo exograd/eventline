@@ -96,7 +96,7 @@ func (s *Service) ComposeNotificationMessage(recipients []string, subject, templ
 
 	part, err := builder.Build()
 	if err != nil {
-		return nil, fmt.Errorf("cannot build mime part: %w")
+		return nil, fmt.Errorf("cannot build mime part: %w", err)
 	}
 
 	var buf bytes.Buffer

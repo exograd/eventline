@@ -58,7 +58,7 @@ func (ir *IdentityRefresher) ProcessJob() (bool, error) {
 
 			err := ir.sendErrorNotification(conn, identity, refreshErr, scope)
 			if err != nil {
-				ir.Log.Error("cannot send notification: %w", err)
+				ir.Log.Error("cannot send notification: %v", err)
 			}
 
 			delay := 600 * time.Second
