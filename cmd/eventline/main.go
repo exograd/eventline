@@ -5,8 +5,11 @@ import (
 	"github.com/exograd/go-daemon/daemon"
 )
 
+var buildId string
+
 func main() {
 	sdata := service.ServiceData{
+		BuildId:    buildId,
 		Connectors: service.Connectors,
 		Runners:    service.Runners,
 	}

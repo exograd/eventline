@@ -25,7 +25,7 @@ endef
 define go_make1
 CGO_ENABLED=0 \
 go build -o $(BIN_DIR) \
-  -ldflags="-X 'service.BuildId=$(BUILD_ID)'" \
+  -ldflags="-X 'main.buildId=$(BUILD_ID)'" \
   $1
 endef
 

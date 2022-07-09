@@ -13,6 +13,7 @@ import (
 )
 
 type ServiceData struct {
+	BuildId    string
 	Connectors []eventline.Connector
 	Runners    []*eventline.RunnerDef
 }

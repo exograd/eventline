@@ -17,10 +17,6 @@ import (
 	"github.com/exograd/go-log"
 )
 
-var (
-	BuildId string
-)
-
 type Service struct {
 	Data ServiceData
 	Cfg  ServiceCfg
@@ -52,7 +48,7 @@ type Service struct {
 
 func NewService(data ServiceData) *Service {
 	hash := sha1.New()
-	hash.Write([]byte(BuildId))
+	hash.Write([]byte(data.BuildId))
 	buildIdHash := hex.EncodeToString(hash.Sum(nil))
 
 	s := &Service{
