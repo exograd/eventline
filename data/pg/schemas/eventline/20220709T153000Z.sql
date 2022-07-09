@@ -73,7 +73,7 @@ CREATE TABLE project_notification_settings
    on_failed_job BOOLEAN DEFAULT FALSE NOT NULL,
    on_aborted_job BOOLEAN DEFAULT FALSE NOT NULL,
    on_identity_refresh_error BOOLEAN DEFAULT FALSE NOT NULL,
-   recipient_account_ids KSUID[] NOT NULL);
+   email_addresses VARCHAR[] NOT NULL);
 
 CREATE INDEX project_notification_settings_id_idx
   ON project_notification_settings (id);
@@ -169,8 +169,19 @@ CREATE INDEX jobs_spec_trigger_identity_idx
   ON jobs ((spec->'trigger'->>'identity'))
   WHERE spec->'trigger' IS NOT NULL;
 
+CREATE INDEX jobs_spec_runner_identity_idx
+  ON jobs ((spec->'runner'->>'identity'))
+  WHERE spec->'runner' IS NOT NULL;
+
 CREATE INDEX jobs_spec_identities_idx
   ON jobs USING GIN ((spec->'identities'));
+
+CREATE TABLE favourite_jobs
+  (account_id KSUID NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
+   project_id KSUID NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
+   job_id KSUID NOT NULL REFERENCES jobs (id) ON DELETE CASCADE,
+
+   PRIMARY KEY (account_id, project_id, job_id));
 
 CREATE TABLE events
   (id KSUID PRIMARY KEY,
@@ -277,8 +288,8 @@ CREATE TABLE subscriptions
    creation_time TIMESTAMP NOT NULL,
    status SUBSCRIPTION_STATUS NOT NULL,
    update_delay INTEGER,
-   last_update TIMESTAMP,
-   next_update TIMESTAMP,
+   last_update_time TIMESTAMP,
+   next_update_time TIMESTAMP,
    op BIGINT DEFAULT nextval('subscription_op'));
 
 CREATE INDEX subscriptions_job_id_idx
@@ -290,11 +301,14 @@ CREATE INDEX subscriptions_identity_id_idx
 CREATE INDEX subscriptions_status_idx
   ON subscriptions (status);
 
-CREATE INDEX subscriptions_next_update_idx
-  ON subscriptions (next_update);
+CREATE INDEX subscriptions_next_update_time_idx
+  ON subscriptions (next_update_time);
 
 CREATE INDEX subscriptions_op_idx
   ON subscriptions (op);
+
+CREATE INDEX subscriptions_connector_event_idx
+  ON subscriptions (connector, event);
 
 CREATE TABLE c_time_subscriptions (
     id KSUID PRIMARY KEY REFERENCES subscriptions (id),
@@ -319,9 +333,16 @@ CREATE INDEX c_github_subscriptions_hook_id_idx
 CREATE INDEX events_event_time_idx
   ON events (event_time);
 
-CREATE TABLE favourite_jobs
-  (account_id KSUID NOT NULL REFERENCES accounts (id) ON DELETE CASCADE,
+CREATE TABLE notifications
+  (id KSUID PRIMARY KEY,
    project_id KSUID NOT NULL REFERENCES projects (id) ON DELETE CASCADE,
-   job_id KSUID NOT NULL REFERENCES jobs (id) ON DELETE CASCADE,
+   recipients VARCHAR[] NOT NULL,
+   message TEXT NOT NULL,
+   next_delivery_time TIMESTAMP NOT NULL,
+   delivery_delay INT NOT NULL);
 
-   PRIMARY KEY (account_id, project_id, job_id));
+CREATE INDEX notifications_project_id_idx
+  ON notifications (project_id);
+
+CREATE INDEX notifications_next_delivery_time_idx
+  ON notifications (next_delivery_time);
