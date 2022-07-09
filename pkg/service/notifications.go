@@ -3,6 +3,8 @@ package service
 import (
 	"bytes"
 	"fmt"
+	"net"
+	"net/smtp"
 	"path"
 	"time"
 
@@ -133,4 +135,23 @@ func (s *Service) RenderNotificationText(name string, data interface{}) ([]byte,
 	}
 
 	return buf.Bytes(), nil
+}
+
+func (s *Service) DeliverNotification(conn pg.Conn, n *eventline.Notification) error {
+	cfg := s.Cfg.Notifications
+	smtpCfg := cfg.SMTPServer
+
+	host, _, err := net.SplitHostPort(smtpCfg.Address)
+	if err != nil {
+		return fmt.Errorf("invalid smtp server address %q: %w",
+			smtpCfg.Address, err)
+	}
+
+	var auth smtp.Auth
+	if smtpCfg.Username != "" && smtpCfg.Password != "" {
+		auth = smtp.PlainAuth("", smtpCfg.Username, smtpCfg.Password, host)
+	}
+
+	return smtp.SendMail(smtpCfg.Address, auth, cfg.FromAddress, n.Recipients,
+		n.Message)
 }
