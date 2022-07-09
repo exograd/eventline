@@ -40,7 +40,7 @@ services:
   mailcatcher:
     image: "exograd/mailcatcher:0.8.0"
     container_name: "mailcatcher"
-    ports: ["1125:1125", "1080:1080"]
+    ports: ["1025:1025", "1080:1080"]
     logging: *logging
 volumes:
   postgres-data:
