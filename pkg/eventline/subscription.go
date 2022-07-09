@@ -47,18 +47,18 @@ const (
 )
 
 type Subscription struct {
-	Id           Id
-	ProjectId    *Id
-	JobId        *Id
-	IdentityId   *Id
-	Connector    string
-	Event        string
-	Parameters   SubscriptionParameters
-	CreationTime time.Time
-	Status       SubscriptionStatus
-	UpdateDelay  int // seconds
-	LastUpdate   *time.Time
-	NextUpdate   *time.Time
+	Id             Id
+	ProjectId      *Id
+	JobId          *Id
+	IdentityId     *Id
+	Connector      string
+	Event          string
+	Parameters     SubscriptionParameters
+	CreationTime   time.Time
+	Status         SubscriptionStatus
+	UpdateDelay    int // seconds
+	LastUpdateTime *time.Time
+	NextUpdateTime *time.Time
 }
 
 type Subscriptions []*Subscription
@@ -91,7 +91,7 @@ func (s *Subscription) NewEvent(cname, ename string, etime *time.Time, data Even
 func (s *Subscription) Load(conn pg.Conn, id Id) error {
 	query := `
 SELECT id, project_id, job_id, identity_id, connector, event, parameters,
-       creation_time, status, update_delay, last_update, next_update
+       creation_time, status, update_delay, last_update_time, next_update_time
   FROM subscriptions
   WHERE id = $1
 `
@@ -106,7 +106,7 @@ SELECT id, project_id, job_id, identity_id, connector, event, parameters,
 func (ss *Subscriptions) LoadAllForUpdate(conn pg.Conn, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, job_id, identity_id, connector, event, parameters,
-       creation_time, status, update_delay, last_update, next_update
+       creation_time, status, update_delay, last_update_time, next_update_time
   FROM subscriptions
   WHERE %s
   FOR UPDATE;
@@ -118,7 +118,7 @@ SELECT id, project_id, job_id, identity_id, connector, event, parameters,
 func (s *Subscription) LoadByJobForUpdate(conn pg.Conn, jobId Id, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, job_id, identity_id, connector, event, parameters,
-       creation_time, status, update_delay, last_update, next_update
+       creation_time, status, update_delay, last_update_time, next_update_time
   FROM subscriptions
   WHERE %s AND job_id = $1
   FOR UPDATE;
@@ -137,10 +137,10 @@ func LoadSubscriptionForProcessing(conn pg.Conn) (*Subscription, error) {
 
 	query := `
 SELECT id, project_id, job_id, identity_id, connector, event, parameters,
-       creation_time, status, update_delay, last_update, next_update
+       creation_time, status, update_delay, last_update_time, next_update_time
   FROM subscriptions
   WHERE status = 'inactive' OR status = 'terminating'
-    AND next_update < $1
+    AND next_update_time < $1
   ORDER BY op
   LIMIT 1
   FOR UPDATE SKIP LOCKED;
@@ -161,7 +161,7 @@ func (s *Subscription) Insert(conn pg.Conn) error {
 	query := `
 INSERT INTO subscriptions
     (id, project_id, job_id, identity_id, connector, event, parameters,
-     creation_time, status, update_delay, last_update, next_update)
+     creation_time, status, update_delay, last_update_time, next_update_time)
   VALUES
     ($1, $2, $3, $4, $5, $6, $7,
      $8, $9, $10, $11, $12);
@@ -169,7 +169,7 @@ INSERT INTO subscriptions
 	return pg.Exec(conn, query,
 		s.Id, s.ProjectId, s.JobId, s.IdentityId,
 		s.Connector, s.Event, s.Parameters, s.CreationTime, s.Status,
-		s.UpdateDelay, s.LastUpdate, s.NextUpdate)
+		s.UpdateDelay, s.LastUpdateTime, s.NextUpdateTime)
 }
 
 func (s *Subscription) Update(conn pg.Conn) error {
@@ -180,13 +180,13 @@ UPDATE subscriptions SET
     identity_id = $4,
     status = $5,
     update_delay = $6,
-    last_update = $7,
-    next_update = $8
+    last_update_time = $7,
+    next_update_time = $8
   WHERE id = $1
 `
 	return pg.Exec(conn, query,
 		s.Id, s.ProjectId, s.JobId, s.IdentityId, s.Status, s.UpdateDelay,
-		s.LastUpdate, s.NextUpdate)
+		s.LastUpdateTime, s.NextUpdateTime)
 }
 
 func (s *Subscription) UpdateOp(conn pg.Conn) error {
@@ -213,7 +213,7 @@ func (s *Subscription) FromRow(row pgx.Row) error {
 
 	err := row.Scan(&s.Id, &projectId, &jobId, &identityId,
 		&s.Connector, &s.Event, &rawParameters, &s.CreationTime, &s.Status,
-		&s.UpdateDelay, &s.LastUpdate, &s.NextUpdate)
+		&s.UpdateDelay, &s.LastUpdateTime, &s.NextUpdateTime)
 	if err != nil {
 		return err
 	}

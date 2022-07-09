@@ -27,16 +27,16 @@ func (s *Service) CreateSubscription(conn pg.Conn, job *eventline.Job, scope eve
 	now := time.Now().UTC()
 
 	subscription := eventline.Subscription{
-		Id:           eventline.GenerateId(),
-		ProjectId:    &projectId,
-		JobId:        &job.Id,
-		IdentityId:   identityId,
-		Connector:    triggerData.Event.Connector,
-		Event:        triggerData.Event.Event,
-		Parameters:   triggerData.Parameters, // should be a deep copy
-		CreationTime: now,
-		Status:       eventline.SubscriptionStatusInactive,
-		NextUpdate:   &now,
+		Id:             eventline.GenerateId(),
+		ProjectId:      &projectId,
+		JobId:          &job.Id,
+		IdentityId:     identityId,
+		Connector:      triggerData.Event.Connector,
+		Event:          triggerData.Event.Event,
+		Parameters:     triggerData.Parameters, // should be a deep copy
+		CreationTime:   now,
+		Status:         eventline.SubscriptionStatusInactive,
+		NextUpdateTime: &now,
 	}
 
 	if err := subscription.Insert(conn); err != nil {
@@ -71,7 +71,7 @@ func (s *Service) TerminateSubscription(conn pg.Conn, subscription *eventline.Su
 	subscription.JobId = nil
 	subscription.Status = eventline.SubscriptionStatusTerminating
 	subscription.UpdateDelay = 0
-	subscription.NextUpdate = &now
+	subscription.NextUpdateTime = &now
 
 	if err := subscription.Update(conn); err != nil {
 		return fmt.Errorf("cannot update subscription: %w", err)
@@ -109,8 +109,8 @@ func (s *Service) processInactiveSubscription(conn pg.Conn, sctx *eventline.Subs
 
 	sctx.Subscription.Status = eventline.SubscriptionStatusActive
 	sctx.Subscription.UpdateDelay = 0
-	sctx.Subscription.LastUpdate = &now
-	sctx.Subscription.NextUpdate = nil
+	sctx.Subscription.LastUpdateTime = &now
+	sctx.Subscription.NextUpdateTime = nil
 
 	return nil
 }

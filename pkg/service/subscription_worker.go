@@ -81,8 +81,8 @@ func (sw *SubscriptionWorker) ProcessJob() (bool, error) {
 			nextUpdate := now.Add(updateDelayDuration)
 
 			subscription.UpdateDelay = updateDelay
-			subscription.LastUpdate = &now
-			subscription.NextUpdate = &nextUpdate
+			subscription.LastUpdateTime = &now
+			subscription.NextUpdateTime = &nextUpdate
 		}
 
 		if err := subscription.Update(conn); err != nil {
