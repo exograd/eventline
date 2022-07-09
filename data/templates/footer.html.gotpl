@@ -3,8 +3,11 @@
     <hr />
 
     <div class="block">
-      <a href="https://www.eventline.net">Eventline</a>: open source software
-      developed with care by <a href="https://www.exograd.com">Exograd</a>.
+      Eventline {{.Context.Version}}
+    </div>
+
+    <div class="block">
+      Open source software developed with care by <a href="https://www.exograd.com">Exograd</a>.
     </div>
 
     <div class="block">
