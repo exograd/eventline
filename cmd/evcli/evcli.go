@@ -27,6 +27,7 @@ func main() {
 		"the name of the current project")
 
 	addConfigCommands()
+	addLoginCommand()
 	addUpdateCommand()
 	addProjectCommands()
 	addEventCommands()
@@ -94,6 +95,7 @@ func noAPIKeyCommands() []string {
 	return []string{
 		"get-config",
 		"help",
+		"login",
 		"set-config",
 		"show-config",
 		"update",

@@ -2,9 +2,7 @@ package service
 
 import (
 	"encoding/base64"
-	"errors"
 
-	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
 )
 
@@ -64,18 +62,8 @@ func (s *WebHTTPServer) hLoginPOST(h *HTTPHandler) {
 		return
 	}
 
-	session, err := s.Service.LogIn(&loginData, h.Context)
+	session, err := s.LogIn(h, &loginData)
 	if err != nil {
-		var unknownUsernameErr *eventline.UnknownUsernameError
-
-		if errors.As(err, &unknownUsernameErr) {
-			h.ReplyError(403, "unknown_username", "%v", err)
-		} else if errors.Is(err, ErrWrongPassword) {
-			h.ReplyError(403, "wrong_password", "%v", err)
-		} else {
-			h.ReplyInternalError(500, "cannot log in: %v", err)
-		}
-
 		return
 	}
 

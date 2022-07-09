@@ -46,6 +46,16 @@ func (err *APIError) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type LoginData struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type LoginResponse struct {
+	APIKey *eventline.APIKey `json:"api_key"`
+	Key    string            `json:"key"`
+}
+
 type Order string
 
 const (

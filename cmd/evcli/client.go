@@ -35,6 +35,17 @@ func NewClient(config *Config) (*Client, error) {
 	return client, nil
 }
 
+func (c *Client) SetEndpoint(endpoint string) error {
+	baseURI, err := url.Parse(endpoint)
+	if err != nil {
+		return err
+	}
+
+	c.baseURI = baseURI
+
+	return nil
+}
+
 func (c *Client) SendRequest(method string, relURI *url.URL, body, dest interface{}) error {
 	uri := c.baseURI.ResolveReference(relURI)
 
@@ -105,6 +116,26 @@ func (c *Client) SendRequest(method string, relURI *url.URL, body, dest interfac
 	}
 
 	return err
+}
+
+func (c *Client) LogIn(username, password string) (*LoginResponse, error) {
+	loginData := LoginData{
+		Username: username,
+		Password: password,
+	}
+
+	var res LoginResponse
+
+	err := c.SendRequest("POST", NewURL("login"), &loginData, &res)
+	if err != nil {
+		return nil, err
+	}
+
+	if res.APIKey == nil || res.Key == "" {
+		return nil, fmt.Errorf("missing or empty api key")
+	}
+
+	return &res, nil
 }
 
 func (c *Client) FetchProjects() ([]*Project, error) {
