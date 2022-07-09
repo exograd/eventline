@@ -79,6 +79,15 @@ UPDATE sessions SET
 	return pg.Exec(conn, query, s.Id, s.Data)
 }
 
+func (s *Session) UpdateAccountSettings(conn pg.Conn) error {
+	query := `
+UPDATE sessions SET
+    account_settings = $2
+  WHERE id = $1
+`
+	return pg.Exec(conn, query, s.Id, s.AccountSettings)
+}
+
 func UpdateSessionsForProjectDeletion(conn pg.Conn, projectId Id) error {
 	query := `
 UPDATE sessions SET

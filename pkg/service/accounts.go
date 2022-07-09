@@ -129,9 +129,13 @@ func (s *Service) SelfUpdateAccount(accountId eventline.Id, update *eventline.Ac
 		}
 
 		account.Settings = update.Settings
-
 		if err := account.SelfUpdate(conn); err != nil {
 			return fmt.Errorf("cannot update account: %w", err)
+		}
+
+		hctx.Session.AccountSettings = account.Settings
+		if err := hctx.Session.UpdateAccountSettings(conn); err != nil {
+			return fmt.Errorf("cannot update session: %w", err)
 		}
 
 		hctx.AccountSettings = account.Settings
