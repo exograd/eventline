@@ -441,6 +441,7 @@ func (h *HTTPHandler) SetSessionCookie(cookie *http.Cookie) {
 
 func (h *HTTPHandler) ReplyContent(status int, content web.Content) {
 	ctx := WebContext{
+		Product:          h.Service.Data.Product,
 		Version:          h.Service.Data.BuildId,
 		VersionHash:      h.Service.BuildIdHash,
 		PublicPage:       h.RouteOptions.Public,

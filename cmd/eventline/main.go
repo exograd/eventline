@@ -9,6 +9,7 @@ var buildId string
 
 func main() {
 	sdata := service.ServiceData{
+		Product:    "Eventline",
 		BuildId:    buildId,
 		Connectors: service.Connectors,
 		Runners:    service.Runners,

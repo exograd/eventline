@@ -12,6 +12,7 @@ import (
 // The set of information we inject into every rendered piece of web content.
 // It is available in templates as .Context.
 type WebContext struct {
+	Product          string
 	Version          string
 	VersionHash      string
 	PublicPage       bool

@@ -3,7 +3,7 @@
     <hr />
 
     <div class="block">
-      Eventline {{.Context.Version}}
+      {{.Context.Product}} {{.Context.Version}}
     </div>
 
     <div class="block">
