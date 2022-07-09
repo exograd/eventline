@@ -73,7 +73,7 @@ CREATE TABLE project_notification_settings
    on_failed_job BOOLEAN DEFAULT FALSE NOT NULL,
    on_aborted_job BOOLEAN DEFAULT FALSE NOT NULL,
    on_identity_refresh_error BOOLEAN DEFAULT FALSE NOT NULL,
-   email_addresses VARCHAR[] NOT NULL);
+   email_addresses VARCHAR[]);
 
 CREATE INDEX project_notification_settings_id_idx
   ON project_notification_settings (id);
