@@ -9,16 +9,13 @@
         <dt>Id</dt>
         <dd class="is-family-monospace">{{.Id}}</dd>
 
+        <dt>Name</dt>
+        <dd class="is-family-monospace">{{.Connector}}/{{.Name}}</dd>
+
         <dt>Event time</dt>
         <dd title="{{$.Context.FormatAltDate .EventTime}}">
           {{$.Context.FormatDate .EventTime}}
         </dd>
-
-        <dt>Connector</dt>
-        <dd class="is-family-monospace">{{.Connector}}</dd>
-
-        <dt>Name</dt>
-        <dd class="is-family-monospace">{{.Name}}</dd>
       </dl>
     </div>
 

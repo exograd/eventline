@@ -7,11 +7,8 @@
         <dt>Name</dt>
         <dd>{{.Name}}</dd>
 
-        <dt>Connector</dt>
-        <dd class="is-family-monospace">{{.Connector}}</dd>
-
         <dt>Type</dt>
-        <dd class="is-family-monospace">{{.Type}}</dd>
+        <dd class="is-family-monospace">{{.Connector}}/{{.Type}}</dd>
 
         <dt>Status</dt>
         <dd>{{template "identity_status_icon.html" .}}</dd>

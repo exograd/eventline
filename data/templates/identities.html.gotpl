@@ -18,7 +18,6 @@
       <tr>
         <th class="is-narrow"></th>
         <th>Name</th>
-        <th class="is-narrow">Connector</th>
         <th class="is-narrow">Type</th>
         <th class="is-narrow">Last update</th>
         <th class="is-narrow">Last use</th>
@@ -40,11 +39,7 @@
         </td>
 
         <td class="is-narrow is-family-monospace">
-          {{.Connector}}
-        </td>
-
-        <td class="is-narrow is-family-monospace">
-          {{.Type}}
+          {{.Connector}}/{{.Type}}
         </td>
 
         <td class="is-narrow" title="{{$.Context.FormatAltDate .UpdateTime}}">
