@@ -14,6 +14,8 @@ workers:
     disabled: true
   time-connector:
     disabled: true
+  notification-worker:
+    disabled: true
 
 notifications:
   smtp_server:
