@@ -54,7 +54,7 @@ func (s *Service) ValidateJobSpec(conn pg.Conn, spec *eventline.JobSpec, scope e
 }
 
 func (c *JobSpecChecker) checkJobSpec() error {
-	// Trigger
+	// Parameters
 	hasMandatoryParams := false
 	for _, p := range c.JobSpec.Parameters {
 		if p.Default == nil {
@@ -69,15 +69,14 @@ func (c *JobSpecChecker) checkJobSpec() error {
 			"jobs with mandatory parameters cannot have a trigger")
 	}
 
-	// Identities
+	// Trigger
 	if trigger := c.JobSpec.Trigger; trigger != nil {
 		c.Checker.WithChild("trigger", func() {
-			if iname := trigger.Identity; iname != "" {
-				c.checkIdentityName("identity", iname)
-			}
+			c.checkTrigger(trigger)
 		})
 	}
 
+	// Runner
 	if runner := c.JobSpec.Runner; runner != nil {
 		c.Checker.WithChild("runner", func() {
 			if iname := runner.Identity; iname != "" {
@@ -86,6 +85,7 @@ func (c *JobSpecChecker) checkJobSpec() error {
 		})
 	}
 
+	// Identities
 	c.Checker.WithChild("identities", func() {
 		for idx, iname := range c.JobSpec.Identities {
 			c.checkIdentityName(idx, iname)
@@ -93,6 +93,25 @@ func (c *JobSpecChecker) checkJobSpec() error {
 	})
 
 	return nil
+}
+
+func (c *JobSpecChecker) checkTrigger(trigger *eventline.Trigger) {
+	cname := trigger.Event.Connector
+
+	// If the connector does not exist, a validation error was added but we
+	// still run all other checks.
+	if connector, found := eventline.FindConnector(cname); found {
+		optConnector, ok := connector.(eventline.OptionalConnector)
+		if ok && !optConnector.Enabled() {
+			c.Checker.AddError("event", "disabled_connector",
+				"connector %q is disabled and cannot be used in triggers",
+				cname)
+		}
+	}
+
+	if iname := trigger.Identity; iname != "" {
+		c.checkIdentityName("identity", iname)
+	}
 }
 
 func (c *JobSpecChecker) checkIdentityName(token interface{}, name string) {

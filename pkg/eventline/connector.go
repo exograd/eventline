@@ -34,3 +34,11 @@ type SubscribableConnector interface {
 	Subscribe(pg.Conn, *SubscriptionContext) error
 	Unsubscribe(pg.Conn, *SubscriptionContext) error
 }
+
+// The optional aspect of the connector is related to events only. But at this
+// point I do not have a better idea for a name.
+type OptionalConnector interface {
+	Connector
+
+	Enabled() bool
+}

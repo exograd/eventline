@@ -53,8 +53,8 @@ func (c *Connector) Definition() *eventline.ConnectorDef {
 	return c.Def
 }
 
-func (c *Connector) DefaultCfg() eventline.ConnectorCfg {
-	return &ConnectorCfg{}
+func (c *Connector) Enabled() bool {
+	return c.Cfg.Enabled
 }
 
 func (c *Connector) Init(ccfg eventline.ConnectorCfg, initData eventline.ConnectorInitData) error {

@@ -105,7 +105,7 @@ steps: []
 name: "foo"
 trigger:
   event: "time/tick"
-  data:
+  parameters:
     periodic: 60
 parameters:
   - name: "a"
@@ -118,6 +118,19 @@ parameters:
 `
 	if assertInvalid(data, 1) {
 		assertError(0, "/trigger", "invalid_trigger_with_mandatory_parameters")
+	}
+
+	// Trigger using disabled connector
+	data = `
+---
+name: "foo"
+trigger:
+  event: "github/raw"
+  parameters:
+    organization: "exograd"
+`
+	if assertInvalid(data, 1) {
+		assertError(0, "/trigger/event", "disabled_connector")
 	}
 
 	// Unknown identities

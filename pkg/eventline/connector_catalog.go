@@ -20,6 +20,11 @@ func ConnectorExists(name string) (exists bool) {
 	return
 }
 
+func FindConnector(name string) (Connector, bool) {
+	c, found := Connectors[name]
+	return c, found
+}
+
 func GetConnector(name string) Connector {
 	c, found := Connectors[name]
 	if !found {
