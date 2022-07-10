@@ -1,3 +1,7 @@
+prefix = /usr/local
+bindir = $(DESTDIR)$(prefix)/bin
+sharedir = $(DESTDIR)$(prefix)/share
+
 BUILD_ID = $(shell ./utils/build-id)
 
 EVWEB_INPUT_DIRS = . ../data # relative to the evweb directory
@@ -73,10 +77,20 @@ doc/%.pdf: FORCE
 	                --destination-dir $(CURDIR)/doc/ \
 	                $(basename $@)/$(basename $(notdir $@)).adoc
 
+install: build
+	mkdir -p $(bindir)
+	cp $(CURDIR)/bin/eventline $(bindir)/
+	cp $(CURDIR)/bin/evcli $(bindir)/
+	mkdir -p $(sharedir)
+	cp -r $(CURDIR)/data $(sharedir)/eventline
+
 clean:
 	$(RM) $(BIN_DIR)/*
 	$(RM) $(DOC_PDF) $(DOC_HTML)
 
 FORCE:
 
-.PHONY: all assets build evcli check vet test doc doc-html doc-pdf clean
+.PHONY: all assets build evcli clean
+.PHONY: check vet test
+.PHONY: doc doc-html doc-pdf
+.PHONY: install
