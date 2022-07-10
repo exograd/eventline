@@ -1,6 +1,7 @@
 prefix = /usr/local
 bindir = $(DESTDIR)$(prefix)/bin
 sharedir = $(DESTDIR)$(prefix)/share
+docdir = $(DESTDIR)$(prefix)/share/doc
 
 BUILD_ID = $(shell ./utils/build-id)
 
@@ -38,8 +39,8 @@ $(foreach dir,$(GO_PKGS),$(call go_make1,$(dir))
 )
 endef
 
-DOC_PDF = doc/handbook.pdf
-DOC_HTML = doc/handbook.html
+DOC_PDF = $(CURDIR)/doc/handbook.pdf
+DOC_HTML = $(CURDIR)/doc/handbook.html
 
 all: build
 
@@ -83,6 +84,10 @@ install: build
 	cp $(CURDIR)/bin/evcli $(bindir)/
 	mkdir -p $(sharedir)
 	cp -r $(CURDIR)/data $(sharedir)/eventline
+	mkdir -p $(docdir)/eventline/
+	mkdir -p $(docdir)/eventline/html
+	cp -r $(DOC_HTML) $(docdir)/eventline/html
+	cp -r $(DOC_PDF) $(docdir)/eventline
 
 clean:
 	$(RM) $(BIN_DIR)/*
