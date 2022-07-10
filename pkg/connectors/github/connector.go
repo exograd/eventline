@@ -8,17 +8,12 @@ import (
 	"net/url"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/dhttp"
 	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-log"
 	"github.com/google/go-github/v45/github"
 )
-
-type ConnectorCfg struct {
-	WebhookKey string `json:"webhook_key"`
-}
 
 type Connector struct {
 	Def    *eventline.ConnectorDef
@@ -48,10 +43,6 @@ func NewConnector() *Connector {
 	return &Connector{
 		Def: def,
 	}
-}
-
-func (cfg *ConnectorCfg) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("webhook_key", cfg.WebhookKey)
 }
 
 func (c *Connector) Name() string {
