@@ -192,10 +192,10 @@ func (s *Service) initConnector(c eventline.Connector) error {
 		if err := checker.Error(); err != nil {
 			return fmt.Errorf("invalid configuration: %w", err)
 		}
+	}
 
-		if err := c.Init(cfg, initData); err != nil {
-			return err
-		}
+	if err := c.Init(cfg, initData); err != nil {
+		return err
 	}
 
 	s.connectors[name] = c
