@@ -1,9 +1,6 @@
 package github
 
 import (
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -36,19 +33,8 @@ func (c *Connector) WebhookURI(params *Parameters) string {
 	return uri.String()
 }
 
-func (c *Connector) WebhookSecret(params *Parameters) string {
-	key := c.webhookKey
-	value := []byte(params.Target())
-
-	mac := hmac.New(sha256.New, key)
-	mac.Write(value)
-	code := mac.Sum(nil)
-
-	return hex.EncodeToString(code)
-}
-
 func (c *Connector) ProcessWebhookRequest(req *http.Request, params *Parameters) error {
-	secret := c.WebhookSecret(params)
+	secret := c.Cfg.WebhookSecret
 	payload, err := github.ValidatePayload(req, []byte(secret))
 	if err != nil {
 		return fmt.Errorf("invalid signature: %w", err)

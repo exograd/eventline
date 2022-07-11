@@ -2,7 +2,6 @@ package github
 
 import (
 	"encoding/base64"
-	"encoding/hex"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -22,7 +21,6 @@ type Connector struct {
 	Log    *log.Logger
 
 	webHTTPServerURI *url.URL
-	webhookKey       []byte
 }
 
 func NewConnector() *Connector {
@@ -63,12 +61,6 @@ func (c *Connector) Init(ccfg eventline.ConnectorCfg, initData eventline.Connect
 	c.Log = initData.Log
 
 	c.webHTTPServerURI = initData.WebHTTPServerURI
-
-	webhookKey, err := hex.DecodeString(c.Cfg.WebhookKey)
-	if err != nil {
-		return fmt.Errorf("invalid webhook key: %w", err)
-	}
-	c.webhookKey = webhookKey
 
 	return nil
 }

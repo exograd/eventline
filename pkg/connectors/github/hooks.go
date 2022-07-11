@@ -52,7 +52,7 @@ func (c *Connector) CreateHook(conn pg.Conn, params *Parameters, identity *event
 			Config: map[string]interface{}{
 				"url":          c.WebhookURI(params),
 				"content_type": "json",
-				"secret":       c.WebhookSecret(params),
+				"secret":       c.Cfg.WebhookSecret,
 			},
 		}
 
@@ -71,7 +71,7 @@ func (c *Connector) CreateHook(conn pg.Conn, params *Parameters, identity *event
 			Config: map[string]interface{}{
 				"url":          c.WebhookURI(params),
 				"content_type": "json",
-				"secret":       c.WebhookSecret(params),
+				"secret":       c.Cfg.WebhookSecret,
 			},
 		}
 

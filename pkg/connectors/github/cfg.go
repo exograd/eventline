@@ -6,8 +6,8 @@ import (
 )
 
 type ConnectorCfg struct {
-	Enabled    bool   `json:"enabled"`
-	WebhookKey string `json:"webhook_key,omitempty"`
+	Enabled       bool   `json:"enabled"`
+	WebhookSecret string `json:"webhook_secret,omitempty"`
 }
 
 func (c *Connector) DefaultCfg() eventline.ConnectorCfg {
@@ -16,6 +16,6 @@ func (c *Connector) DefaultCfg() eventline.ConnectorCfg {
 
 func (cfg *ConnectorCfg) Check(c *check.Checker) {
 	if cfg.Enabled {
-		c.CheckStringNotEmpty("webhook_key", cfg.WebhookKey)
+		c.CheckStringNotEmpty("webhook_secret", cfg.WebhookSecret)
 	}
 }
