@@ -296,7 +296,7 @@ func LoadSubscriptionsByParams(conn pg.Conn, ename string, params *Parameters) (
 	query := fmt.Sprintf(`
 SELECT es.id, es.project_id, es.job_id, es.identity_id, es.connector, es.event,
        es.parameters, es.creation_time, es.status, es.update_delay,
-       es.last_update, es.next_update
+       es.last_update_time, es.next_update_time
   FROM subscriptions AS es
   JOIN c_github_subscriptions AS gs ON gs.id = es.id
   WHERE es.connector = 'github'
