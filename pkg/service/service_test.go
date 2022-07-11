@@ -39,7 +39,7 @@ func setTestDirectory() {
 	// project by looking for the configuration file, and change the current
 	// directory.
 
-	cfgFileName := "eventline-test.yaml"
+	cfgFileName := "cfg/test.yaml"
 
 	_, filePath, _, _ := runtime.Caller(0)
 
@@ -103,8 +103,7 @@ func initTestService() {
 	readyChan := make(chan struct{})
 
 	go func() {
-		daemon.RunTest("eventline", testService, "eventline-test.yaml",
-			readyChan)
+		daemon.RunTest("eventline", testService, "cfg/test.yaml", readyChan)
 	}()
 
 	select {

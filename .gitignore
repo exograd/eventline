@@ -6,5 +6,7 @@
 /data/assets/js/*
 /data/assets/images/*
 
+/cfg/local.yaml
+
 /doc/*.html
 /doc/*.pdf
