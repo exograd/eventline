@@ -63,17 +63,18 @@ test:
 
 doc: doc-html doc-pdf
 
-doc-html: FORCE
-	$(call doc_genhtml)
+doc-html: $(DOC_HTML)
 
-doc-pdf: $(DOC_PDF) $(DOC_HTML) FORCE
+doc-pdf: $(DOC_PDF)
 
-doc/%.html: FORCE
+.SECONDEXPANSION:
+$(CURDIR)/doc/%.html: $$(wildcard $(CURDIR)/doc/%/*)
 	asciidoctor --backend html \
 	            --destination-dir $(CURDIR)/doc/ \
 	            $(basename $@)/$(basename $(notdir $@)).adoc
 
-doc/%.pdf: FORCE
+.SECONDEXPANSION:
+$(CURDIR)/doc/%.pdf: $$(wildcard $(CURDIR)/doc/%/*)
 	asciidoctor-pdf --backend pdf \
 	                --destination-dir $(CURDIR)/doc/ \
 	                $(basename $@)/$(basename $(notdir $@)).adoc
