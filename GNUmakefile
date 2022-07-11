@@ -7,7 +7,7 @@ BUILD_ID = $(shell ./utils/build-id)
 
 EVWEB_INPUT_DIRS = . ../data # relative to the evweb directory
 
-BIN_DIR ?= $(CURDIR)/bin
+BIN_DIR ?= bin
 
 GO_PKGS =					\
   github.com/exograd/eventline/cmd/eventline	\
@@ -39,8 +39,8 @@ $(foreach dir,$(GO_PKGS),$(call go_make1,$(dir))
 )
 endef
 
-DOC_PDF = $(CURDIR)/doc/handbook.pdf
-DOC_HTML = $(CURDIR)/doc/handbook.html
+DOC_PDF = doc/handbook.pdf
+DOC_HTML = doc/handbook.html
 
 all: build
 
@@ -56,10 +56,10 @@ evcli: FORCE
 check: vet
 
 vet:
-	go vet $(CURDIR)/...
+	go vet ./...
 
 test:
-	go test $(GO_TEST_OPTIONS) $(CURDIR)/...
+	go test $(GO_TEST_OPTIONS) ./...
 
 doc: doc-html doc-pdf
 
@@ -68,25 +68,25 @@ doc-html: $(DOC_HTML)
 doc-pdf: $(DOC_PDF)
 
 .SECONDEXPANSION:
-$(CURDIR)/doc/%.html: $$(wildcard $(CURDIR)/doc/%/*)
+doc/%.html: $$(wildcard doc/%/*)
 	asciidoctor --backend html \
-	            --destination-dir $(CURDIR)/doc/ \
+	            --destination-dir doc/ \
 	            $(basename $@)/$(basename $(notdir $@)).adoc
 
 .SECONDEXPANSION:
-$(CURDIR)/doc/%.pdf: $$(wildcard $(CURDIR)/doc/%/*) $(CURDIR)/doc/pdf-theme.yml
+doc/%.pdf: $$(wildcard doc/%/*) doc/pdf-theme.yml
 	asciidoctor-pdf --backend pdf \
-	                --destination-dir $(CURDIR)/doc/ \
-	                -a pdf-theme=$(CURDIR)/doc/pdf-theme.yml \
-	                -a pdf-fontsdir=$(CURDIR)/doc/fonts \
+	                --destination-dir doc/ \
+	                -a pdf-theme=doc/pdf-theme.yml \
+	                -a pdf-fontsdir=doc/fonts \
 	                $(basename $@)/$(basename $(notdir $@)).adoc
 
 install: build
 	mkdir -p $(bindir)
-	cp $(CURDIR)/bin/eventline $(bindir)/
-	cp $(CURDIR)/bin/evcli $(bindir)/
+	cp bin/eventline $(bindir)/
+	cp bin/evcli $(bindir)/
 	mkdir -p $(sharedir)
-	cp -r $(CURDIR)/data $(sharedir)/eventline
+	cp -r data $(sharedir)/eventline
 	mkdir -p $(docdir)/eventline/
 	mkdir -p $(docdir)/eventline/html
 	cp -r $(DOC_HTML) $(docdir)/eventline/html
