@@ -1,0 +1,27 @@
+# https://github.com/asciidoctor/asciidoctor-pdf/blob/main/data/themes/default-theme.yml
+extends: ["default"]
+
+font:
+  catalog:
+    IBM Plex Serif:
+      normal: "IBMPlexSerif-Regular.ttf"
+      bold: "IBMPlexSerif-Medium.ttf"
+      italic: "IBMPlexSerif-Italic.ttf"
+      bold_italic: "IBMPlexSerif-MediumItalic.ttf"
+    Barlow Semi Condensed:
+      normal: "BarlowSemiCondensed-Medium.ttf"
+    # TODO monospace
+
+page:
+  margin: ["1.4in", "1.4in", "1.4in", "1.4in"]
+
+base:
+  font-family: "IBM Plex Serif"
+
+heading:
+  font-family: "Barlow Semi Condensed"
+  font-style: "normal"
+
+title-page:
+  font-family: "Barlow Semi Condensed"
+

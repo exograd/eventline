@@ -1,5 +1,42 @@
+[preface]
 == Preface
 
 === What is Eventline?
 
-*TODO*
+Writing scripts to automate recurring tasks is the bread and butter of every
+developer, SRE or data scientist out there. But running these scripts is
+always annoying: hosting, deployment, secret management, monitoring,
+everything has to be handled correctly.
+
+Eventline is a platform that stores, schedules, executes and monitors all your
+jobs. You define what the job does, where to run it and when to trigger it,
+and Eventline takes care of everything else.
+
+=== Features
+
+Eventline is battery included by design, and provides multiple features
+designed to make your life easier:
+
+- Declarative job definitions with inline or external source code.
+- Support for multiple runners: local execution, Docker, Kubernetes…
+- Events used to trigger jobs when certain conditions are met.
+- Manual execution with custom parameters and auto-generated forms.
+- Identities to store credentials, with full OAuth2 support.
+- Observability with access to all past runs of your jobs, success rate and
+  performance monitoring, output logs…
+- Full runtime control, letting you abort jobs, restart them and replay
+  events.
+- HTTP API and command line tool.
+
+=== Digging in
+
+Interested? Good! In the next section, we will describe the simplest ways to
+install Eventline.
+
+Curious about the way Eventline works? Jump directly to the source code
+on https://github.com/exograd/eventline[GitHub].
+
+Feel free to mailto:contact@exograd.com[contact us] at any time if you have
+any question. Or ask directly on
+https://github.com/exograd/eventline/discussions[GitHub discussions].
+

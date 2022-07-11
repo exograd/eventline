@@ -1,12 +1,17 @@
+// Careful, attributes (lines starting with ':') must be right next to the
+// book title, without any blank line anywhere.
+
 = Eventline Handbook
 :author: Exograd SAS
 :email: contact@exograd.com
 :doctype: book
+:description: Reference for the Eventline scheduling platform
 :toc: left
 :toclevels: 2
 :toc-title: Table of Contents
-:description: Reference for the Eventline scheduling platform
+:toc-placement: left
+:sectnums:
 
 include::preface.adoc[]
 
-include::tutorial.adoc[]
+include::installation.adoc[]

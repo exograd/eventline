@@ -74,9 +74,11 @@ $(CURDIR)/doc/%.html: $$(wildcard $(CURDIR)/doc/%/*)
 	            $(basename $@)/$(basename $(notdir $@)).adoc
 
 .SECONDEXPANSION:
-$(CURDIR)/doc/%.pdf: $$(wildcard $(CURDIR)/doc/%/*)
+$(CURDIR)/doc/%.pdf: $$(wildcard $(CURDIR)/doc/%/*) $(CURDIR)/doc/pdf-theme.yml
 	asciidoctor-pdf --backend pdf \
 	                --destination-dir $(CURDIR)/doc/ \
+	                -a pdf-theme=$(CURDIR)/doc/pdf-theme.yml \
+	                -a pdf-fontsdir=$(CURDIR)/doc/fonts \
 	                $(basename $@)/$(basename $(notdir $@)).adoc
 
 install: build
