@@ -10,7 +10,8 @@ font:
       bold_italic: "IBMPlexSerif-MediumItalic.ttf"
     Barlow Semi Condensed:
       normal: "BarlowSemiCondensed-Medium.ttf"
-    # TODO monospace
+    Iosevka Fixed:
+      normal: "iosevka-fixed-regular.ttf"
 
 page:
   margin: ["1.4in", "1.4in", "1.4in", "1.4in"]
@@ -24,4 +25,7 @@ heading:
 
 title-page:
   font-family: "Barlow Semi Condensed"
-
+  authors:
+    font-family: "Barlow Semi Condensed"
+  revision:
+    font-family: "Iosevka Fixed"

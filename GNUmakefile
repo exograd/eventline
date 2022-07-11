@@ -42,6 +42,8 @@ endef
 DOC_PDF = doc/handbook.pdf
 DOC_HTML = doc/handbook.html
 
+ASCIIDOCTOR_OPTIONS = -a revnumber=$(BUILD_ID)
+
 all: build
 
 assets:
@@ -68,15 +70,17 @@ doc-html: $(DOC_HTML)
 doc-pdf: $(DOC_PDF)
 
 .SECONDEXPANSION:
-doc/%.html: $$(wildcard doc/%/*)
+doc/%.html: $$(wildcard doc/%/*) doc/pdf-theme.yml
 	asciidoctor --backend html \
 	            --destination-dir doc/ \
+	            $(ASCIIDOCTOR_OPTIONS) \
 	            $(basename $@)/$(basename $(notdir $@)).adoc
 
 .SECONDEXPANSION:
 doc/%.pdf: $$(wildcard doc/%/*) doc/pdf-theme.yml
 	asciidoctor-pdf --backend pdf \
 	                --destination-dir doc/ \
+	                $(ASCIIDOCTOR_OPTIONS) \
 	                -a pdf-theme=doc/pdf-theme.yml \
 	                -a pdf-fontsdir=doc/fonts \
 	                $(basename $@)/$(basename $(notdir $@)).adoc
