@@ -99,7 +99,7 @@ func findBuildURI(id *program.BuildId, osName, archName string) (string, error) 
 	ctx := context.Background()
 
 	org := "exograd"
-	repo := "evcli"
+	repo := "eventline"
 	tagName := id.String()
 
 	p.Debug(1, "fetching release for build %v on os %s and arch %s",
