@@ -119,4 +119,4 @@ FORCE:
 .PHONY: all assets build evcli clean
 .PHONY: check vet test
 .PHONY: doc doc-html doc-pdf
-.PHONY: install
+.PHONY: install install-flat
