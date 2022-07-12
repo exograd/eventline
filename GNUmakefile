@@ -87,14 +87,28 @@ doc/%.pdf: $$(wildcard doc/%/*) doc/pdf-theme.yml
 
 install: build
 	mkdir -p $(bindir)
-	cp bin/eventline $(bindir)/
-	cp bin/evcli $(bindir)/
-	mkdir -p $(sharedir)
-	cp -r data $(sharedir)/eventline
-	mkdir -p $(docdir)/eventline/
+	cp $(wildcard bin/*) $(bindir)
+	mkdir -p $(sharedir)/eventline
+	cp -r data/assets $(sharedir)/eventline
+	cp -r data/pg $(sharedir)/eventline
+	cp -r data/templates $(sharedir)/eventline
+	mkdir -p $(docdir)/eventline
+	cp -r $(DOC_PDF) $(docdir)/eventline
 	mkdir -p $(docdir)/eventline/html
 	cp -r $(DOC_HTML) $(docdir)/eventline/html
-	cp -r $(DOC_PDF) $(docdir)/eventline
+
+install-flat: build
+	@if [ -z "$(DESTDIR)" ]; then echo "DESTDIR not set" >&2; exit 1; fi
+	mkdir -p $(DESTDIR)
+	cp $(wildcard bin/*) $(DESTDIR)
+	mkdir -p $(DESTDIR)/data
+	cp -r data/assets $(DESTDIR)/data
+	cp -r data/pg $(DESTDIR)/data
+	cp -r data/templates $(DESTDIR)/data
+	mkdir -p $(DESTDIR)/doc
+	cp -r $(DOC_PDF) $(DESTDIR)/doc
+	mkdir -p $(DESTDIR)/doc/html
+	cp -r $(DOC_HTML) $(DESTDIR)/doc/html
 
 clean:
 	$(RM) $(BIN_DIR)/*
