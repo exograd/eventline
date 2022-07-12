@@ -85,7 +85,7 @@ doc/%.pdf: $$(wildcard doc/%/*) doc/pdf-theme.yml
 	                -a pdf-fontsdir=doc/fonts \
 	                $(basename $@)/$(basename $(notdir $@)).adoc
 
-install: build
+install: build doc
 	mkdir -p $(bindir)
 	cp $(wildcard bin/*) $(bindir)
 	mkdir -p $(sharedir)/eventline
@@ -97,7 +97,7 @@ install: build
 	mkdir -p $(docdir)/eventline/html
 	cp -r $(DOC_HTML) $(docdir)/eventline/html
 
-install-flat: build
+install-flat: build doc
 	@if [ -z "$(DESTDIR)" ]; then echo "DESTDIR not set" >&2; exit 1; fi
 	mkdir -p $(DESTDIR)
 	cp $(wildcard bin/*) $(DESTDIR)
