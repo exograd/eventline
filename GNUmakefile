@@ -88,6 +88,8 @@ doc/%.pdf: $$(wildcard doc/%/*) doc/pdf-theme.yml
 install: build doc
 	mkdir -p $(bindir)
 	cp $(wildcard bin/*) $(bindir)
+	mkdir -p $(sharedir)/licenses/eventline
+	cp LICENSE $(sharedir)/licenses/eventline
 	mkdir -p $(sharedir)/eventline
 	cp -r data/assets $(sharedir)/eventline
 	cp -r data/pg $(sharedir)/eventline
@@ -101,6 +103,7 @@ install-flat: build doc
 	@if [ -z "$(DESTDIR)" ]; then echo "DESTDIR not set" >&2; exit 1; fi
 	mkdir -p $(DESTDIR)
 	cp $(wildcard bin/*) $(DESTDIR)
+	cp LICENSE $(DESTDIR)
 	mkdir -p $(DESTDIR)/data
 	cp -r data/assets $(DESTDIR)/data
 	cp -r data/pg $(DESTDIR)/data
