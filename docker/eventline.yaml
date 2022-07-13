@@ -1,10 +1,10 @@
-logger:
-  backend_type: "terminal"
-  backend:
-    color: false
-  debug_level: {{ env "EVENTLINE_LOGGER_DEBUG_LEVEL" }}
+data_directory: "/usr/share/eventline"
 
-data_directory: "/usr/share/eventline/data"
+api_http_server:
+  address: "0.0.0.0:8085"
+
+web_http_server:
+  address: "0.0.0.0:8087"
 
 web_http_server_uri: {{ env "EVENTLINE_WEB_HTTP_SERVER_URI" }}
 

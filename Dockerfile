@@ -26,9 +26,9 @@ USER eventline:eventline
 
 COPY --chown=eventline:eventline bin/* /usr/bin/
 
-COPY --chown=eventline:eventline data/assets /usr/share/eventline/
-COPY --chown=eventline:eventline data/pg /usr/share/eventline/
-COPY --chown=eventline:eventline data/templates /usr/share/eventline/
+COPY --chown=eventline:eventline data/assets/ /usr/share/eventline/assets/
+COPY --chown=eventline:eventline data/pg/ /usr/share/eventline/pg/
+COPY --chown=eventline:eventline data/templates/ /usr/share/eventline/templates/
 
 COPY --chown=eventline:eventline --chmod=0600 \
     docker/eventline.yaml /etc/eventline/eventline.yaml
