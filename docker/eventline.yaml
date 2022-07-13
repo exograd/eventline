@@ -1,0 +1,5 @@
+# TODO templating for encryption_key, web_http_server_uri, pg.uri, etc.
+data_directory: "/usr/share/eventline/data"
+
+pg:
+  uri: "postgres://eventline:eventline@postgres:5432/eventline"

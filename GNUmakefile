@@ -28,9 +28,9 @@ $(foreach dir,$(EVWEB_INPUT_DIRS),$(call evweb_make1,$(dir),$1)
 endef
 
 define go_make1
-CGO_ENABLED=0 \
-go build -o $(BIN_DIR) \
-  -ldflags="-X 'main.buildId=$(BUILD_ID)'" \
+CGO_ENABLED=0					\
+go build -o $(BIN_DIR)				\
+  -ldflags="-X 'main.buildId=$(BUILD_ID)'"	\
   $1
 endef
 
@@ -43,6 +43,23 @@ DOC_PDF = doc/handbook.pdf
 DOC_HTML = doc/handbook.html
 
 ASCIIDOCTOR_OPTIONS = -a revnumber=$(BUILD_ID)
+
+DOCKER_IMAGES =					\
+  exograd/eventline
+
+define docker_build1
+DOCKER_BUILDKIT=1							\
+docker build --no-cache							\
+  --label org.opencontainers.image.created=$(shell date -u +%FT%TZ)	\
+  --label org.opencontainers.image.version=$(BUILD_ID)			\
+  --label org.opencontainers.image.revision=$(shell git rev-parse HEAD)	\
+  --tag $1:latest .
+endef
+
+define docker_build
+$(foreach image,$(DOCKER_IMAGES),$(call docker_build1,$(image))
+)
+endef
 
 all: build
 
@@ -85,6 +102,9 @@ doc/%.pdf: $$(wildcard doc/%/*) doc/pdf-theme.yml
 	                -a pdf-fontsdir=doc/fonts \
 	                $(basename $@)/$(basename $(notdir $@)).adoc
 
+docker-images: build doc FORCE
+	$(call docker_build)
+
 install: build doc
 	mkdir -p $(bindir)
 	cp $(wildcard bin/*) $(bindir)
@@ -122,4 +142,5 @@ FORCE:
 .PHONY: all assets build evcli clean
 .PHONY: check vet test
 .PHONY: doc doc-html doc-pdf
+.PHONE: docker-images
 .PHONY: install install-flat
