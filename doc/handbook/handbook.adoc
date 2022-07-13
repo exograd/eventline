@@ -14,4 +14,4 @@
 
 include::preface.adoc[]
 
-include::installation.adoc[]
+include::getting-started.adoc[]

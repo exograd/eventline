@@ -1,0 +1,74 @@
+== Getting started
+
+In this chapter, we will install Eventline and get it ready to use. While
+there are multiple ways to deploy Eventline depending on your needs, we will
+use https://docs.docker.com/compose[Docker Compose] to run everything locally
+with minimum effort.
+
+You will need a UNIX system supporting Docker Compose, for example Linux or
+Mac OS, with Docker and Docker Compose installed.
+
+=== Evenline
+
+==== Installation
+First download the Docker Compose definition file, `docker-compose.yaml`,
+provided with each Eventline release. You can either get it on
+https://github.com/exograd/eventline/releases/latest[GitHub release page] or
+download it directly from
+https://github.com/exograd/eventline/releases/latest/download/docker-compose.yaml.
+
+Run Docker Compose in the directory you downloaded the file to:
+----
+docker-compose up -d
+----
+
+You now have Eventline running along its PostgreSQL database. It also includes
+https://mailcatcher.me[MailCatcher] so that you can send email notifications
+without having to configure access to an email server.
+
+Start your favourite web browser and open http://localhost:8087. You should
+see the login page of Eventline.
+
+==== First connection
+
+The first time Eventline starts, it creates an account with username `admin`
+and `password`. Use these credentials to connect to the web interface.
+
+Start by going to the "Account" section and click the "Change password"
+button. Choose a strong password to protect the admin account.
+
+CAUTION: When installing Eventline, always change the default password
+immediately after starting the platform to prevent unauthorized access.
+
+=== Evcli
+
+==== Installation
+Evcli is the command line tool used to interact with Eventline. You can also
+get it from the https://github.com/exograd/eventline/releases/latest[GitHub
+release page], where it is available as a binary for all supported platforms,
+or simply use our installation script:
+----
+curl -sSLf https://github.com/exograd/eventline/releases/latest/download/install-evcli | sh -
+----
+
+At this point, you should be able to run `evcli version` and see the version
+number of the last release.
+
+NOTE: `install-evcli` put the `evcli` executable file in `/usr/local/bin`.
+Therefore you should make sure that the `PATH` environment variable contains
+this location.
+
+==== Authentication
+Eventline uses keys to authenticate clients on the API. While you could create
+an API key manually and add it to the Evcli configuration file, it is much
+simpler to use the `login` command.
+
+Run `evcli login`; the command asks for the endpoint (prefilled as
+"http://localhost:8085", which will work for the current setup), username and
+password, then takes care of everything.
+
+To make sure everything works as intended, run `evcli list-projects`. You
+should see the default project, `main`.
+
+=== Writing your first job
+*TODO*

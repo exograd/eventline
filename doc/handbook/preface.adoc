@@ -39,4 +39,3 @@ on https://github.com/exograd/eventline[GitHub].
 Feel free to mailto:contact@exograd.com[contact us] at any time if you have
 any question. Or ask directly on
 https://github.com/exograd/eventline/discussions[GitHub discussions].
-

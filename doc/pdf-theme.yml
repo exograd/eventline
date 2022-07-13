@@ -3,29 +3,41 @@ extends: ["default"]
 
 font:
   catalog:
-    IBM Plex Serif:
+    main:
       normal: "IBMPlexSerif-Regular.ttf"
       bold: "IBMPlexSerif-Medium.ttf"
       italic: "IBMPlexSerif-Italic.ttf"
       bold_italic: "IBMPlexSerif-MediumItalic.ttf"
-    Barlow Semi Condensed:
+    title:
       normal: "BarlowSemiCondensed-Medium.ttf"
-    Iosevka Fixed:
+    monospace:
       normal: "iosevka-fixed-regular.ttf"
 
 page:
   margin: ["1.4in", "1.4in", "1.4in", "1.4in"]
 
 base:
-  font-family: "IBM Plex Serif"
+  font-family: "main"
 
 heading:
-  font-family: "Barlow Semi Condensed"
+  font-family: "title"
   font-style: "normal"
 
 title-page:
-  font-family: "Barlow Semi Condensed"
+  font-family: "title"
   authors:
-    font-family: "Barlow Semi Condensed"
+    font-family: "title"
   revision:
-    font-family: "Iosevka Fixed"
+    font-family: "monospace"
+
+codespan:
+  font-family: "monospace"
+
+code:
+  font-family: "monospace"
+
+conum:
+  font-family: "monospace"
+
+kbd:
+  font-family: "monospace"
