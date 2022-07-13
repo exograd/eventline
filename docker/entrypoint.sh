@@ -7,7 +7,7 @@ if [ "$1" = "eventline" ]; then
     fi
 
     echo "waiting for postgresql ($uri)"
-    until psql -c '\q' $uri; do
+    until psql -c '\q' "$uri"; do
         sleep 1
     done
     echo "postgresql ready"
