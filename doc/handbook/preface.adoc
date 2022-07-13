@@ -30,8 +30,8 @@ designed to make your life easier:
 
 === Digging in
 
-Interested? Good! In the next section, we will describe the simplest ways to
-install Eventline.
+Interested? Good! In the next section, we will install Eventline and start
+writing our first job.
 
 Curious about the way Eventline works? Jump directly to the source code
 on https://github.com/exograd/eventline[GitHub].
