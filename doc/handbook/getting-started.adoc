@@ -11,6 +11,7 @@ Mac OS, with Docker and Docker Compose installed.
 === Evenline
 
 ==== Installation
+
 First download the Docker Compose definition file, `docker-compose.yaml`,
 provided with each Eventline release. You can either get it on
 https://github.com/exograd/eventline/releases/latest[GitHub release page] or
@@ -43,6 +44,7 @@ immediately after starting the platform to prevent unauthorized access.
 === Evcli
 
 ==== Installation
+
 Evcli is the command line tool used to interact with Eventline. You can also
 get it from the https://github.com/exograd/eventline/releases/latest[GitHub
 release page], where it is available as a binary for all supported platforms,
@@ -59,6 +61,7 @@ Therefore you should make sure that the `PATH` environment variable contains
 this location.
 
 ==== Authentication
+
 Eventline uses keys to authenticate clients on the API. While you could create
 an API key manually and add it to the Evcli configuration file, it is much
 simpler to use the `login` command.
@@ -71,4 +74,5 @@ To make sure everything works as intended, run `evcli list-projects`. You
 should see the default project, `main`.
 
 === Writing your first job
+
 *TODO*

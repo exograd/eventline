@@ -1,7 +1,7 @@
 // Careful, attributes (lines starting with ':') must be right next to the
 // book title, without any blank line anywhere.
 
-= Eventline Handbook
+= Eventline handbook
 :author: Exograd SAS
 :email: contact@exograd.com
 :doctype: book
