@@ -1,0 +1,64 @@
+#!/bin/sh
+
+set -eu
+
+sudo=""
+if [ "$(id -u)" -ne 0 ]; then
+    sudo=sudo
+fi
+
+echo "inspecting environment"
+
+uname_os=$(uname -s)
+uname_arch=$(uname -m)
+
+os=""
+arch=""
+
+case "$uname_os/$uname_arch" in
+    Linux/x86_64)
+        os=linux
+        arch=amd64
+        ;;
+
+    FreeBSD/amd64)
+        os=freebsd
+        arch=amd64
+        ;;
+
+    Darwin/x86_64)
+        os=darwin
+        arch=amd64
+        ;;
+
+    Darwin/arm64)
+        os=darwin
+        arch=arm64
+        ;;
+esac
+
+if [ -z "$os" ] ; then
+    echo "unsupported operating system \"$uname_os\"" >&2
+    exit 1
+fi
+
+echo "operating system: $os"
+
+if [ -z "$arch" ] ; then
+    echo "unsupported system architecture \"$uname_arch\"" >&2
+    exit 1
+fi
+
+echo "system architecture: $arch"
+
+bin_name=evcli-$os-$arch
+install_path=/usr/local/bin/evcli
+uri=https://github.com/exograd/eventline/releases/latest/download/$bin_name
+
+echo "downloading evcli from $uri"
+
+curl -sSfL -o /tmp/evcli $uri
+
+$sudo install -m 0755 /tmp/evcli $install_path
+
+echo "evcli has been installed to $install_path"
