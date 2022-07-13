@@ -9,8 +9,8 @@ always annoying: hosting, deployment, secret management, monitoring,
 everything has to be handled correctly.
 
 Eventline is a platform that stores, schedules, executes and monitors all your
-jobs. You define what the job does, where to run it and when to trigger it,
-and Eventline takes care of everything else.
+jobs. You define what the job does, where to run it and when to trigger it;
+Eventline takes care of everything else.
 
 === Features
 
