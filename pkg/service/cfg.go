@@ -61,9 +61,8 @@ func DefaultServiceCfg() ServiceCfg {
 		},
 
 		Pg: &pg.ClientCfg{
-			URI:             "postgres://eventline:eventline@localhost:5432/eventline",
-			SchemaDirectory: "data/pg/schemas",
-			SchemaNames:     []string{"eventline"},
+			URI:         "postgres://eventline:eventline@localhost:5432/eventline",
+			SchemaNames: []string{"eventline"},
 		},
 
 		WebHTTPServerURI: "http://localhost:8087",

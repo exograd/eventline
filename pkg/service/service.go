@@ -92,6 +92,10 @@ func (s *Service) DaemonCfg() (daemon.DaemonCfg, error) {
 
 	cfg.Influx = s.Cfg.Influx
 
+	if s.Cfg.Pg.SchemaDirectory == "" {
+		s.Cfg.Pg.SchemaDirectory =
+			path.Join(s.Cfg.DataDirectory, "pg", "schemas")
+	}
 	cfg.Pg = s.Cfg.Pg
 
 	return cfg, nil
