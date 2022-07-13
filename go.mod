@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/docker/docker v20.10.17+incompatible
-	github.com/exograd/go-daemon v0.0.0-20220712091809-48444ad2ea6a
+	github.com/exograd/go-daemon v0.0.0-20220713131909-898426197e2b
 	github.com/exograd/go-log v0.0.0-20220624102840-d28c3e9f8c96
 	github.com/exograd/go-oauth2c v0.0.0-20220708172730-f3790ca07115
 	github.com/exograd/go-program v0.0.0-20220116124618-691d97553601
@@ -59,3 +59,5 @@ require (
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858 // indirect
 	gotest.tools/v3 v3.3.0 // indirect
 )
+
+replace github.com/exograd/go-daemon => ../go-daemon

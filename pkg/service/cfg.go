@@ -46,7 +46,6 @@ func DefaultServiceCfg() ServiceCfg {
 			Color:       true,
 			DomainWidth: 32,
 		},
-		DebugLevel: 1,
 	}
 
 	return ServiceCfg{

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"os"
 	"path"
 	"sync"
 	"text/template"
@@ -14,7 +13,6 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/dcrypto"
 	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-log"
 )
@@ -147,33 +145,7 @@ func (s *Service) Init(d *daemon.Daemon) error {
 }
 
 func (s *Service) initEncryptionKey() error {
-	name := "EVENTLINE_ENCRYPTION_KEY"
-
-	var key dcrypto.AES256Key
-
-	if keyString := os.Getenv(name); keyString != "" {
-		// Having encryption keys provided at two different places is a good
-		// way to end up with an unusable database, so we forbid it.
-		if !s.Cfg.EncryptionKey.IsZero() {
-			return fmt.Errorf("cannot use EVENTLINE_ENCRYPTION_KEY, " +
-				"encryption key already provided in the configuration file")
-		}
-
-		s.Log.Info("using encryption key from EVENTLINE_ENCRYPTION_KEY")
-
-		if err := key.FromBase64(keyString); err != nil {
-			return fmt.Errorf("invalid encryption key: %w", err)
-		}
-	} else if !s.Cfg.EncryptionKey.IsZero() {
-		s.Log.Info("using encryption key from configuration file")
-
-		key = s.Cfg.EncryptionKey
-	} else {
-		return fmt.Errorf("encryption key not found: either set " +
-			"EVENTLINE_ENCRYPTION_KEY or provide it in the configuration file")
-	}
-
-	eventline.GlobalEncryptionKey = key
+	eventline.GlobalEncryptionKey = s.Cfg.EncryptionKey
 
 	return nil
 }

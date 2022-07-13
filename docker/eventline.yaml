@@ -1,5 +1,40 @@
-# TODO templating for encryption_key, web_http_server_uri, pg.uri, etc.
+logger:
+  backend_type: "terminal"
+  backend:
+    color: false
+  debug_level: {{ env "EVENTLINE_LOGGER_DEBUG_LEVEL" }}
+
 data_directory: "/usr/share/eventline/data"
 
+web_http_server_uri: {{ env "EVENTLINE_WEB_HTTP_SERVER_URI" }}
+
+{{ if (env "EVENTLINE_INFLUX_URI") }}
+influx:
+  uri: {{ env "EVENTLINE_INFLUX_URI" }}
+  bucket: {{ env "EVENTLINE_INFLUX_BUCKET" }}
+  org: {{ env "EVENTLINE_INFLUX_ORG" }}
+{{ end }}
+
 pg:
-  uri: "postgres://eventline:eventline@postgres:5432/eventline"
+  uri: {{ env "EVENTLINE_PG_URI" }}
+
+encryption_key: {{ env "EVENTLINE_ENCRYPTION_KEY" }}
+
+connectors:
+  github:
+    {{ with (env "EVENTLINE_CONNECTORS_GITHUB_WEBHOOK_SECRET") }}
+    enabled: true
+    webhook_secret: {{ . }}
+    {{ end }}
+
+max_parallel_jobs: {{ env "EVENTLINE_MAX_PARALLEL_JOBS" }}
+job_retention: {{ env "EVENTLINE_JOB_RETENTION" }}
+
+notifications:
+  smtp_server:
+    address: {{ env "EVENTLINE_NOTIFICATIONS_SMTP_SERVER_ADDRESS" }}
+    username: {{ env "EVENTLINE_NOTIFICATIONS_SMTP_SERVER_USERNAME" }}
+    password: {{ env "EVENTLINE_NOTIFICATIONS_SMTP_SERVER_PASSWORD" }}
+  from_address: {{ env "EVENTLINE_NOTIFICATIONS_FROM_ADDRESS" }}
+  subject_prefix: {{ env "EVENTLINE_NOTIFICATIONS_SUBJECT_PREFIX" }}
+  signature: {{ env "EVENTLINE_NOTIFICATIONS_SIGNATURE" }}
