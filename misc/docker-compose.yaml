@@ -1,0 +1,41 @@
+version: "3"
+services:
+  eventline:
+    image: "exograd/eventline:latest"
+    container_name: "eventline-demo-eventline"
+    ports: ["8085:8085", "8087:8087"]
+    environment:
+      EVENTLINE_PG_URI: "postgres://eventline:eventline@postgres:5432/eventline"
+      # Make sure to generate your own key, for example using:
+      #   openssl rand -base64 32
+      EVENTLINE_ENCRYPTION_KEY: "1knbmkE/Cw8bkNd2VTPhB9zHQVs+D6vix8Yv0Gpyhfk="
+      EVENTLINE_MAX_PARALLEL_JOBS: 10
+      EVENTLINE_JOB_RETENTION: 90
+      # You will need to provide the address of your own SMTP server to
+      # actually send notification emails.
+      EVENTLINE_NOTIFICATIONS_SMTP_SERVER_ADDRESS: "mailcatcher:1025"
+    logging: &logging
+      driver: "json-file"
+      options:
+        max-size: "10m"
+  postgres:
+    image: "postgres:14.4"
+    # Set shared_buffers to 25% of available system memory
+    command: >
+      postgres -c "shared_buffers=1GB"
+               -c "max_connections=40"
+    container_name: "eventline-demo-postgres"
+    volumes:
+      - "postgres-data:/var/lib/postgresql/data:rw"
+    environment:
+      POSTGRES_USER: "eventline"
+      POSTGRES_PASSWORD: "eventline"
+      POSTGRES_DB: "eventline"
+    logging: *logging
+  mailcatcher:
+    image: "exograd/mailcatcher:0.8.2"
+    container_name: "eventline-demo-mailcatcher"
+    ports: ["1080:1080"]
+    logging: *logging
+volumes:
+  postgres-data:
