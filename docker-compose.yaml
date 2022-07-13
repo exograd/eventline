@@ -38,7 +38,7 @@ services:
       - "grafana-data:/var/lib/grafana:rw"
     logging: *logging
   mailcatcher:
-    image: "exograd/mailcatcher:0.8.0"
+    image: "exograd/mailcatcher:0.8.2"
     container_name: "mailcatcher"
     ports: ["1025:1025", "1080:1080"]
     logging: *logging
