@@ -17,3 +17,5 @@
 include::preface.adoc[]
 
 include::getting-started.adoc[]
+
+include::writing-jobs.adoc[]

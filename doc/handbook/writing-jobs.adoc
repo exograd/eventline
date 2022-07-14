@@ -1,0 +1,138 @@
+== Writing jobs
+
+=== Definition files
+
+Jobs are defined in YAML documents. Each file contains a single object, the
+job specification. When you deploy one of these files, Eventline uses the
+`name` field to either create a new job or update an existing one.
+
+NOTE: While job filenames have no particular meaning to Eventline, using the
+name of the job as filename is helpful when organizing multiple job files.
+
+=== Deployment
+
+Jobs are deployed using Evcli. The `deploy-job` command deploys a single job
+file, while `deploy-jobs` can be used to deploy multiple jobs at the same
+time.
+
+Both commands accept the `--dry-run` (or `-n`) option which validate job files
+without actually deploying them.
+
+TIP: While you can write and deploy jobs manually, you will probably reach a
+point where you want to organize all your jobs in a central place with version
+control. In that case, you could use a job which calls evcli to deploy all
+jobs in the repository, and trigger it on new commits.
+
+=== Export
+
+Any job can be exported out of Eventline at any time using Evcli and the
+`export-job` command. The job is exported as a job specification file which
+can then be edited and re-deployed.
+
+=== Reference
+
+==== Job specification
+
+A job is an object containing the following fields:
+
+`name` (string) ::
+The name of the job.
+
+`description` (optional string) :: A textual description of the job.
+
+`trigger` (optional object) :: The specification of a trigger indicating when
+to execute the job.
+
+`parameters` (optional object array) :: A list of parameter specifications
+used to execute the job manually.
+
+`runner` (optional object) :: The specification of the runner used to execute
+the job.
+
+`concurrent` (optional boolean, default to `false`) :: Whether to allow
+concurrent executions for this job or not.
+
+`retention` (optional integer) :: The number of days after which past
+executions of this job will be deleted. This value override the global
+`job_retention` setting.
+
+`identities` (optional string array) :: The names of the identities to inject during
+job execution.
+
+`environment` (optional object) :: A set of environment variables mapping
+names to values to be defined during job execution.
+
+`steps` (object array) :: A list of steps which will be executed sequentially.
+
+==== Trigger specification
+
+A trigger is an object containing the following fields:
+
+`event` (string) :: The event to react to formatted as `<connector>/<event>`.
+
+`parameters` (optional object) :: The set of parameters associated to the
+event. Refer to the connector documentation to know which parameters are
+available for each event.
+
+`identity` (optional string) :: The name of an identity to use for events
+which require authentication. For example the `github/push` event needs an
+identity to create the GitHub hook used to listen to push events.
+
+==== Parameter specification
+
+A parameter is an object containing the following fields:
+
+`name` (string) :: The name of the parameter.
+
+`description` (optional string) :: A textual description of the parameter.
+
+`type` (string) :: The type of the parameter. The following types are
+supported:
+* `number`: either an integer or a IEEE 754 double precision floating point
+  value.
+* `integer`: an integer.
+* `string`: a character string.
+* `boolean`: a boolean.
+
+`values` (optional string array) :: For parameters of type `string`, the list
+of valid values.
+
+`default` (optional) :: The default value of the parameter. The type of the
+field must be compatible with the type of the parameter.
+
+`environment` (optional string) :: The name of an environment variable to be
+used to inject the value of this parameter during execution.
+
+==== Runner specification
+
+A runner is an object containing the following fields:
+
+`name` (string) :: The name of the runner.
+
+`parameters` (optional object) :: The set of parameters associated to the
+runner. Refer to the runner documentation to know which parameters are
+available for each runner.
+
+==== Step specification
+
+A step is an object containing the following fields:
+
+`label` (optional string) :: A short description of the step which will be
+displayed on the web interface.
+
+`code` (optional string) :: The fragment of code to execute for this step.
+
+`command` (optional object) :: The command to execute for this step. Contains
+the following members:
+    `name` (string) ::: The name of the command.
+    `arguments` (optional string array) ::: The list of arguments to pass to
+    the command.
+
+`script` (optional object) :: An external script to execute for this step.
+Contains the following members:
+    `path` (string) ::: The path of the script file relative to the job file.
+    `arguments` (optional string array) ::: The list of arguments to pass to
+    the script.
+
+Each step must contain a single field among `code`, `command` and `script`
+indicating what will be executed.
