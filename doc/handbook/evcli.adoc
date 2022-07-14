@@ -1,3 +1,169 @@
 == Evcli
 
-_Coming soon._
+=== Installation
+
+Evcli is distributed both in binary tarballs along with the Eventline binary,
+and as a stand-alone executable file. Each release on GitHub contains binaries
+for multiple platforms which can be downloaded and used without any specific
+installation procedure.
+
+Alternatively, GitHub releases contain an `install-evcli` executable script
+which detects the operating system and architecture of the machine, downloads
+the right Evcli executable and installs it.
+
+While we try to keep Evcli both backward and forward compatible with different
+versions of Eventline, it is advised to use the same version for both Evcli
+and Eventline.
+
+=== Configuration
+
+The configuration file used by Evcli is stored in
+`$HOME/.config/evcli/config.json`. You can either write it yourself, or let
+Evcli manage it.
+
+CAUTION: The configuration file contains the API key used to connect to the
+Eventline API. You must therefore make sure that other users on the same
+machine cannot read it by settings file permissions to `0600`.
+
+=== Usage
+
+Evcli supports multiple commands and options:
+----
+evcli GLOBAL-OPTIONS <command> COMMAND-OPTIONS
+----
+
+You can print a list of all commands with `evcli -h`.
+
+=== Global options
+
+The following options can be used for all commands:
+
+`--debug <level>` :: Print all debug messages whose level is higher or equal
+to `<level>`.
+
+`-h`, `--help` :: Print help about Evcli.
+
+`--no-color` :: Disable the use of colors when printing data.
+
+`-p <name>`, `--project <name>` :: Select the current project by name.
+
+`--project-id <id>` :: Select the current project by identifier.
+
+`-q`, `--quiet`: Do not print status or information messages.
+
+`-y`, `--yes`: skip all confirmation and automatically approve all questions.
+
+=== Commands
+
+==== `create-project`
+
+Create a new project.
+
+==== `delete-job`
+
+Delete a job. All past job executions will also be deleted.
+
+==== `delete-project`
+
+Delete a project and everything it contains.
+
+==== `deploy-job`
+
+Deploy a single job file. The `--dry-run` command option can be used to
+validate the job instead of deploying it.
+
+==== `deploy-jobs`
+
+Deploy one or more job files. The `--dry-run` command option can be used to
+validate the jobs instead of deploying them.
+
+Note that job files are deployed one by one; execution will stop at the first
+error.
+
+==== `describe-job`
+
+Print information about a job.
+
+==== `execute-job`
+
+Execute a job. The name of the job is passed as first arguments. Additional
+arguments are used to set parameter values. Each parameter value is passed as
+a `<name>=<value>` argument.
+
+.Example
+----
+evcli execute-job create-env branch=experimental public=true
+----
+
+==== `export-job`
+
+Export a job to a file. The file is written to the current directory by
+default. The `--directory` command option can be used to write to another
+path.
+
+==== `get-config`
+
+Obtain the value from the configuration file and print it.
+
+.Example
+----
+evcli get-config api.endpoint
+----
+
+==== `help`
+
+When called without argument, print help about Evcli. When called with the
+name of a command as argument, print help about this command.
+
+==== `list-jobs`
+
+Print a list of all jobs in the current project.
+
+==== `list-projects`
+
+Print a list of all projects.
+
+==== `login`
+
+Prompt for an endpoint, login and password, connects to Eventline and create
+an API key. The key is then stored in the Evcli configuration file.
+
+This command is the fastest way to start using Evcli.
+
+==== `replay-event`
+
+Replay an event as if it has just been created for the first time. Any job
+whose trigger matches the event will be instantiated.
+
+==== `set-config`
+
+Set the value of an entry in the configuration file.
+
+.Example
+----
+evcli set-config interface.color false
+----
+
+==== `show-config`
+
+Print the current configuration file as a JSON object.
+
+If the `--entries` command option is used, print the list of configuration
+entries as a table instead.
+
+==== `update`
+
+Update Evcli by downloading a pre-built binary from the last available GitHub
+release.
+
+If the `--build-id` command option is used, download a specific version
+instead.
+
+NOTE: If Evcli is installed in a location which is not writable by the user
+such as the path used by `install-evcli` (`/usr/local/bin`), the `update`
+command must be executed with the appropriate permissions, for example using
+`sudo`.
+
+==== `version`
+
+Print the version of the Evcli program.
