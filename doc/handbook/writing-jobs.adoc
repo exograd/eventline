@@ -88,7 +88,7 @@ A parameter is an object containing the following fields:
 
 `type` (string) :: The type of the parameter. The following types are
 supported:
-* `number`: either an integer or a IEEE 754 double precision floating point
+* `number`: either an integer or an IEEE 754 double precision floating point
   value.
 * `integer`: an integer.
 * `string`: a character string.
