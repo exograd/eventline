@@ -8,5 +8,5 @@
 
 /cfg/local.yaml
 
-/doc/*.html
+/doc/*/*.html
 /doc/*.pdf

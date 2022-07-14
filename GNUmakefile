@@ -40,7 +40,7 @@ $(foreach dir,$(GO_PKGS),$(call go_make1,$(dir))
 endef
 
 DOC_PDF = doc/handbook.pdf
-DOC_HTML = doc/handbook.html
+DOC_HTML = doc/handbook/handbook.html
 
 ASCIIDOCTOR_OPTIONS = -a revnumber=$(BUILD_ID)
 
@@ -89,9 +89,9 @@ doc-pdf: $(DOC_PDF)
 .SECONDEXPANSION:
 doc/%.html: $$(wildcard doc/%/*) doc/pdf-theme.yml
 	asciidoctor --backend html \
-	            --destination-dir doc/ \
+	            --destination-dir $(dir $@) \
 	            $(ASCIIDOCTOR_OPTIONS) \
-	            $(basename $@)/$(basename $(notdir $@)).adoc
+	            $(subst .html,.adoc,$@)
 
 .SECONDEXPANSION:
 doc/%.pdf: $$(wildcard doc/%/*) doc/pdf-theme.yml
@@ -118,6 +118,7 @@ install: build doc
 	cp -r $(DOC_PDF) $(docdir)/eventline
 	mkdir -p $(docdir)/eventline/html
 	cp -r $(DOC_HTML) $(docdir)/eventline/html
+	cp -r $(dir $(DOC_HTML))/images $(docdir)/eventline/html
 
 install-flat: build doc
 	@if [ -z "$(DESTDIR)" ]; then echo "DESTDIR not set" >&2; exit 1; fi
@@ -132,6 +133,7 @@ install-flat: build doc
 	cp -r $(DOC_PDF) $(DESTDIR)/doc
 	mkdir -p $(DESTDIR)/doc/html
 	cp -r $(DOC_HTML) $(DESTDIR)/doc/html
+	cp -r $(dir $(DOC_HTML))/images $(DESTDIR)/doc/html
 
 clean:
 	$(RM) $(BIN_DIR)/*
