@@ -78,6 +78,9 @@ available for each event.
 which require authentication. For example the `github/push` event needs an
 identity to create the GitHub hook used to listen to push events.
 
+`filters` (optional object array) :: A list of filters used to control whether
+an event matches the trigger or not.
+
 ==== Parameter specification
 
 A parameter is an object containing the following fields:
@@ -97,11 +100,50 @@ supported:
 `values` (optional string array) :: For parameters of type `string`, the list
 of valid values.
 
-`default` (optional) :: The default value of the parameter. The type of the
-field must be compatible with the type of the parameter.
+`default` (optional value) :: The default value of the parameter. The type of
+the field must be compatible with the type of the parameter.
 
 `environment` (optional string) :: The name of an environment variable to be
 used to inject the value of this parameter during execution.
+
+==== Filter specification
+
+Each filter is an object made of a path, and zero or more predicates. The path
+is a JSON pointer (see https://datatracker.ietf.org/doc/html/rfc6901[RFC
+6901]) applied to the data of the event.
+
+Predicates are additional members which are applied to the value referenced by
+the path. An event matches a filter if all predicates are true.
+
+The following predicates are supported:
+
+`is_equal_to` (optional value) :: Matches if the value referenced by the path
+is equal to the value associated with the predicate.
+
+`is_not_equal_to` (optional value) :: Matches if the value referenced by the
+path is different from the value associated with the predicate.
+
+`matches` (optional value) :: The associated value is a regular expression;
+the predicate matches if the value referenced by the path is a string which
+matches this regular expression. Eventline supports the
+https://github.com/google/re2/wiki/Syntax[RE2] syntax.
+
+`does_not_match` (optional value) :: The associated value is a regular
+expression; the predicate matches if the value referenced by the path is a
+string which does not match this regular expression.
+
+.Example
+----
+filters:
+  - path: "/branch"
+    matches: "^feature-"
+  - path: "/repository"
+    is_not_equal_to: "tests"
+----
+
+When applied to a `github/push` event, this filters will match push events on
+branches whose name starts with `feature-` but not if the repository is named
+`tests`.
 
 ==== Runner specification
 
