@@ -1,3 +1,172 @@
 == Deployment and configuration
 
+=== Requirements
+
+Eventline is written in Go and distributed as a statically linked executable
+for various platforms.
+
+The following platforms are officially supported for production:
+
+- Linux x86_64.
+- FreeBSD x86_64.
+
+Binaries are also released on a best effort basis for the following platforms:
+
+- Mac OS x86_64.
+- Mac OS arm64 (M1).
+
+Eventline uses a https://www.postgresql.org[PostgreSQL database] version 14 or
+higher. It does not require local filesystem storage.
+
+Eventline can also send metrics to an https://www.influxdata.com[InfluxDB]
+server.
+
+=== Installation
+
+==== Binary tarballs
+
+Eventline is released primarily as a set of binary tarballs. Each tarball
+contains everything required to run the program:
+
+* Both the `eventline` and the `evcli` executables.
+* The Eventline license.
+* The `data` directory containing web assets, database migrations and template
+  files.
+* This handbook both as a PDF file and a HTML file with associated images.
+
+While you can run Eventline directly from the tarball directory, you will want
+something more practical for production. As such, binary tarballs are
+generally only used by people building packages or images themselves.
+
+==== Docker images
+
+The `exograd/eventline` image is available on
+https://hub.docker.com[DockerHub]. All Eventline versions are available
+by tag. For example, Eventline 0.9.0, whose build id is `v0.9.0`, is available
+with `exograd/eventline:0.9.0`.
+
+==== Helm chart
+
 _Coming soon._
+
+=== Configuration
+
+==== Configuration file
+
+Eventline uses a configuration file whose path is provided with the `-c`
+command line option.
+
+CAUTION: The configuration file contains the global encryption key used to
+secure storage of sensitive information in the database. You must make sure
+that the UNIX user executing Eventline is the only user able to read the
+configuration file. Alternatively, you can use templating and environment
+variables to provide sensitive settings.
+
+==== Templating
+
+The configuration file is treated as a template using the
+https://pkg.go.dev/text/template[Go template format]. Templating currently
+supports the following functions:
+
+`env <name>` :: Return the value of the `<name>` environment variable.
+
+.Example:
+[source,yaml]
+----
+data_directory: "/usr/share/eventline"
+
+encryption_key: {{ env "EVENTLINE_ENCRYPTION_KEY" }}
+
+pg:
+  uri: {{ env "EVENTLINE_PG_URI" }}
+----
+
+At startup, Eventline loads the configuration file, renders it and then parses
+it as a YAML document.
+
+==== Specification
+
+A configuration file is an object containing the following fields:
+
+`logger` (optional object) :: The configuration of the logger used to print
+information and errors. The default value is:
++
+[source,yaml]
+----
+backend_type: "terminal"
+backend:
+  color: true
+  domain_width: 32
+----
+
+`data_directory` (optional string, default to `data`) :: The path of the
+directory containing Eventline data files.
+
+`api_http_server` (optional object) :: the HTTP server configuration of the
+API interface. The default value is:
++
+[source,yaml]
+----
+address: "localhost:8085"
+----
+
+`web_http_server` (optional object) :: the HTTP server configuration of the
+web interface. The default value is:
++
+[source,yaml]
+----
+address: "localhost:8087"
+----
+
+`connectors` (optional object) :: The configuration of each connector. Refer
+to the connector documentation for the settings available for each connector.
+
+`max_parallel_jobs` (optional integer) :: If set, the maximum number of jobs
+which can run in parallel for the entire platform.
+
+`runners` (optional object) :: The configuration of each runner. Refer
+to the runner documentation for the settings available for each runner.
+
+`notifications` (optional object) :: The configuration of the email
+notification system. The default value is:
++
+[source,yaml]
+----
+smtp_server:
+  address: "localhost:25"
+from_address: "no-reply@localhost"
+subject_prefix: "[eventline] "
+signature: "This email is a notification sent by the Eventline job scheduling software."
+----
+
+===== HTTP server specification
+
+The configuration of a HTTP server is an object containing the following
+fields:
+
+`address` (optional string, default to `localhost:8080`) :: The address to
+listen on as a `<host>:<port>` string.
+
+`tls` (optional object) :: If set, use TLS for the connection. The object
+containing the following fields:
+
+    `certificate` (string) ::: The path of the TLS certificate file.
+
+    `private_key` (string) ::: The path of the TLS private key.
+
+===== Notifications specifications
+
+The configuration for the notification system is an object containing the
+following fields:
+
+`smtp_server` (optional object) :: The configuration of the SMTP server to use
+when sending emails.
+
+`from_address` (optional string) :: The email address to use in the `From`
+header field.
+
+`subject_prefix` (optional string) :: A character string to use as prefix for
+the `Subject` header field.
+
+`signature` (optional string) :: A character string to insert as signature at
+the end of all emails.
