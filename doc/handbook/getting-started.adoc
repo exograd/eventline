@@ -103,7 +103,7 @@ evcli deploy-job hello-world.yaml
 ----
 
 This is it! The job is now saved in Eventline and will be executed every 30
-seconds as requested. Open your web browser; on the "Job" page, you can see
+seconds as requested. Open your web browser; on the "Jobs" page, you can see
 your new `hello world` job:
 
 image::images/hello-world-job.png[]
@@ -116,5 +116,14 @@ can see its status changes in real time. You can also click on this particular
 execution and see the status and output of each step:
 
 image::images/hello-world-execution.png[]
+
+You can now delete job: go to the "Jobs" page, click on the "..." button to
+the right of the "hello-world" list entry, and select "Delete". This will
+delete the job and all its executions.
+
+Alternatively, you can use Evcli:
+----
+evcli delete-job hello-world
+----
 
 In the next chapters, we will explore more advanced features of Eventline.
