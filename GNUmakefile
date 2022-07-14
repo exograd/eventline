@@ -87,14 +87,14 @@ doc-html: $(DOC_HTML)
 doc-pdf: $(DOC_PDF)
 
 .SECONDEXPANSION:
-doc/%.html: $$(wildcard doc/%/*) doc/pdf-theme.yml
+%.html: $$(wildcard doc/**/*.adoc)
 	asciidoctor --backend html \
 	            --destination-dir $(dir $@) \
 	            $(ASCIIDOCTOR_OPTIONS) \
 	            $(subst .html,.adoc,$@)
 
 .SECONDEXPANSION:
-doc/%.pdf: $$(wildcard doc/%/*) doc/pdf-theme.yml
+%.pdf: $$(wildcard doc/**/*.adoc) doc/pdf-theme.yml
 	asciidoctor-pdf --backend pdf \
 	                --destination-dir doc/ \
 	                $(ASCIIDOCTOR_OPTIONS) \
