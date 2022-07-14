@@ -11,6 +11,8 @@
 :toc-title: Table of Contents
 :toc-placement: left
 :sectnums:
+:source-highlighter: rouge
+:rouge-style: base16.solarized.light
 
 include::preface.adoc[]
 

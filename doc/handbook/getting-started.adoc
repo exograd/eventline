@@ -75,4 +75,46 @@ should see the default project, `main`.
 
 === Writing your first job
 
-*TODO*
+Now that everything is running, let us write a job. Eventline jobs are small
+YAML documents describing when, where and how to run the job. Open a file
+named `hellow-world.yaml` with your favourite text editor and copy the
+following content:
+
+[source,yaml]
+----
+name: "hellow-world"
+trigger:
+  event: "time/tick"
+  parameters:
+    periodic: 30
+steps:
+  - code: |
+      echo "Hello world!"
+----
+
+We define a job and give it a name. We then describe *when* to run the job
+using a trigger: the job will react to the `tick` events from the `time`
+connector, and will be executed periodically, every 30 seconds. Finally we
+provide the code to run as a list of steps.
+
+Save the file, and deploy the job using Evcli:
+----
+evcli deploy-job hello-world.yaml
+----
+
+This is it! The job is now saved in Eventline and will be executed every 30
+seconds as requested. Open your web browser; on the "Job" page, you can see
+your new `hello world` job:
+
+image::images/hello-world-job.png[]
+
+If you click on it, you will see the job execution page, which lists all
+executions of this job.
+
+After a few seconds, Eventline should execute the job for the first time. You
+can see its status changes in real time. You can also click on this particular
+execution and see the status and output of each step:
+
+image::images/hello-world-execution.png[]
+
+In the next chapters, we will explore more advanced features of Eventline.

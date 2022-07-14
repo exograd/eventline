@@ -12,6 +12,7 @@ font:
       normal: "BarlowSemiCondensed-Medium.ttf"
     monospace:
       normal: "iosevka-fixed-regular.ttf"
+      bold: "iosevka-fixed-bold.ttf"
 
 page:
   margin: ["1.4in", "1.4in", "1.4in", "1.4in"]
