@@ -124,8 +124,9 @@ to the connector documentation for the settings available for each connector.
 `max_parallel_jobs` (optional integer) :: If set, the maximum number of jobs
 which can run in parallel for the entire platform.
 
-`runners` (optional object) :: The configuration of each runner. Refer
-to the runner documentation for the settings available for each runner.
+`runners` (optional object) :: The configuration of each runner. Refer to the
+<<chapter-runners,runner documentation>> for the settings available for each
+runner.
 
 `notifications` (optional object) :: The configuration of the email
 notification system. The default value is:

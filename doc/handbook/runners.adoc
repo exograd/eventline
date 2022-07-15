@@ -1,3 +1,112 @@
+[#chapter-runners]
 == Runners
 
-_Coming soon._
+Eventline has the ability to run jobs in different environments using runners.
+Each job can select the runner to use for execution, and its parameters.
+
+The default runner is the most basic one, the local runner.
+
+=== Local
+
+The local runner executes jobs directly on the machine where Eventline is
+hosted.
+
+Its bigger advantage is how fast it is: since there is no intermediary
+execution layer, it lets you execute jobs in a few milliseconds.
+
+Using the local runner is also useful for jobs containing lower level tasks
+that could be difficult to run in a virtualized environment.
+
+.Example
+[source,yaml]
+----
+runner:
+  name: "local"
+----
+
+Note that the local runner being the default runner, jobs using it do not need
+to include a `runner` field.
+
+==== Configuration
+
+The local runner supports the following settings:
+
+`root_directory` (optional string, default to `tmp/local-execution`) :: The
+directory used to store temporary data during the execution of each job.
+
+==== Parameters
+
+There are no parameters for jobs using the local runner.
+
+=== Docker
+
+The Docker runner executes jobs in containers executed by the
+https://www.docker.com[Docker daemon]. All the steps in a job are executed
+sequentially in the same container.
+
+.Example
+[source,yaml]
+----
+runner:
+  name: "docker"
+  parameters:
+    image: "alpine:3.16"
+    cpu_limit: 2.0
+    memory_limit: 1000
+----
+
+==== Configuration
+
+The Docker runner does not have any settings.
+
+==== Parameters
+
+Jobs using the Docker runner support the following parameters:
+
+`image` (string) :: The reference of the image to use for the container.
+
+`cpu_limit` (optional number) :: Set a limit to the number of virtual CPUs
+that can be used during execution.
+
+`memory_limit` (optional integer) :: Set a limit to the amount of memory in
+megabytes that can be used during execution.
+
+=== Kubernetes
+
+The Kubernetes runner executes jobs in a https://kubernetes.io[Kubernetes
+cluster]. All the steps in a job are executed sequentially in the same
+container of the same pod.
+
+.Example
+[source,yaml]
+----
+runner:
+  name: "kubernetes"
+  parameters:
+    image: "alpine:3.16"
+    namespace: "eventline"
+----
+
+NOTE: The Kubernetes runner is only available in Eventline Pro.
+
+==== Configuration
+
+The Kubernetes runner supports the following settings:
+
+`config_path` (optional string) :: The path of the
+https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig[kubeconfig]
+file to use to connect to the cluster. If not set, Eventline will either use
+the value of the `KUBECONFIG` environment variable if it set or to
+`$HOME/.kube/config`.
+
+`namespace` (optional string, default to `default`) :: The namespace to create
+pods into.
+
+==== Parameters
+
+Jobs using the Kubernetes runner support the following parameters:
+
+`image` (string) :: The reference of the image to use for the container.
+
+`namespace` (optional string) :: The namespace to create the pod into. If not
+set, the runner uses the namespace defined in the configuration.
