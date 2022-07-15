@@ -26,11 +26,13 @@ include::using-identities.adoc[]
 
 include::runners.adoc[]
 
+include::connectors.adoc[]
+
 include::organization-with-projects.adoc[]
 
 include::managing-your-account.adoc[]
 
-include::connectors.adoc[]
+include::administration.adoc[]
 
 include::deployment-and-configuration.adoc[]
 

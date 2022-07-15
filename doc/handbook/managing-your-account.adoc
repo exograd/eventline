@@ -1,3 +1,25 @@
 == Managing your account
 
-_Coming soon._
+=== Configuration
+
+The account configuration page lets you update several settings:
+
+Date format :: The format used to display dates on the web interface, either
+absolute (e.g. "2022-07-15T17:11:50Z") or relative (e.g. "3 hours ago").
+
+Default page size :: The number of elements displayed on a page listing
+multiple elements, e.g. the event list page.
+
+=== API keys
+
+Each account can define multiple API keys. Keys are used to access the HTTP
+API, either using Evcli or with a client of your choice.
+
+CAUTION: API key give access to your account and must be treated as sensitive
+data.
+
+Eventline only stores a cryptographic hash (SHA256) of each API key. When you
+create a new API key, you must save its value: you will not be able to recover
+it later.
+
+API keys can be deleted at any moment to revoke access to Eventline.
