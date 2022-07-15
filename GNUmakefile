@@ -42,7 +42,7 @@ endef
 DOC_PDF = doc/handbook.pdf
 DOC_HTML = doc/handbook/handbook.html
 
-ASCIIDOCTOR_OPTIONS = -a revnumber=$(BUILD_ID)
+ASCIIDOCTOR_OPTIONS = -v -a revnumber=$(BUILD_ID)
 
 DOCKER_IMAGES =					\
   exograd/eventline
