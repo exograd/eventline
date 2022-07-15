@@ -32,7 +32,7 @@ The following settings are available:
 
 Code header :: A fragment of code inserted at the beginning of each `code`
 block of each step in all jobs in the project unless the block already
-contains a https://en.wikipedia.org/wiki/Shebang_(Unix)[Shebang line]. The
+contains a https://en.wikipedia.org/wiki/Shebang_(Unix)[shebang line]. The
 default value is:
 +
 [source,sh]

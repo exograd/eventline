@@ -29,6 +29,80 @@ Any job can be exported out of Eventline at any time using Evcli and the
 `export-job` command. The job is exported as a job specification file which
 can then be edited and re-deployed.
 
+=== Writing code
+
+Jobs contain a list of steps. Each steps is executed as a small independent
+program. There are several ways to define each step, each one with its pros
+and cons.
+
+==== Code blocks
+
+Code blocks let you write code inline.
+
+.Example
+[source,yaml]
+----
+name: "code-blocks"
+steps:
+  - code: |
+      echo "Hello world!"
+  - code: |
+      #!/usr/bin/env ruby
+
+      puts "Use any language you want!"
+----
+
+The first code block does not start with a
+https://en.wikipedia.org/wiki/Shebang_(Unix)[shebang line], so Eventline
+automatically inserts the default project header which contains the
+`#!/bin/sh` shebang line.
+
+In the second block, we provide the shebang line ourselves, and write the code
+in Ruby.
+
+==== Commands
+
+Commands are a simple way to execute a program with or without arguments.
+
+.Example
+[source,yaml]
+----
+name: "command"
+steps:
+  - command:
+      name: "ls"
+      arguments: ["-l", "/eventline"]
+----
+
+Here we simply execute the `ls` program with two arguments.
+
+==== Scripts
+
+Scripts give you the ability to use files written out of the job definition
+file. This is particularly nice when you have to write more than a couple
+lines of code, and want to use a proper code editor instead of writing inline
+code in a YAML file.
+
+.Example
+[source,yaml]
+----
+name: "script"
+steps:
+  - command:
+      path: "utils/generate-report.rb"
+      arguments: ["--output", "/tmp/report.pdf"]
+----
+
+In this example, the actual code is written in the `utils/generate-report.rb`
+file. We instruct Eventline to use this code during execution, with the
+provided arguments.
+
+During deployment, Eventline read script files and embed their content in the
+job specification structure as if it had been written inline.
+
+Even better, if this job is exported later, Evcli will recreate the original
+script file as you would expect.
+
 === Reference
 
 ==== Job specification
@@ -56,8 +130,8 @@ concurrent executions for this job or not.
 executions of this job will be deleted. This value override the global
 `job_retention` setting.
 
-`identities` (optional string array) :: The names of the identities to inject during
-job execution.
+`identities` (optional string array) :: The names of the identities to inject
+during job execution.
 
 `environment` (optional object) :: A set of environment variables mapping
 names to values to be defined during job execution.

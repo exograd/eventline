@@ -32,8 +32,6 @@ include::organization-with-projects.adoc[]
 
 include::managing-your-account.adoc[]
 
-include::administration.adoc[]
-
 include::deployment-and-configuration.adoc[]
 
 include::evcli.adoc[]
