@@ -6,9 +6,9 @@ Each job can select the runner to use for execution, and its parameters.
 
 The default runner is the most basic one, the local runner.
 
-=== Local
+=== `local`
 
-The local runner executes jobs directly on the machine where Eventline is
+The `local` runner executes jobs directly on the machine where Eventline is
 hosted.
 
 Its bigger advantage is how fast it is: since there is no intermediary
@@ -38,9 +38,9 @@ directory used to store temporary data during the execution of each job.
 
 There are no parameters for jobs using the local runner.
 
-=== Docker
+=== `docker`
 
-The Docker runner executes jobs in containers executed by the
+The `docker` runner executes jobs in containers executed by the
 https://www.docker.com[Docker daemon]. All the steps in a job are executed
 sequentially in the same container.
 
@@ -71,9 +71,9 @@ that can be used during execution.
 `memory_limit` (optional integer) :: Set a limit to the amount of memory in
 megabytes that can be used during execution.
 
-=== Kubernetes
+=== `kubernetes`
 
-The Kubernetes runner executes jobs in a https://kubernetes.io[Kubernetes
+The `kubernetes` runner executes jobs in a https://kubernetes.io[Kubernetes
 cluster]. All the steps in a job are executed sequentially in the same
 container of the same pod.
 
