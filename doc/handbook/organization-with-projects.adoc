@@ -42,6 +42,7 @@ default value is:
 set -eu
 ----
 
+[#project-notification-settings]
 === Notifications settings
 
 Each project can specify when notifications have to be sent.

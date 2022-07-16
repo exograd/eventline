@@ -1,3 +1,4 @@
+[#chapter-connectors]
 == Connectors
 
 _Coming soon._
