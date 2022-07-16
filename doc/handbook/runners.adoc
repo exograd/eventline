@@ -14,7 +14,7 @@ hosted.
 Its bigger advantage is how fast it is: since there is no intermediary
 execution layer, it lets you execute jobs in a few milliseconds.
 
-Using the local runner is also useful for jobs containing lower level tasks
+Using the `local` runner is also useful for jobs containing lower level tasks
 that could be difficult to run in a virtualized environment.
 
 .Example
@@ -24,19 +24,19 @@ runner:
   name: "local"
 ----
 
-Note that the local runner being the default runner, jobs using it do not need
+Note that the `local` runner being the default runner, jobs using it do not need
 to include a `runner` field.
 
 ==== Configuration
 
-The local runner supports the following settings:
+The `local` runner supports the following settings:
 
 `root_directory` (optional string, default to `tmp/local-execution`) :: The
 directory used to store temporary data during the execution of each job.
 
 ==== Parameters
 
-There are no parameters for jobs using the local runner.
+There are no parameters for jobs using the `local` runner.
 
 === `docker`
 
@@ -57,11 +57,24 @@ runner:
 
 ==== Configuration
 
-The Docker runner does not have any settings.
+The `docker` runner supports the following settings:
+
+`uri` (optional string) :: The URI of the Docker HTTP endpoint. If set,
+Eventline will connect to the Docker daemon in TCP mode instead of using the
+local UNIX socket.
+
+`ca_certificate_path` (optional string) :: The path of the CA certificate file
+to use to connect to the Docker daemon.
+
+`certificate_path` (optional string) :: The path of the certificate file to
+use to connect to the Docker daemon.
+
+`private_key_path` (optional string) :: The path of the private key file to
+use to connect to the Docker daemon.
 
 ==== Parameters
 
-Jobs using the Docker runner support the following parameters:
+Jobs using the `docker` runner support the following parameters:
 
 `image` (string) :: The reference of the image to use for the container.
 
@@ -91,7 +104,7 @@ NOTE: The `kubernetes` runner is only available in Eventline Pro.
 
 ==== Configuration
 
-The Kubernetes runner supports the following settings:
+The `kubernetes` runner supports the following settings:
 
 `config_path` (optional string) :: The path of the
 https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig[kubeconfig]
@@ -104,7 +117,7 @@ pods into.
 
 ==== Parameters
 
-Jobs using the Kubernetes runner support the following parameters:
+Jobs using the `kubernetes` runner support the following parameters:
 
 `image` (string) :: The reference of the image to use for the container.
 

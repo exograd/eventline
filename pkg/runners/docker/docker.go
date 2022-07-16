@@ -17,9 +17,19 @@ import (
 	"github.com/exograd/eventline/pkg/utils"
 )
 
-func newClient() (*dockerclient.Client, error) {
+func newLocalClient() (*dockerclient.Client, error) {
 	opts := []dockerclient.Opt{
 		dockerclient.WithAPIVersionNegotiation(),
+	}
+
+	return dockerclient.NewClientWithOpts(opts...)
+}
+
+func newTCPClient(uri, caCertPath, certPath, keyPath string) (*dockerclient.Client, error) {
+	opts := []dockerclient.Opt{
+		dockerclient.WithAPIVersionNegotiation(),
+		dockerclient.WithHost(uri),
+		dockerclient.WithTLSClientConfig(caCertPath, certPath, keyPath),
 	}
 
 	return dockerclient.NewClientWithOpts(opts...)

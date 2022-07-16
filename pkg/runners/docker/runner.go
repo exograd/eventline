@@ -13,6 +13,7 @@ import (
 type Runner struct {
 	runner *eventline.Runner
 	log    *log.Logger
+	cfg    *RunnerCfg
 
 	client *dockerclient.Client
 
@@ -30,11 +31,10 @@ func RunnerDef() *eventline.RunnerDef {
 }
 
 func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
-	//cfg := r.Cfg.(*RunnerCfg)
-
 	return &Runner{
 		runner: r,
 		log:    r.Log,
+		cfg:    r.Cfg.(*RunnerCfg),
 	}
 }
 
@@ -44,12 +44,18 @@ func (r *Runner) DirPath() string {
 
 func (r *Runner) Init(ctx context.Context) error {
 	// Create the client
-	client, err := newClient()
+	var err error
+
+	if r.cfg.URI == "" {
+		r.client, err = newLocalClient()
+	} else {
+		r.client, err = newTCPClient(r.cfg.URI, r.cfg.CACertificatePath,
+			r.cfg.CertificatePath, r.cfg.PrivateKeyPath)
+	}
+
 	if err != nil {
 		return fmt.Errorf("cannot create client: %w", err)
 	}
-
-	r.client = client
 
 	// Pull the image
 	if err := r.pullImage(ctx); err != nil {
