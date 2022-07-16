@@ -1,0 +1,87 @@
+=== `time`
+
+The `time` connector provides a way to execute jobs using various kind of
+timers.
+
+==== Event subscription parameters
+
+Parameters must include one of the following fields:
+
+`oneshot` (string) :: The trigger will be activated one single time. The value
+is a datetime string.
+
+`periodic` (integer) :: The trigger will be activated at a fixed time
+interval. The value is the number of seconds between two activations.
+
+`hourly` (object) :: The trigger will be activated every hour. The value is an
+object containing two optional fields `minute` and `second` indicating the precise
+activation time.
+
+`daily` (object) :: The trigger will be activated every day. The value is an
+object containing three optional fields `hour`, `minute`, and `second`
+indicating the precise activation time.
+
+`weekly` (object) :: The trigger will be activated every week. The value is an
+object containing four fields `day`, `hour`, `minute`, and `second` indicating
+the precise activation time. The mandatory `day` field is a string indicating
+the day of the week between `monday` and `sunday`. Other fields are optional.
+
+==== Event: `tick`
+
+The `time/tick` event is emitted when a timer goes off.
+
+Job triggered by `time/tick` events are instantiated when the timer goes off.
+Eventline will instantiate job executions for past, missed datetimes. For
+example, if Eventline is down for a whole day and a job is supposed to be run
+every hour, it will instantiate a job execution for every hour as soon as it
+goes up. These executions will be queued for scheduling and executed
+sequentially or concurrently depending on the job definition.
+
+TIP: In `time/tick` events, the `event_time` field is the date the timer was
+supposed to go off, while the `creation_time` is the date the event was
+actually created. You may need both values depending on the work you are
+doing.
+
+===== Examples
+
+.Periodic timer
+[source,yaml]
+----
+name: "every-5-minutes"
+trigger:
+  event: "time/tick"
+  parameters:
+    periodic: 300
+----
+
+.Hourly timer
+[source,yaml]
+----
+name: "every-hour"
+trigger:
+  event: "time/tick"
+----
+
+.Daily timer
+[source,yaml]
+----
+name: "every-day-at-7am"
+trigger:
+  event: "time/tick"
+  parameters:
+    daily:
+      hour: 7
+----
+
+.Weekly timer
+[source,yaml]
+----
+name: "every-friday-at-18h30"
+trigger:
+  event: "time/tick"
+  parameters:
+    weekly:
+      day: "friday"
+      hour: 18
+      minute: 30
+----

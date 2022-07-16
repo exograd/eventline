@@ -1,0 +1,8 @@
+`access_token` (optional string) :: The OAuth2 access token. Automatically
+handled by Eventline.
+
+`refresh_token` (optional string) :: The OAuth2 refresh token. Automatically
+handled by Eventline.
+
+`expiration_time` (optional string) :: The expiration date for the access
+token. Automatically handled by Eventline.

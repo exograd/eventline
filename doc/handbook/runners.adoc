@@ -87,7 +87,7 @@ runner:
     namespace: "eventline"
 ----
 
-NOTE: The Kubernetes runner is only available in Eventline Pro.
+NOTE: The `kubernetes` runner is only available in Eventline Pro.
 
 ==== Configuration
 

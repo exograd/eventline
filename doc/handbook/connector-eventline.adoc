@@ -1,0 +1,21 @@
+=== `eventline`
+
+The `eventline` connector is used to provide identities related to the
+Eventline platform itself.
+
+It is currently only used for Eventline API keys.
+
+==== Identity: `api_key`
+
+The `eventline/api_key` identity is used to connect to the Eventline platform
+with Evcli.
+
+===== Data fields
+
+`key` (string) :: The API key.
+
+===== Environment variables
+
+`EVENTLINE_API_KEY` :: The API key.
+
+This environment variable is used by the Evcli command line tool.

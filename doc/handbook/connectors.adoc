@@ -1,4 +1,16 @@
 [#chapter-connectors]
 == Connectors
 
-_Coming soon._
+include::connector-dockerhub.adoc[]
+
+include::connector-eventline.adoc[]
+
+include::connector-generic.adoc[]
+
+include::connector-github.adoc[]
+
+include::connector-postgresql.adoc[]
+
+include::connector-slack.adoc[]
+
+include::connector-time.adoc[]

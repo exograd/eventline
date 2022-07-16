@@ -1,0 +1,73 @@
+=== `generic`
+
+The `generic` connector is used to provide generic identities to store
+credentials for whom there are no dedicated connectors.
+
+==== Identity: `api_key`
+
+A generic API key.
+
+===== Data fields
+
+`key` (string) :: The API key.
+
+==== Identity: `password`
+
+A generic login and password pair, the login being optional.
+
+===== Data fields
+
+`login` (optional string) :: The login.
+
+`password` (string) :: The password.
+
+==== Identity: `ssh_key`
+
+A SSH key.
+
+===== Data fields
+
+`private_key` (string) :: The private key in PEM format.
+
+`public_key` (optional string) :: The public key in PEM format.
+
+`certificate` (optional string) :: The certificate in PEM format.
+
+Note that OpenSSH will fail to load a private key, public key or certificate
+file which does not end with a new line character (`\n`). Eventline will
+automatically add one at the end of each field of this identity if there is
+not already one present.
+
+==== Identity: `oauth2`
+
+The `generic/oauth2` identity can be used for any platform which complies with
+OAuth2 specifications. If `discovery` is true, Eventline will use OAuth2
+discovery (https://datatracker.ietf.org/doc/html/rfc8414[RFC 8414]) to find
+other endpoints.
+
+===== Data fields
+
+`issuer` (string) :: The issuer URI.
+
+`discovery` (optional boolean, default to `false`) :: Whether to enable OAuth2
+discovery.
+
+`discovery_endpoint` (optional string) :: The URI of the discovery endpoint.
+Note that this field will be ignored if `discovery` is false. The default
+value is the endpoint mandated by OAuth2 specifications.
+
+`authorization_endpoint` (optional string) :: The URI of the authorization
+endpoint. The default value is the endpoint mandated by OAuth2 specifications
+or the endpoint found during discovery if `discovery` is true.
+
+`token_endpoint` (optional string) :: The URI of the token
+endpoint. The default value is the endpoint mandated by OAuth2 specifications
+or the endpoint found during discovery if `discovery` is true.
+
+`client_id` (string) :: The client identifier.
+
+`client_secret` (string) :: The client secret.
+
+`scopes` (string array) :: A comma-separated list of scopes to request.
+
+include::generic-oauth2-data-fields.adoc[]

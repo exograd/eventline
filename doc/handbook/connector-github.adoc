@@ -1,0 +1,230 @@
+=== `github`
+
+The `github` connector provides identities and events for the
+https://github.com[GitHub] platform.
+
+==== Identity: `oauth2`
+
+The `github/oauth2` identity contains a username and an OAuth2 access token.
+
+During the creation of the identity, you will be redirected to the GitHub
+website to authorize the creation of a new access token.
+
+Note that due to a limitation of the ghcr.io Docker registry, this identity
+cannot be use as runner identity for runners `docker` and `kubernetes`.
+
+===== Data fields
+
+`username` (string) :: The name of the GitHub account.
+
+`scopes` (string array) :: The list of OAuth2 scopes.
+
+include::generic-oauth2-data-fields.adoc[]
+
+===== Environment variables
+
+`GITHUB_USER` :: The name of the GitHub account.
+
+`GITHUB_TOKEN` :: The GitHub access token.
+
+These environment variables are used by the
+https://github.com/cli/cli[official GitHub command line tool] among others.
+
+==== Identity `token`
+
+The `github/token` identity is used to store GitHub
+https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token[personal
+access tokens].
+
+NOTE: `github/token` identities used in triggers require the following scopes:
+
+* `admin:repo_hook`
+* `admin:org_hook`
+* `read:packages`
+
+You may need to add additional permissions if you intend to use this identity
+in jobs for other purposes, for example to interact with the GitHub API.
+
+This identity be used for authentication in runners `docker` and `kubernetes`.
+
+===== Data fields
+
+`username` (string) :: The name of the GitHub account.
+
+`token` (string) :: The GitHub private access token.
+
+===== Environment variables
+
+`GITHUB_USER` :: The name of the GitHub account.
+
+`GITHUB_TOKEN` :: The GitHub private access token.
+
+These environment variables are used by the
+https://github.com/cli/cli[official GitHub command line tool] among others.
+
+==== Event subscription parameters
+
+`organization` (string) :: The name of the GitHub organization.
+
+`repository` (optional string) :: The name of the repository.
+
+Setting only `organization` will subscribe to events for all repositories in
+the origanization, while settings both fields will subscribe to events for a
+single repository.
+
+==== Event: `raw`
+
+The `github/raw` event is used to access raw data from GitHub events and is
+emitted for every single organization or repository event. It can be used when
+other events do not contain the required information.
+
+===== Data fields
+
+`delivery_id` (string) :: The delivery id of the event. See the
+https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#delivery-headers[GitHub
+documentation] for more information.
+
+`event_type` (string) :: The type of the event.
+
+`event` (object) :: The raw event payload delivered by GitHub.
+
+WARNING: Subscribing to `github/raw` events will potentially result in lots of
+events created and lots of jobs executed. Make sure you actually need this
+kind of low level access to event data.
+
+==== Event: `repository_creation`
+
+The `github/repository_creation` event is emitted when a repository is created
+in an organization.
+
+===== Data fields
+
+`organization` (string) :: The name of the GitHub organization.
+
+`repository` (string) :: The name of the repository.
+
+==== Event: `repository_deletion`
+
+The `github/repository_deletion` event is emitted when a repository is deleted
+in an organization.
+
+===== Data fields
+
+`organization` (string) :: The name of the GitHub organization.
+
+`repository` (string) :: The name of the repository.
+
+==== Event: `tag_creation`
+
+The `github/tag_creation` event is emitted when a tag is created in a
+repository.
+
+NOTE: Due to a GitHub limitation, this event will not be emitted if more than
+three tags are pushed at the same time.
+
+===== Data fields
+
+`organization` (string) :: The name of the GitHub organization.
+
+`repository` (string) :: The name of the repository.
+
+`tag` (string) :: The name of the tag.
+
+`revision` (string) :: The hash of the revision associated with the tag.
+
+==== Event: `tag_deletion`
+
+The `github/tag_deletion` event is emitted when a tag is deleted in a
+repository.
+
+===== Data fields
+
+`organization` (string) :: The name of the GitHub organization.
+
+`repository` (string) :: The name of the repository.
+
+`tag` (string) :: The name of the tag.
+
+`revision` (string) :: The hash of the revision associated with the tag.
+
+==== Event: `branch_creation`
+
+The `github/tag_created` event is emitted when a branch is created in a
+repository.
+
+===== Data fields
+
+`organization` (string) :: The name of the GitHub organization.
+
+`repository` (string) :: The name of the repository.
+
+`branch` (string) :: The name of the branch.
+
+`revision` (string) :: The hash of the revision the branch starts from.
+
+==== Event: `branch_deletion`
+
+The `github/branch_deleted` event is emitted when a branch is deleted in a
+repository.
+
+===== Data fields
+
+`organization` (string) :: The name of the GitHub organization.
+
+`repository` (string) :: The name of the repository.
+
+`branch` (string) :: The name of the branch.
+
+`revision` (string) :: The hash of the revision the branch pointed to when the
+deletion occurred.
+
+==== Event: `push`
+
+The `github/push` event is emitted when one or more commits are pushed in a
+repository.
+
+===== Data fields
+
+`organization` (string) :: The name of the GitHub organization.
+
+`repository` (string) :: The name of the repository.
+
+`branch` (string) :: The branch where commits were pushed.
+
+`old_revision` (optional string) :: The hash of the revision the branch
+pointed to before the push. This field is not set for the first push in a
+repository.
+
+`new_revision` (string) :: The hash of the revision the branch pointed to
+after the push.
+
+===== Examples
+
+.Commits on the `stable` branch
+[source,yaml]
+----
+name: "stable-branch-commits"
+trigger:
+  event: "github/push"
+  parameters:
+    organization: "my-organization"
+    repository: "my-product"
+  filters:
+    - path: "/branch"
+      is_equal_to: "stable"
+  identity: "github-oauth2"
+----
+
+.New demo branches in the organization
+[source,yaml]
+----
+name: "new-demo-branches"
+trigger:
+  event: "github/branch_creation"
+  parameters:
+    organization: "my-organization"
+  filters:
+    - path: "/branch"
+      matches: "^demo-"
+  identity: "github-oauth2"
+----

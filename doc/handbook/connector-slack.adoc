@@ -1,0 +1,44 @@
+=== `slack`
+
+The `slack` connector provides identities for the https://slack.com[Slack]
+platform.
+
+NOTE: The `slack` connector is only available in Eventline Pro.
+
+==== Identity: `oauth2_bot`
+
+The `slack/oauth2_bot` identity is used to store
+https://api.slack.com/authentication/token-types#bot[Slack bot tokens]. It is
+used to interact with the Slack API independently of any user account.
+
+===== Data fields
+
+`scopes` (string array) :: The list of OAuth2 scopes.
+
+include::generic-oauth2-data-fields.adoc[]
+
+`incoming_webhook_channel` (string) :: The name of the channel associated with
+the https://api.slack.com/messaging/webhooks[incoming webhook] if the
+`incoming-webhook` scope was selected.
+
+`incoming_webhook_uri` (string) :: The URI of the
+https://api.slack.com/messaging/webhooks[incoming webhook] if the
+`incoming-webhook` scope was selected.
+
+==== Identity: `oauth2_user`
+
+The `slack/oauth2_user` identity is used to store
+https://api.slack.com/authentication/token-types#user[Slack user tokens]. It
+is used to interact with the Slack API on behalf of a specific user account.
+
+`scopes` (string array) :: The list of OAuth2 scopes.
+
+include::generic-oauth2-data-fields.adoc[]
+
+`incoming_webhook_channel` (string) :: The name of the channel associated with
+the https://api.slack.com/messaging/webhooks[incoming webhook] if the
+`incoming-webhook` scope was selected.
+
+`incoming_webhook_uri` (string) :: The URI of the
+https://api.slack.com/messaging/webhooks[incoming webhook] if the
+`incoming-webhook` scope was selected.
