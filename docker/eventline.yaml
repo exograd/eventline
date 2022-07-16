@@ -30,6 +30,10 @@ connectors:
 max_parallel_jobs: {{ env "EVENTLINE_MAX_PARALLEL_JOBS" }}
 job_retention: {{ env "EVENTLINE_JOB_RETENTION" }}
 
+runners:
+  local:
+    root_directory: "/var/tmp/eventline/local-execution"
+
 notifications:
   smtp_server:
     address: {{ env "EVENTLINE_NOTIFICATIONS_SMTP_SERVER_ADDRESS" }}
