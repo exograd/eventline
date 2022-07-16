@@ -461,6 +461,16 @@ func (rd *RunnerData) Environment() map[string]string {
 		env[name] = value
 	}
 
+	for _, param := range rd.JobExecution.JobSpec.Parameters {
+		if param.Environment == "" {
+			continue
+		}
+
+		if value, found := rd.JobExecution.Parameters[param.Name]; found {
+			env[param.Environment] = param.ValueString(value)
+		}
+	}
+
 	return env
 }
 

@@ -234,3 +234,28 @@ func (p *Parameter) Label() string {
 	label := reParameterLabelRE.ReplaceAllString(p.Name, " ")
 	return utils.Capitalize(label)
 }
+
+func (p *Parameter) ValueString(value interface{}) (s string) {
+	switch p.Type {
+	case ParameterTypeNumber:
+		return fmt.Sprintf("%v", value)
+
+	case ParameterTypeInteger:
+		return fmt.Sprintf("%v", value)
+
+	case ParameterTypeString:
+		return value.(string)
+
+	case ParameterTypeBoolean:
+		if value.(bool) == true {
+			return "true"
+		} else {
+			return "false"
+		}
+
+	default:
+		utils.Panicf("unhandled parameter type %v", p.Type)
+	}
+
+	return
+}
