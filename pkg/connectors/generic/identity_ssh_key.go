@@ -1,6 +1,8 @@
 package generic
 
 import (
+	"strings"
+
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
 )
@@ -18,6 +20,21 @@ func SSHKeyIdentityDef() *eventline.IdentityDef {
 
 func (i *SSHKeyIdentity) Check(c *check.Checker) {
 	c.CheckStringNotEmpty("private_key", i.PrivateKey)
+
+	// OpenSSH will fail with strange errors if key files do not end with a
+	// newline character; we add it ourselves if it is not here.
+
+	if !strings.HasSuffix(i.PrivateKey, "\n") {
+		i.PrivateKey += "\n"
+	}
+
+	if i.PublicKey != "" && !strings.HasSuffix(i.PublicKey, "\n") {
+		i.PublicKey += "\n"
+	}
+
+	if i.Certificate != "" && !strings.HasSuffix(i.Certificate, "\n") {
+		i.Certificate += "\n"
+	}
 }
 
 func (i *SSHKeyIdentity) Def() *eventline.IdentityDataDef {
