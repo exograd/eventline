@@ -74,8 +74,9 @@ Please refer to the documentation for a [quick start
 guide](doc/handbook/getting-started.adoc).
 
 ## Documentation
-The Eventline handbook is available both [in the repository](doc/handbook/)
-and [online](https://docs.eventline.net). It is also distributed with GitHub
+The Eventline handbook is available both [in the
+repository](doc/handbook/handbook.adoc) and
+[online](https://docs.eventline.net). It is also distributed with GitHub
 releases in PDF and in HTML.
 
 ## Commercial use
