@@ -448,7 +448,6 @@ func (rd *RunnerData) Environment() map[string]string {
 		"EVENTLINE_JOB_ID":           rd.JobExecution.JobId.String(),
 		"EVENTLINE_JOB_NAME":         rd.JobExecution.JobSpec.Name,
 		"EVENTLINE_JOB_EXECUTION_ID": rd.JobExecution.Id.String(),
-		"EVENTLINE_CONTEXT_PATH":     "/eventline/context.json",
 	}
 
 	for _, i := range rd.ExecutionContext.Identities {
