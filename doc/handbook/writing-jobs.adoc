@@ -138,6 +138,7 @@ names to values to be defined during job execution.
 
 `steps` (object array) :: A list of steps which will be executed sequentially.
 
+[#trigger-spec]
 ==== Trigger specification
 
 A trigger is an object containing the following fields:

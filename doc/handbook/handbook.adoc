@@ -20,11 +20,11 @@ include::getting-started.adoc[]
 
 include::writing-jobs.adoc[]
 
-include::triggers-and-events.adoc[]
-
 include::using-identities.adoc[]
 
 include::runners.adoc[]
+
+include::executing-jobs.adoc[]
 
 include::connectors.adoc[]
 

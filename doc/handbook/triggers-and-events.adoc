@@ -1,3 +1,0 @@
-== Triggers and events
-
-_Coming soon._
