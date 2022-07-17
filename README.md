@@ -65,6 +65,19 @@ Once defined, simply deploy it using the evcli command line program:
 evcli deploy-job export-clients.yaml
 ```
 
+## Running Eventline
+The simplest way to run Eventline is to use the [Docker
+Compose](misc/docker-compose.yaml) setup, which pulls the official
+`exograd/eventline` Docker image.
+
+Please refer to the documentation for a [quick start
+guide](doc/handbook/getting-started.adoc).
+
+## Documentation
+The Eventline handbook is available both [in the repository](doc/handbook/)
+and [online](https://docs.eventline.net). It is also distributed with GitHub
+releases in PDF and in HTML.
+
 ## Commercial use
 We also provide Eventline Pro with multiple extensions and commercial support.
 
