@@ -130,8 +130,9 @@ install: build doc
 	cp -r $(DOC_PDF) $(docdir)/eventline
 	mkdir -p $(docdir)/eventline/html
 	cp -r $(DOC_HTML) $(docdir)/eventline/html
-	cp -rL $(dir $(DOC_HTML))/images $(docdir)/eventline/html
-	cp -rL $(dir $(DOC_HTML))/fonts $(docdir)/eventline/
+	cp -r $(dir $(DOC_HTML))images $(docdir)/eventline/html
+	mkdir -p $(docdir)/eventline/fonts
+	cp -r doc/fonts/*.woff2 $(docdir)/eventline/fonts
 
 install-flat: build doc
 	@if [ -z "$(DESTDIR)" ]; then echo "DESTDIR not set" >&2; exit 1; fi
@@ -146,8 +147,9 @@ install-flat: build doc
 	cp -r $(DOC_PDF) $(DESTDIR)/doc
 	mkdir -p $(DESTDIR)/doc/html
 	cp -r $(DOC_HTML) $(DESTDIR)/doc/html
-	cp -rL $(dir $(DOC_HTML))/images $(DESTDIR)/doc/html
-	cp -rL $(dir $(DOC_HTML))/fonts $(DESTDIR)/doc/
+	cp -r $(dir $(DOC_HTML))images $(DESTDIR)/doc/html
+	mkdir -p $(DESTDIR)/doc/fonts
+	cp -r doc/fonts/*.woff2 $(DESTDIR)/doc/fonts
 
 clean:
 	$(call evweb_make,clean)
