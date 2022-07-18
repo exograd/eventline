@@ -19,6 +19,7 @@ page:
 
 base:
   font-family: "main"
+  font_color: "#000000"
 
 heading:
   font-family: "title"
