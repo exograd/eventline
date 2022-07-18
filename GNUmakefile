@@ -90,6 +90,8 @@ doc-pdf: $(DOC_PDF)
 %.html: $$(wildcard doc/**/*.adoc) doc/html-theme.css
 	asciidoctor --backend html \
 	            --destination-dir $(dir $@) \
+	            -a docinfo=shared \
+	            -a nofooter \
 	            -a rouge-style=base16.dark \
 	            -a stylesdir=.. \
 	            -a stylesheet=html-theme.css \
