@@ -85,4 +85,4 @@
 {{template "page_buttons.html" .Page}}
 {{end}}
 
-{{template "jobs_modals.html"}}
+{{template "job_executions_modals.html"}}

@@ -134,6 +134,14 @@
                   Disable
                 </a>
                 {{end}}
+
+                <hr class="dropdown-divider">
+
+                <a class="dropdown-item has-text-danger"
+                   data-id="{{.Id}}" data-name="{{.Spec.Name}}"
+                   data-action="delete">
+                  Delete
+                </a>
               </div>
             </div>
           </div>
@@ -148,3 +156,5 @@
 
 {{template "page_buttons.html" .Page}}
 {{end}}
+
+{{template "jobs_modals.html"}}

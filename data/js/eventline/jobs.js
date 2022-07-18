@@ -19,6 +19,12 @@ function evSetupJobList() {
     link.onclick = evOnEnableJobClicked;
   });
 
+  const deleteLinkSelector = "#ev-jobs a[data-action='delete']";
+  const deleteLinks = document.querySelectorAll(deleteLinkSelector);
+  deleteLinks.forEach(link => {
+    link.onclick = evOnDeleteJobClicked;
+  });
+
   const addFavouriteIconSelector = "#ev-jobs .icon.ev-is-favourite";
   const addFavouriteIcons = document.querySelectorAll(addFavouriteIconSelector);
   addFavouriteIcons.forEach(icon => {
@@ -106,6 +112,47 @@ function evOnEnableJobClicked(event) {
     .catch (e => {
       evShowError(`cannot enable job: ${e.message}`);
     });
+}
+
+function evOnDeleteJobClicked(event) {
+  event.preventDefault();
+
+  const link = event.target;
+  const id = link.dataset.id;
+  const name = link.dataset.name;
+
+  const modal = document.querySelector("#ev-delete-job-modal");
+
+  console.log("MODAL", modal);
+  modal.querySelector(".ev-job-name").textContent = name;
+
+  modal.querySelectorAll("button[name='cancel']").forEach(button => {
+    button.onclick = evCloseModals;
+  });
+
+  const deleteButton = modal.querySelector("button[name='delete']");
+  deleteButton.onclick = function () {
+    deleteButton.classList.add("is-loading");
+
+    const uri = `/jobs/id/${id}/delete`
+    const request = {
+      method: "POST"
+    };
+
+    evFetch(uri, request)
+      .then(response => {
+        window.location.href = response.data.location;
+      })
+      .catch (e => {
+        evShowError(`cannot delete job ${name}: ${e.message}`);
+        evCloseModals();
+      })
+      .finally(() => {
+        deleteButton.classList.remove("is-loading");
+      });
+  }
+
+  evOpenModal(modal);
 }
 
 function evSetupJobTimeline() {

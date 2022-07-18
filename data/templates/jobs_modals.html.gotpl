@@ -1,37 +1,21 @@
-<div id="ev-abort-job-modal" class="modal">
+<div id="ev-delete-job-modal" class="modal">
   <div class="modal-background"></div>
   <div class="modal-card">
     <header class="modal-card-head">
-      <h1 class="modal-card-title">Job abortion</h1>
+      <h1 class="modal-card-title">Job deletion</h1>
       <button name="cancel" class="delete"></button>
     </header>
     <section class="modal-card-body">
       <p>
-        Do you want to abort this job ? Steps currently being executed will be
-        interrupted, and all remaining steps will be cancelled.
+        Do you want to delete
+        job <strong><span class="ev-job-name"></span></strong> ?
       </p>
-    </section>
-    <footer class="modal-card-foot">
-      <button name="abort" class="button is-danger">Abort</button>
-      <button name="cancel" class="button">Cancel</button>
-    </footer>
-  </div>
-</div>
-
-<div id="ev-restart-job-modal" class="modal">
-  <div class="modal-background"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
-      <h1 class="modal-card-title">Job restart</h1>
-      <button name="cancel" class="delete"></button>
-    </header>
-    <section class="modal-card-body">
       <p>
-        Do you want to restart this job ? All steps will be re-executed.
+        <strong>This action cannot be undone.</strong>
       </p>
     </section>
     <footer class="modal-card-foot">
-      <button name="restart" class="button is-info">Restart</button>
+      <button name="delete" class="button is-danger">Delete</button>
       <button name="cancel" class="button">Cancel</button>
     </footer>
   </div>
