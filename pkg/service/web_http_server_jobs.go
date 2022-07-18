@@ -23,6 +23,10 @@ func (s *WebHTTPServer) setupJobRoutes() {
 		s.hJobsIdTimelineGET,
 		HTTPRouteOptions{Project: true})
 
+	s.route("/jobs/id/{id}/delete", "POST",
+		s.hJobsIdDeletePOST,
+		HTTPRouteOptions{Project: true})
+
 	s.route("/jobs/id/{id}/enable", "POST",
 		s.hJobsIdEnablePOST,
 		HTTPRouteOptions{Project: true})
@@ -225,6 +229,19 @@ func (s *WebHTTPServer) hJobsIdTimelineGET(h *HTTPHandler) {
 		Tabs:       jobTabs(&job, "timeline"),
 		Body:       s.NewTemplate("job_timeline.html", bodyData),
 	})
+}
+
+func (s *WebHTTPServer) hJobsIdDeletePOST(h *HTTPHandler) {
+	jobId, err := h.IdRouteVariable("id")
+	if err != nil {
+		return
+	}
+
+	if err := s.DeleteJob(h, jobId); err != nil {
+		return
+	}
+
+	h.ReplyJSONLocation(200, "/jobs", nil)
 }
 
 func (s *WebHTTPServer) hJobsIdEnablePOST(h *HTTPHandler) {
