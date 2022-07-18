@@ -7,9 +7,9 @@ scheduling.
 
 === Triggers
 
-Each job can contain a trigger which specify when to execute it. The trigger
-defines an event, a set of parameters and optional additional filters.
-When the event occurs and filters match, Eventline instantiates the job.
+Each job can contain a trigger which specifies when to execute it. The trigger
+defines an event, a set of parameters and optional additional filters. When
+the event occurs and filters match, Eventline instantiates the job.
 
 If a job does not contain a trigger, it will never be instantiated
 automatically, but can still be executed manually.
@@ -66,7 +66,7 @@ image::images/manual-execution.png[]
 
 A job execution instantiated manually does not have any associated event.
 
-TIP: If you define a job to be executable with either a trigger or manual
+CAUTION: If you define a job to be executable with either a trigger or manual
 execution, you need to make sure that the code executed by the job handle the
 fact that there may or may not be an available event.
 
@@ -87,8 +87,8 @@ action of a user.
 `failed` :: The job execution has failed, either because one of the steps
 failed or due to an internal error.
 
-Each step in the job execution uses the same status code, allowing users to
-track the execution process.
+Each step in the job execution has a status code with the same possible
+values, allowing users to track the execution process.
 
 Users can affect this lifecycle by aborting or restarting jobs. Both actions
 can be done on the web interface, with Evcli or with the HTTP API.
@@ -133,16 +133,19 @@ the job, containing a file for each field of the identity. For example, if a
 job uses a `github/oauth2` identity named `gh`, the access token will be
 available in `identities/gh/access_token`.
 
+CAUTION: The location of this directory depends on the runner due to technical
+limitations; always use the `EVENTLINE_DIR` to build paths.
+
 Having event and identity fields available as simple text files makes it
 really simple to write jobs written as shell scripts. Using the previous
 example, reading the access token of the identity in shell in trivial:
 [source,sh]
 ----
-access_token=<(cat $EVENTLINE_DIR/identities/gh/access_token)
+access_token=$(<$EVENTLINE_DIR/identities/gh/access_token)
 ----
 
-CAUTION: The location of this directory depends on the runner due to technical
-limitations; always use the `EVENTLINE_DIR` to build paths.
+Alternatively, in higher level languages, simply load `context.json` and
+access all data directly.
 
 ==== Execution context
 

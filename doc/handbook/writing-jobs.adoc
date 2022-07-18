@@ -25,7 +25,7 @@ jobs in the repository, and trigger it on new commits.
 
 === Export
 
-Any job can be exported out of Eventline at any time using Evcli and the
+Jobs can be exported out of Eventline at any time using Evcli and the
 `export-job` command. The job is exported as a job specification file which
 can then be edited and re-deployed.
 
@@ -49,7 +49,7 @@ steps:
   - code: |
       #!/usr/bin/env ruby
 
-      puts "Use any language you want!"
+      puts "Use the language of your choice."
 ----
 
 The first code block does not start with a
@@ -71,7 +71,7 @@ name: "command"
 steps:
   - command:
       name: "ls"
-      arguments: ["-l", "/eventline"]
+      arguments: ["-l", "/tmp"]
 ----
 
 Here we simply execute the `ls` program with two arguments.
@@ -80,8 +80,8 @@ Here we simply execute the `ls` program with two arguments.
 
 Scripts give you the ability to use files written out of the job definition
 file. This is particularly nice when you have to write more than a couple
-lines of code, and want to use a proper code editor instead of writing inline
-code in a YAML file.
+lines of code, and want to edit the code properly instead of writing inline
+YAML content.
 
 .Example
 [source,yaml]
@@ -94,13 +94,13 @@ steps:
 ----
 
 In this example, the actual code is written in the `utils/generate-report.rb`
-file. We instruct Eventline to use this code during execution, with the
+file. We instruct Eventline to use this code during execution with the
 provided arguments.
 
-During deployment, Eventline read script files and embed their content in the
+During deployment, Eventline reads script files and embeds their content in the
 job specification structure as if it had been written inline.
 
-Even better, if this job is exported later, Evcli will recreate the original
+Even better, if the job is exported later, Evcli will recreate the original
 script file as you would expect.
 
 === Reference
@@ -183,7 +183,7 @@ used to inject the value of this parameter during execution.
 
 ==== Filter specification
 
-Each filter is an object made of a path, and zero or more predicates. The path
+Each filter is an object made of a path and zero or more predicates. The path
 is a JSON pointer (see https://datatracker.ietf.org/doc/html/rfc6901[RFC
 6901]) applied to the data of the event.
 
@@ -208,6 +208,7 @@ expression; the predicate matches if the value referenced by the path is a
 string which does not match this regular expression.
 
 .Example
+[source,yaml]
 ----
 filters:
   - path: "/branch"

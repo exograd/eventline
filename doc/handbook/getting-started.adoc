@@ -92,10 +92,10 @@ steps:
       echo "Hello world!"
 ----
 
-We define a job and give it a name. We then describe *when* to run the job
-using a trigger: the job will react to the `tick` events from the `time`
-connector, and will be executed periodically, every 30 seconds. Finally we
-provide the code to run as a list of steps.
+We define a job and give it a name. We then describe when to run the job using
+a trigger: the job will react to the `tick` events from the `time` connector,
+and will be executed periodically, every 30 seconds. Finally we provide the
+code to run as a list of steps.
 
 Save the file, and deploy the job using Evcli:
 ----

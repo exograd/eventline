@@ -45,12 +45,13 @@ set -eu
 [#project-notification-settings]
 === Notifications settings
 
-Each project can specify when notifications have to be sent.
+Each project can specify when notifications are sent.
 
-You can send notifications in the following situations:
+Eventline send notifications in the following situations:
 
 * When jobs succeed.
-* When jobs succeed for the first time after one or more failures or abortions.
+* When jobs succeed for the first time after one or more failures or
+  abortions.
 * When jobs fail.
 * When jobs are aborted.
 * When OAuth2 identities cannot be refreshed.

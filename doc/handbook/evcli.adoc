@@ -50,9 +50,10 @@ to `<level>`.
 
 `--project-id <id>` :: Select the current project by identifier.
 
-`-q`, `--quiet`: Do not print status or information messages.
+`-q`, `--quiet` :: Do not print status or information messages.
 
-`-y`, `--yes`: skip all confirmation and automatically approve all questions.
+`-y`, `--yes` :: Skip all confirmation and automatically approve all
+questions.
 
 === Commands
 

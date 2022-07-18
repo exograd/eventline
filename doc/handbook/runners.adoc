@@ -2,7 +2,7 @@
 == Runners
 
 Eventline has the ability to run jobs in different environments using runners.
-Each job can select the runner to use for execution, and its parameters.
+Each job can select the runner to use for execution and its parameters.
 
 The default runner is the most basic one, the local runner.
 
@@ -12,7 +12,7 @@ The `local` runner executes jobs directly on the machine where Eventline is
 hosted.
 
 Its bigger advantage is how fast it is: since there is no intermediary
-execution layer, it lets you execute jobs in a few milliseconds.
+execution layer, it lets you execute jobs in a couple milliseconds.
 
 Using the `local` runner is also useful for jobs containing lower level tasks
 that could be difficult to run in a virtualized environment.
@@ -72,6 +72,9 @@ use to connect to the Docker daemon.
 `private_key_path` (optional string) :: The path of the private key file to
 use to connect to the Docker daemon.
 
+WARNING: Using HTTP to connect to the Docker daemon is experimental; it is not
+recommended for security reasons.
+
 ==== Parameters
 
 Jobs using the `docker` runner support the following parameters:
@@ -109,8 +112,8 @@ The `kubernetes` runner supports the following settings:
 `config_path` (optional string) :: The path of the
 https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig[kubeconfig]
 file to use to connect to the cluster. If not set, Eventline will either use
-the value of the `KUBECONFIG` environment variable if it set or to
-`$HOME/.kube/config`.
+the value of the `KUBECONFIG` environment variable if it set or
+`$HOME/.kube/config` otherwise.
 
 `namespace` (optional string, default to `default`) :: The namespace to create
 pods into.

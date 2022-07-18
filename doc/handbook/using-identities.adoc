@@ -29,7 +29,7 @@ identity.
 Identities with statuses `pending` or `error` cannot be used in jobs.
 
 Most identities are self-sufficient and will be ready as soon as they are
-created. Others, such as OAuth2 identities, require extra initialization steps
+created. Others such as OAuth2 identities require extra initialization steps
 to get ready. If these steps are not completed, for example if the web browser
 is closed during a redirection, the identity will stay with the `pending`
 status. If one of these steps fails, the identity will have the `error`
