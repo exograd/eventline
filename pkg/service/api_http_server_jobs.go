@@ -19,9 +19,6 @@ func (s *APIHTTPServer) setupJobRoutes() {
 	s.route("/jobs/id/{id}", "DELETE", s.hJobsIdDELETE,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}", "DELETE", s.hJobsIdDELETE,
-		HTTPRouteOptions{Project: true})
-
 	s.route("/jobs/name/{name}", "GET", s.hJobsNameGET,
 		HTTPRouteOptions{Project: true})
 
