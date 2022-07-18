@@ -5,6 +5,8 @@
 :author: Exograd SAS
 :email: contact@exograd.com
 :doctype: book
+:docinfo: shared
+:nofooter:
 :description: Reference for the Eventline scheduling platform
 :toc: left
 :toclevels: 2
@@ -12,7 +14,6 @@
 :toc-placement: left
 :sectnums:
 :source-highlighter: rouge
-:rouge-style: base16.solarized.light
 
 include::preface.adoc[]
 

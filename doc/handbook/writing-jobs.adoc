@@ -166,11 +166,12 @@ A parameter is an object containing the following fields:
 
 `type` (string) :: The type of the parameter. The following types are
 supported:
-* `number`: either an integer or an IEEE 754 double precision floating point
-  value.
-* `integer`: an integer.
-* `string`: a character string.
-* `boolean`: a boolean.
+
+    `number` ::: Either an integer or an IEEE 754 double precision floating point
+    value.
+    `integer` ::: An integer.
+    `string` ::: A character string.
+    `boolean` ::: A boolean.
 
 `values` (optional string array) :: For parameters of type `string`, the list
 of valid values.

@@ -8,5 +8,6 @@
 
 /cfg/local.yaml
 
-/doc/*/*.html
-/doc/*.pdf
+/doc/handbook.pdf
+/doc/handbook/handbook.html
+/doc/html-theme.css

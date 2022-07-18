@@ -1,0 +1,251 @@
+@charset "utf-8";
+
+// Relative to the doc/ directory
+@import "../evweb/css/base.scss";
+
+$menu-width: 20rem;
+$content-width: 60rem;
+
+body.book {
+  #header {
+    max-width: $content-width;
+    margin: 0 auto $size-2 auto;
+    padding-top: $size-2; // same as #toc
+    padding-bottom: $size-6;
+    border-bottom: 1px solid $grey-lighter;
+
+    h1 {
+      font-family: $family-secondary;
+      font-size: $size-2;
+      font-weight: $title-weight;
+    }
+
+    .details {
+      font-family: $family-secondary;
+      font-size: $size-5;
+
+      br {
+        display: none;
+      }
+
+      #author {
+      }
+
+      #email {
+        &::before { content: "— " }
+      }
+
+      #revnumber {
+        float: right;
+
+        font-family: $family-monospace;
+        text-transform: capitalize;
+      }
+    }
+
+    #toc {
+      width: $menu-width;
+
+      background-color: $black-ter;
+      color: $grey-lightest;
+
+      &.toc2 {
+        position: fixed;
+        height: 100%;
+        left: 0;
+        top: 0;
+
+        padding: $size-4 $size-6;
+
+        overflow: auto;
+      }
+
+      #toctitle {
+        margin-bottom: $size-5;
+
+        font-family: $family-secondary;
+        font-size: $size-4;
+      }
+
+      ul {
+        list-style-type: none;
+
+        &.sectlevel1 {
+          & > li {
+            margin-top: $size-6;
+
+            & > a {
+              color: $primary;
+            }
+          }
+        }
+
+        &.sectlevel2 {
+          margin-left: $size-7;
+        }
+      }
+
+      a {
+        color: inherit;
+
+        code {
+          background-color: unset;
+          color: inherit;
+        }
+      }
+    }
+  }
+
+  #content {
+    max-width: $content-width;
+    margin: 0 auto;
+
+    .sect1 {
+      &:not(:first-child) { margin-top: $size-2; }
+    }
+
+    .sect2 {
+      margin-top: $size-3;
+    }
+
+    .sect3 {
+      margin-top: $size-4;
+    }
+
+    .sect4 {
+      margin-top: $size-5;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: $family-secondary;
+      margin-bottom: $size-7;
+    }
+
+    h1 {
+      font-size: $size-2;
+      font-weight: $title-weight;
+    }
+
+    h2 {
+      border-bottom: 2px solid $text;
+
+      font-size: $size-2;
+      font-weight: $title-weight;
+    }
+
+    h3 {
+      border-bottom: 1.5px solid $text;
+
+      font-size: $size-3;
+      font-weight: $subtitle-weight;
+    }
+
+    h4 {
+      border-bottom: 1.0px solid $text;
+
+      font-size: $size-4;
+      font-weight: $subtitle-weight;
+    }
+
+    h5 {
+      font-size: $size-5;
+      font-weight: $subtitle-weight;
+    }
+
+    .paragraph, .listingblock, .admonitionblock, .imageblock, .dlist, .ulist {
+      &:not(:last-child) { margin-bottom: $size-5; }
+    }
+
+    ul {
+      list-style-type: '– ';
+
+      // I really want to use "inside", but for some reason browsers adds a
+      // line break after the list element marker. No idea why.
+      list-style-position: outside;
+
+      li {
+        &:not(:first-child) { margin-top: $size-7; }
+      }
+    }
+
+    dl {
+      dt {
+        &:not(:first-child) { margin-top: $size-7; }
+
+        font-weight: $weight-medium;
+      }
+
+      dd {
+        margin-left: $size-7;
+      }
+    }
+
+    code {
+      padding: 1px 5px;
+      background-color: $white-bis;
+    }
+
+    pre {
+      border: 0;
+    }
+
+    pre > code {
+      padding: unset;
+      background-color: unset;
+      color: unset;
+    }
+
+    .admonitionblock {
+      .title {
+        color: unset;
+      }
+
+      &.tip .title, &.note .title {
+        color: $success;
+      }
+
+      &.caution .title {
+        color: $danger;
+      }
+
+      &.warning .title {
+        color: $danger;
+      }
+
+      td.icon {
+        // Override Bulma's .icon rules
+        display: table-cell;
+
+        //width: 8rem;
+        padding-right: $size-6;
+
+        font-family: $family-secondary;
+        text-transform: uppercase;
+        white-space: nowrap;
+
+        text-align: left;
+        vertical-align: middle;
+
+        border-right: 1px solid $grey-lighter;
+      }
+
+      td.content {
+        padding-left: $size-6;
+      }
+    }
+
+    .imageblock {
+      border: 1px solid $grey-darker;
+    }
+  }
+
+  #footer {
+    max-width: $content-width;
+    margin: $size-1 auto 0 auto;
+    padding-top: $size-2;
+    padding-bottom: $size-1;
+    border-top: 1px solid $grey-lighter;
+
+    color: $grey-light;
+  }
+}
