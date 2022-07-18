@@ -3,13 +3,34 @@
 // Relative to the doc/ directory
 @import "../evweb/css/base.scss";
 
-$menu-width: 20rem;
+$toc-width: 16rem;
 $content-width: 60rem;
+
+@mixin content-positioning() {
+  padding-left: 0;
+  padding-right: 0;
+
+  @include desktop {
+    padding-left: calc($toc-width + $size-1);
+    padding-right: $size-1;
+  }
+
+  @include fullhd {
+    max-width: $content-width;
+  }
+
+  @media only screen and (min-width: 2560px) {
+    padding-left: 0;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
 
 body.book {
   #header {
-    max-width: $content-width;
-    margin: 0 auto $size-2 auto;
+    @include content-positioning;
+
+    margin-bottom: $size-2;
     padding-top: $size-2; // same as #toc
     padding-bottom: $size-6;
     border-bottom: 1px solid $grey-lighter;
@@ -44,16 +65,22 @@ body.book {
     }
 
     #toc {
-      width: $menu-width;
+      width: $toc-width;
+
+      @include touch {
+        width: 100%;
+      }
 
       background-color: $black-ter;
       color: $grey-lightest;
 
       &.toc2 {
-        position: fixed;
-        height: 100%;
-        left: 0;
-        top: 0;
+        @include desktop {
+          position: fixed;
+          height: 100%;
+          left: 0;
+          top: 0;
+        }
 
         padding: $size-4 $size-6;
 
@@ -97,8 +124,12 @@ body.book {
   }
 
   #content {
-    max-width: $content-width;
-    margin: 0 auto;
+    @include content-positioning;
+
+    @include touch {
+      padding-left: $size-6;
+      padding-right: $size-6;
+    }
 
     .sect1 {
       &:not(:first-child) { margin-top: $size-2; }
@@ -240,8 +271,9 @@ body.book {
   }
 
   #footer {
-    max-width: $content-width;
-    margin: $size-1 auto 0 auto;
+    @include content-positioning;
+
+    margin-top: $size-1;
     padding-top: $size-2;
     padding-bottom: $size-1;
     border-top: 1px solid $grey-lighter;
