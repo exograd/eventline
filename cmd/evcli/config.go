@@ -77,7 +77,7 @@ func ConfigPath() string {
 		p.Fatal("cannot locate user home directory: %v", err)
 	}
 
-	return path.Join(homePath, ".config", "evcli", "config.json")
+	return path.Join(homePath, ".evcli", "config.json")
 }
 
 func DefaultConfig() *Config {

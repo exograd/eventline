@@ -18,9 +18,8 @@ and Eventline.
 
 === Configuration
 
-The configuration file used by Evcli is stored in
-`$HOME/.config/evcli/config.json`. You can either write it yourself, or let
-Evcli manage it.
+The configuration file used by Evcli is stored in `$HOME/.evcli/config.json`.
+You can either write it yourself, or let Evcli manage it.
 
 CAUTION: The configuration file contains the API key used to connect to the
 Eventline API. You must therefore make sure that other users on the same
