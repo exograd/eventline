@@ -49,6 +49,11 @@ func DefaultNotificationsCfg() *NotificationsCfg {
 }
 
 func (s *Service) CreateNotification(conn pg.Conn, recipients []string, subject, templateName string, templateData interface{}, scope eventline.Scope) error {
+	if len(recipients) == 0 {
+		s.Log.Debug(1, "dropping notification: no recipients")
+		return nil
+	}
+
 	cfg := s.Cfg.Notifications
 	projectId := scope.(*eventline.ProjectScope).ProjectId
 	now := time.Now().UTC()
