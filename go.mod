@@ -59,5 +59,3 @@ require (
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858 // indirect
 	gotest.tools/v3 v3.3.0 // indirect
 )
-
-replace github.com/exograd/go-daemon => ../go-daemon
