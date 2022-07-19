@@ -70,8 +70,8 @@ The simplest way to run Eventline is to use the [Docker
 Compose](misc/docker-compose.yaml) setup, which pulls the official
 `exograd/eventline` Docker image.
 
-Please refer to the documentation for a [quick start
-guide](doc/handbook/getting-started.adoc).
+Refer to the documentation for a [quick start
+guide](https://www.exograd.com/doc/eventline/handbook.html#_getting_started).
 
 ## Documentation
 The Eventline handbook is available both [in the
