@@ -216,6 +216,14 @@ func cmdDescribeJob(p *program.Program) {
 			Colorize(ColorYellow, "Description:"), job.Spec.Description)
 	}
 
+	if job.Spec.Trigger != nil {
+		fmt.Printf("%s %s\n",
+			Colorize(ColorYellow, "Trigger event:"), job.Spec.Trigger.Event)
+	}
+
+	fmt.Printf("%s %s\n",
+		Colorize(ColorYellow, "Runner name:"), job.Spec.Runner.Name)
+
 	if len(job.Spec.Parameters) > 0 {
 		fmt.Printf("%s\n", Colorize(ColorYellow, "Parameters:"))
 		for _, p := range job.Spec.Parameters {
