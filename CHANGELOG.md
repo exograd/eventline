@@ -1,5 +1,6 @@
 # Changelog
+## v1.0.0
+_Work in progress._
 
-## [Unreleased]
-
-- No changes yet.
+## v0.9.0
+First public release.
