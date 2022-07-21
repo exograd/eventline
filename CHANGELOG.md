@@ -7,6 +7,8 @@ _Work in progress._
 - Add a `--wait` option to the `execute-job` evcli command which monitors
   execution, print status changes and wait for execution to finish before
   exiting.
+- Add a `--fail` option to the `execute-job` evcli command to exit with status
+  1 if job execution fails.
 
 ### Bug fixes
 - Remove initial blank line(s) in notification emails.

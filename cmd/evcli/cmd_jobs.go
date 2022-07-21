@@ -69,6 +69,8 @@ func addJobCommands() {
 		"a parameter passed to the command as <name>=<value>")
 
 	c.AddFlag("w", "wait", "wait for execution to finish")
+	c.AddFlag("f", "fail",
+		"exit with status 1 if execution does not complete successfully")
 }
 
 func cmdListJobs(p *program.Program) {
@@ -258,6 +260,12 @@ func cmdExecuteJob(p *program.Program) {
 	paramStrings := p.TrailingArgumentValues("parameter")
 
 	wait := p.IsOptionSet("wait")
+	fail := p.IsOptionSet("fail")
+
+	if fail && !wait {
+		p.Fatal("the --fail option is only supported if the --wait option " +
+			" is set")
+	}
 
 	job, err := app.Client.FetchJobByName(name)
 	if err != nil {
@@ -337,6 +345,10 @@ func cmdExecuteJob(p *program.Program) {
 		if je.Finished() {
 			d := je.EndTime.Sub(*je.StartTime)
 			p.Info("job execution finished in %s", utils.FormatDuration(d))
+
+			if je.Status == eventline.JobExecutionStatusFailed && fail {
+				os.Exit(1)
+			}
 
 			break
 		}

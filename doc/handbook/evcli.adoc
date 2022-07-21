@@ -99,6 +99,9 @@ evcli execute-job create-env branch=experimental public=true
 If the `--wait` option is passed, Evcli will monitor execution and wait for it
 to finish before exiting.
 
+If both the `--wait` and `--fail` options are passed, Evcli with exit with
+status 1 if execution fails.
+
 ==== `export-job`
 
 Export a job to a file. The file is written to the current directory by
