@@ -4,6 +4,9 @@ _Work in progress._
 
 ### Features
 - Add pagination support for the `list-projects` evcli command.
+- Add a `--wait` option to the `execute-job` evcli command which monitors
+  execution, print status changes and wait for execution to finish before
+  exiting.
 
 ### Bug fixes
 - Remove initial blank line(s) in notification emails.

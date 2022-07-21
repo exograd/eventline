@@ -304,3 +304,16 @@ func (c *Client) ExecuteJob(id string, input *eventline.JobExecutionInput) (*eve
 
 	return &jobExecution, nil
 }
+
+func (c *Client) FetchJobExecution(id eventline.Id) (*eventline.JobExecution, error) {
+	uri := NewURL("job_executions", "id", id.String())
+
+	var je eventline.JobExecution
+
+	err := c.SendRequest("GET", uri, nil, &je)
+	if err != nil {
+		return nil, err
+	}
+
+	return &je, nil
+}

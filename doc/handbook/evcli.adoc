@@ -96,6 +96,9 @@ a `<name>=<value>` argument.
 evcli execute-job create-env branch=experimental public=true
 ----
 
+If the `--wait` option is passed, Evcli will monitor execution and wait for it
+to finish before exiting.
+
 ==== `export-job`
 
 Export a job to a file. The file is written to the current directory by

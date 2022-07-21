@@ -3,10 +3,15 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
+	"os/signal"
 	"strconv"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-program"
 )
 
@@ -62,6 +67,8 @@ func addJobCommands() {
 	c.AddArgument("name", "the name of the job")
 	c.AddTrailingArgument("parameter",
 		"a parameter passed to the command as <name>=<value>")
+
+	c.AddFlag("w", "wait", "wait for execution to finish")
 }
 
 func cmdListJobs(p *program.Program) {
@@ -250,6 +257,8 @@ func cmdExecuteJob(p *program.Program) {
 	name := p.ArgumentValue("name")
 	paramStrings := p.TrailingArgumentValues("parameter")
 
+	wait := p.IsOptionSet("wait")
+
 	job, err := app.Client.FetchJobByName(name)
 	if err != nil {
 		p.Fatal("cannot fetch job: %v", err)
@@ -289,7 +298,43 @@ func cmdExecuteJob(p *program.Program) {
 		}
 	}
 
-	p.Info("job execution %q created", jobExecution.Id)
+	jeId := jobExecution.Id
+
+	p.Info("job execution %q created", jeId)
+
+	if !wait {
+		return
+	}
+
+	lastStatus := jobExecution.Status
+
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+
+	for {
+		select {
+		case <-sigChan:
+			return
+		case <-time.After(time.Second):
+		}
+
+		je, err := app.Client.FetchJobExecution(jeId)
+		if err != nil {
+			p.Fatal("cannot fetch job execution: %v", err)
+		}
+
+		if je.Status != lastStatus {
+			p.Info("job execution %s", je.Status)
+			lastStatus = je.Status
+		}
+
+		if je.Finished() {
+			d := je.EndTime.Sub(*je.StartTime)
+			p.Info("job execution finished in %s", utils.FormatDuration(d))
+
+			break
+		}
+	}
 }
 
 func parseCommandParameters(ss []string, params eventline.Parameters) (map[string]interface{}, error) {
