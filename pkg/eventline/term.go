@@ -95,7 +95,7 @@ func renderTermDataFragment(f *ansi.StyledText, buf *bytes.Buffer) {
 
 		case ansi.TrueColour:
 			styles = append(styles,
-				fmt.Sprintf("color: %02x%02x02x",
+				fmt.Sprintf("color: %02x%02x%02x",
 					c.Rgb.R, c.Rgb.G, c.Rgb.B))
 		}
 	}
@@ -129,7 +129,7 @@ func renderTermDataFragment(f *ansi.StyledText, buf *bytes.Buffer) {
 
 		case ansi.TrueColour:
 			styles = append(styles,
-				fmt.Sprintf("background-color: %02x%02x02x",
+				fmt.Sprintf("background-color: %02x%02x%02x",
 					c.Rgb.R, c.Rgb.G, c.Rgb.B))
 		}
 	}
