@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
 
 	"github.com/exograd/eventline/pkg/eventline"
 )
@@ -215,13 +214,7 @@ func (c *Client) FetchJobs() (eventline.Jobs, error) {
 		var page JobPage
 
 		uri := NewURL("jobs")
-
-		query := url.Values{}
-		query.Add("size", strconv.FormatUint(uint64(cursor.Size), 10))
-		if cursor.After != "" {
-			query.Add("after", cursor.After)
-		}
-		uri.RawQuery = query.Encode()
+		uri.RawQuery = cursor.Query().Encode()
 
 		err := c.SendRequest("GET", uri, nil, &page)
 		if err != nil {
