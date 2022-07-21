@@ -105,6 +105,12 @@ func (s *Service) ComposeNotificationMessage(recipients []string, subject, templ
 	if err != nil {
 		return nil, fmt.Errorf("cannot render message: %w", err)
 	}
+
+	// It is really easy to get leading and trailing spaces in templates,
+	// especially newline characters. Removing them here is a lot easier that
+	// removing all newlines in complex if/else/end blocks.
+	body = bytes.TrimSpace(body)
+
 	builder = builder.Text(body)
 
 	if err := builder.Error(); err != nil {
