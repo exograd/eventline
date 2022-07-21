@@ -12,13 +12,17 @@ _Work in progress._
 - Render [ANSI escape
   sequences](https://en.wikipedia.org/wiki/ANSI_escape_code) in execution
   output data on the web interface.
-- Use the default monospace font of the web browser instead of serving a half
-  megabyte file.
+- `github/oauth2` identities can now be used as identity for the `docker`
+  runner.
 
 ### Bug fixes
 - Remove initial blank line(s) in notification emails.
 - Remove invalid expiration date for `github/oauth2` identities.
 - Fix job pagination in evcli.
+
+### Misc
+- Use the default monospace font of the web browser instead of serving a half
+  megabyte file.
 
 ## v0.9.0
 First public release.

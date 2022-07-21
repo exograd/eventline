@@ -13,15 +13,15 @@ import (
 )
 
 func IdentityAuthenticationKey(identity *eventline.Identity) (key string, err error) {
-	// Note that GitHub OAuth2 identities cannot be used for the ghcr.io
-	// container registry. If this changes one day, feel free to contact me.
-
 	switch i := identity.Data.(type) {
 	case *cdockerhub.PasswordIdentity:
 		key = i.Username + ":" + i.Password
 
 	case *cdockerhub.TokenIdentity:
 		key = i.Username + ":" + i.Token
+
+	case *cgithub.OAuth2Identity:
+		key = i.Username + ":" + i.AccessToken
 
 	case *cgithub.TokenIdentity:
 		key = i.Username + ":" + i.Token

@@ -10,9 +10,6 @@ The `github/oauth2` identity contains a username and an OAuth2 access token.
 During the creation of the identity, you will be redirected to the GitHub
 website to authorize the creation of a new access token.
 
-Note that due to a limitation of the ghcr.io Docker registry, this identity
-cannot be use as runner identity for runners `docker` and `kubernetes`.
-
 ===== Data fields
 
 `username` (string) :: The name of the GitHub account.
