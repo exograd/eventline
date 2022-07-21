@@ -324,7 +324,13 @@ func cmdExecuteJob(p *program.Program) {
 		}
 
 		if je.Status != lastStatus {
-			p.Info("job execution %s", je.Status)
+			switch je.Status {
+			case eventline.JobExecutionStatusFailed:
+				p.Info("job execution %s: %s", je.Status, je.FailureMessage)
+			default:
+				p.Info("job execution %s", je.Status)
+			}
+
 			lastStatus = je.Status
 		}
 
