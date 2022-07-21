@@ -209,7 +209,7 @@ func (c *Client) FetchJobByName(name string) (*eventline.Job, error) {
 func (c *Client) FetchJobs() (eventline.Jobs, error) {
 	var jobs eventline.Jobs
 
-	cursor := Cursor{Size: 20}
+	cursor := eventline.Cursor{Size: 20}
 
 	for {
 		var page JobPage

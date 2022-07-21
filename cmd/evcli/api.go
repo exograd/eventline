@@ -56,25 +56,10 @@ type LoginResponse struct {
 	Key    string            `json:"key"`
 }
 
-type Order string
-
-const (
-	OrderAsc  Order = "asc"
-	OrderDesc Order = "desc"
-)
-
-type Cursor struct {
-	Before string `json:"before,omitempty"`
-	After  string `json:"after,omitempty"`
-	Size   uint   `json:"size,omitempty"`
-	Sort   string `json:"sort,omitempty"`
-	Order  Order  `json:"order,omitempty"`
-}
-
 type ProjectPage struct {
-	Elements []*Project `json:"elements"`
-	Previous *Cursor    `json:"previous,omitempty"`
-	Next     *Cursor    `json:"next,omitempty"`
+	Elements []*Project        `json:"elements"`
+	Previous *eventline.Cursor `json:"previous,omitempty"`
+	Next     *eventline.Cursor `json:"next,omitempty"`
 }
 
 type Project struct {
@@ -94,7 +79,7 @@ type Parameter struct {
 type Parameters []*Parameter
 
 type JobPage struct {
-	Elements eventline.Jobs `json:"elements"`
-	Previous *Cursor        `json:"previous,omitempty"`
-	Next     *Cursor        `json:"next,omitempty"`
+	Elements eventline.Jobs    `json:"elements"`
+	Previous *eventline.Cursor `json:"previous,omitempty"`
+	Next     *eventline.Cursor `json:"next,omitempty"`
 }
