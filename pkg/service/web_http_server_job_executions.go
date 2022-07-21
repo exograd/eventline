@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"html/template"
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
@@ -87,6 +88,7 @@ func (s *WebHTTPServer) hJobExecutionsIdContentGET(h *HTTPHandler) {
 	var job eventline.Job
 	var jobExecution eventline.JobExecution
 	var stepExecutions eventline.StepExecutions
+	var stepExecutionOutputs []template.HTML
 	var event *eventline.Event
 
 	err = s.Pg.WithConn(func(conn pg.Conn) error {
@@ -101,6 +103,20 @@ func (s *WebHTTPServer) hJobExecutionsIdContentGET(h *HTTPHandler) {
 
 		if err = stepExecutions.LoadByJobExecutionId(conn, jeId); err != nil {
 			return fmt.Errorf("cannot load step executions: %w", err)
+		}
+
+		stepExecutionOutputs = make([]template.HTML, len(stepExecutions))
+		for i, se := range stepExecutions {
+			rawOutput := se.Output
+
+			htmlOutput, err := eventline.RenderTermData(rawOutput)
+			if err != nil {
+				h.Log.Error("cannot render output of step execution %q: %v",
+					se.Id, err)
+				htmlOutput = rawOutput
+			}
+
+			stepExecutionOutputs[i] = template.HTML(htmlOutput)
 		}
 
 		if eventId := jobExecution.EventId; eventId != nil {
@@ -125,13 +141,15 @@ func (s *WebHTTPServer) hJobExecutionsIdContentGET(h *HTTPHandler) {
 	}
 
 	contentData := struct {
-		JobExecution   *eventline.JobExecution
-		StepExecutions eventline.StepExecutions
-		Event          *eventline.Event
+		JobExecution         *eventline.JobExecution
+		StepExecutions       eventline.StepExecutions
+		StepExecutionOutputs []template.HTML
+		Event                *eventline.Event
 	}{
-		JobExecution:   &jobExecution,
-		StepExecutions: stepExecutions,
-		Event:          event,
+		JobExecution:         &jobExecution,
+		StepExecutions:       stepExecutions,
+		StepExecutionOutputs: stepExecutionOutputs,
+		Event:                event,
 	}
 
 	content := s.NewTemplate("job_execution_view_content.html", contentData)

@@ -42,6 +42,7 @@ require (
 	github.com/jackc/puddle v1.2.1 // indirect
 	github.com/jaytaylor/html2text v0.0.0-20200412013138-3577fbdbcff7 // indirect
 	github.com/keybase/saltpack v0.0.0-20211122193250-350028a91799 // indirect
+	github.com/leaanthony/go-ansi-parser v1.5.0 // indirect
 	github.com/mattn/go-runewidth v0.0.12 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect

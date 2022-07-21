@@ -617,9 +617,19 @@ form.ev-subscription {
   color: $grey-lightest;
 
   .tb  { font-weight: $weight-bold; }
+  .tf  { font-weight: $weight-light; }
   .ti  { font-style: italic; }
+  .tv  { visibility: hidden; }
   .tu  { text-decoration: underline;  }
   .tco { text-decoration: line-through; }
+
+  .tk {
+    animation: blink 1s step-start infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
 
   :not(.trv) {
     &.tfg-black   { color: $black-ter; }

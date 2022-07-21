@@ -9,6 +9,9 @@ _Work in progress._
   exiting.
 - Add a `--fail` option to the `execute-job` evcli command to exit with status
   1 if job execution fails.
+- Render [ANSI escape
+  sequences](https://en.wikipedia.org/wiki/ANSI_escape_code) in execution
+  output data on the web interface.
 
 ### Bug fixes
 - Remove initial blank line(s) in notification emails.

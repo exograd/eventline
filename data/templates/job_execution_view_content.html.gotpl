@@ -81,6 +81,7 @@
 <div id="ev-steps">
   {{range $i, $stepExecution := .StepExecutions}}
   {{$step := (index $.Data.JobExecution.JobSpec.Steps $i)}}
+  {{$output := (index $.Data.StepExecutionOutputs $i)}}
   <div class="block ev-block ev-step"
        data-id="{{.Id}}" data-position="{{.Position}}"
        data-status="{{.Status}}">
@@ -152,10 +153,10 @@
         </div>
         {{end}}
 
-        {{with .Output}}
+        {{if .Output}}
         <div class="block ev-program-output">
           <h2 class="subtitle">Output</h2>
-          <pre class="ev-term">{{.}}</pre>
+          <pre class="ev-term">{{$output}}</pre>
         </div>
         {{end}}
       </div>
