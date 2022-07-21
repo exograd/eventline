@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-program"
 )
 
@@ -67,7 +68,15 @@ func main() {
 		p.Fatal("%v", err)
 	}
 
-	app.projectIdOption = optionValue("project-id")
+	if projectIdString := optionValue("project-id"); projectIdString != nil {
+		var projectId eventline.Id
+		if err := projectId.Parse(*projectIdString); err != nil {
+			p.Fatal("invalid project id %q: %v", *projectIdString, err)
+		}
+
+		app.projectIdOption = &projectId
+	}
+
 	app.projectNameOption = optionValue("project-name")
 
 	name := p.CommandName()

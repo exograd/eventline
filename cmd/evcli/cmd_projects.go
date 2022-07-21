@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-program"
 )
 
@@ -45,7 +46,7 @@ func cmdListProjects(p *program.Program) {
 func cmdCreateProject(p *program.Program) {
 	name := p.ArgumentValue("name")
 
-	project := &Project{
+	project := &eventline.Project{
 		Name: name,
 	}
 

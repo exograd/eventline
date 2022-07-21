@@ -57,17 +57,10 @@ type LoginResponse struct {
 }
 
 type ProjectPage struct {
-	Elements []*Project        `json:"elements"`
-	Previous *eventline.Cursor `json:"previous,omitempty"`
-	Next     *eventline.Cursor `json:"next,omitempty"`
+	Elements eventline.Projects `json:"elements"`
+	Previous *eventline.Cursor  `json:"previous,omitempty"`
+	Next     *eventline.Cursor  `json:"next,omitempty"`
 }
-
-type Project struct {
-	Id   string `json:"id,omitempty"`
-	Name string `json:"name"`
-}
-
-type Projects []*Project
 
 type Parameter struct {
 	Name        string      `json:"name"`

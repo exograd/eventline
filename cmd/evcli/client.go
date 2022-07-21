@@ -14,7 +14,7 @@ import (
 
 type Client struct {
 	APIKey    string
-	ProjectId string
+	ProjectId *eventline.Id
 
 	httpClient *http.Client
 
@@ -71,8 +71,8 @@ func (c *Client) SendRequest(method string, relURI *url.URL, body, dest interfac
 		req.Header.Set("Authorization", "Bearer "+c.APIKey)
 	}
 
-	if c.ProjectId != "" {
-		req.Header.Set("X-Eventline-Project-Id", c.ProjectId)
+	if c.ProjectId != nil {
+		req.Header.Set("X-Eventline-Project-Id", c.ProjectId.String())
 	}
 
 	res, err := c.httpClient.Do(req)
@@ -137,27 +137,38 @@ func (c *Client) LogIn(username, password string) (*LoginResponse, error) {
 	return &res, nil
 }
 
-func (c *Client) FetchProjects() ([]*Project, error) {
-	var page ProjectPage
+func (c *Client) FetchProjects() (eventline.Projects, error) {
+	var projects eventline.Projects
 
-	uri := NewURL("projects")
+	cursor := eventline.Cursor{Size: 1}
 
-	query := url.Values{}
-	query.Add("size", "20")
-	uri.RawQuery = query.Encode()
+	for {
+		var page ProjectPage
 
-	err := c.SendRequest("GET", uri, nil, &page)
-	if err != nil {
-		return nil, err
+		uri := NewURL("projects")
+		uri.RawQuery = cursor.Query().Encode()
+
+		err := c.SendRequest("GET", uri, nil, &page)
+		if err != nil {
+			return nil, err
+		}
+
+		projects = append(projects, page.Elements...)
+
+		if page.Next == nil {
+			break
+		}
+
+		cursor = *page.Next
 	}
 
-	return page.Elements, nil
+	return projects, nil
 }
 
-func (c *Client) FetchProjectByName(name string) (*Project, error) {
+func (c *Client) FetchProjectByName(name string) (*eventline.Project, error) {
 	uri := NewURL("projects", "name", name)
 
-	var project Project
+	var project eventline.Project
 
 	err := c.SendRequest("GET", uri, nil, &project)
 	if err != nil {
@@ -167,14 +178,14 @@ func (c *Client) FetchProjectByName(name string) (*Project, error) {
 	return &project, nil
 }
 
-func (c *Client) CreateProject(project *Project) error {
+func (c *Client) CreateProject(project *eventline.Project) error {
 	uri := NewURL("projects")
 
 	return c.SendRequest("POST", uri, project, project)
 }
 
-func (c *Client) DeleteProject(id string) error {
-	uri := NewURL("projects", "id", id)
+func (c *Client) DeleteProject(id eventline.Id) error {
+	uri := NewURL("projects", "id", id.String())
 
 	return c.SendRequest("DELETE", uri, nil, nil)
 }
