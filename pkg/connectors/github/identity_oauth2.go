@@ -129,12 +129,21 @@ func (i *OAuth2Identity) FetchTokenData(httpClient *http.Client, code, redirecti
 		return err
 	}
 
-	ttl := time.Duration(res.ExpiresIn) * time.Second
-	expirationTime := time.Now().UTC().Add(ttl)
-
 	i.AccessToken = res.AccessToken
-	i.TTL = int(res.ExpiresIn)
-	i.ExpirationTime = &expirationTime
+
+	// GitHub OAuth2 tokens do not expire and cannot be refreshed. The
+	// expire_in field is usually 0. We still handle a value greater than zero
+	// if GitHub decides to support refresh later.
+	if res.ExpiresIn == 0 {
+		ttl := time.Duration(res.ExpiresIn) * time.Second
+		expirationTime := time.Now().UTC().Add(ttl)
+
+		i.TTL = int(res.ExpiresIn)
+		i.ExpirationTime = &expirationTime
+	} else {
+		i.TTL = 0
+		i.ExpirationTime = nil
+	}
 
 	return nil
 }
