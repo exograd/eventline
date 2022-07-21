@@ -12,6 +12,8 @@ _Work in progress._
 - Render [ANSI escape
   sequences](https://en.wikipedia.org/wiki/ANSI_escape_code) in execution
   output data on the web interface.
+- Use the default monospace font of the web browser instead of serving a half
+  megabyte file.
 
 ### Bug fixes
 - Remove initial blank line(s) in notification emails.
