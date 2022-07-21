@@ -76,8 +76,8 @@ guide](doc/handbook/getting-started.adoc).
 ## Documentation
 The Eventline handbook is available both [in the
 repository](doc/handbook/handbook.adoc) and
-[online](https://docs.eventline.net). It is also distributed with GitHub
-releases in PDF and in HTML.
+[online](https://www.exograd.com/doc/eventline/handbook.html). It is also
+distributed with GitHub releases in PDF and in HTML.
 
 ## Commercial use
 We also provide Eventline Pro with multiple extensions and commercial support.
