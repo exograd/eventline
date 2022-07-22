@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# PROVIDE: eventline
+# REQUIRE: DAEMON
+# KEYWORD: shutdown
+
+. /etc/rc.subr
+
+name="eventline"
+rcvar="eventline_enable"
+load_rc_config $name
+
+: ${eventline_enable:="no"}
+: ${eventline_user:="eventline"}
+: ${eventline_syslog_tag:="eventline"}
+
+command="/usr/sbin/daemon"
+pidfile="/var/run/$name.pid"
+
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+
+eventline_start() {
+    echo "Starting $name..."
+    /usr/sbin/daemon -P $pidfile -u $eventline_user /usr/local/bin/$name
+}
+
+eventline_stop() {
+    local pid
+
+    echo "Stopping $name..."
+
+    [ -f "$pidfile" ] && pwait "$(< $pidfile)" || true
+}
+
+run_rc_command "$1"
