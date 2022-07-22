@@ -88,7 +88,7 @@ YAML content.
 ----
 name: "script"
 steps:
-  - command:
+  - script:
       path: "utils/generate-report.rb"
       arguments: ["--output", "/tmp/report.pdf"]
 ----
