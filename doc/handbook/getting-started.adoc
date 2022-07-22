@@ -77,12 +77,12 @@ should see the default project, `main`.
 
 Now that everything is running, let us write a job. Eventline jobs are small
 YAML documents describing when, where and how to run the job. Open a file
-named `hellow-world.yaml` with your favourite text editor and copy the
+named `hello-world.yaml` with your favourite text editor and copy the
 following content:
 
 [source,yaml]
 ----
-name: "hellow-world"
+name: "hello-world"
 trigger:
   event: "time/tick"
   parameters:
