@@ -7,28 +7,26 @@
 . /etc/rc.subr
 
 name="eventline"
+
 rcvar="eventline_enable"
-load_rc_config $name
 
 : ${eventline_enable:="no"}
-: ${eventline_user:="eventline"}
 : ${eventline_cfg_path:="/usr/local/etc/eventline/eventline.yaml"}
 : ${eventline_syslog_tag:="eventline"}
 
-command="/usr/sbin/daemon"
 procname="/usr/local/bin/eventline"
-pidfile="/var/run/$name.pid"
+pidfile="/var/run/eventline/$name.pid"
 
-start_cmd="${name}_start"
+command="/usr/sbin/daemon"
+command_args="-p $pidfile -u $name -T $eventline_syslog_tag -R 5 $procname -c $eventline_cfg_path"
 
-eventline_start() {
-    echo "Starting $name..."                        \
-    /usr/sbin/daemon                                \
-        -R 5                                        \
-        -p $pidfile                                 \
-        -u $eventline_user                          \
-        -T $eventline_syslog_tag                    \
-        /usr/local/bin/$name -c $eventline_cfg_path
+required_files="$eventline_cfg_path"
+
+start_precmd="eventline_precmd"
+
+eventline_precmd() {
+    install -d -o eventline /var/run/eventline/
 }
 
+load_rc_config $name
 run_rc_command "$1"
