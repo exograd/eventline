@@ -8,7 +8,7 @@ with minimum effort.
 You will need a UNIX system supporting Docker Compose, for example Linux or
 Mac OS, with Docker and Docker Compose installed.
 
-=== Evenline
+=== Eventline
 
 ==== Installation
 
