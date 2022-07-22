@@ -12,6 +12,7 @@ load_rc_config $name
 
 : ${eventline_enable:="no"}
 : ${eventline_user:="eventline"}
+: ${eventline_cfg_path:="/usr/local/etc/eventline/eventline.yaml"}
 : ${eventline_syslog_tag:="eventline"}
 
 command="/usr/sbin/daemon"
@@ -22,7 +23,8 @@ stop_cmd="${name}_stop"
 
 eventline_start() {
     echo "Starting $name..."
-    /usr/sbin/daemon -P $pidfile -u $eventline_user /usr/local/bin/$name
+    /usr/sbin/daemon -P $pidfile -u $eventline_user \
+                     /usr/local/bin/$name -c $eventline_cfg_path
 }
 
 eventline_stop() {
