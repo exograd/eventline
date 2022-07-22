@@ -141,7 +141,7 @@ really simple to write jobs written as shell scripts. Using the previous
 example, reading the access token of the identity in shell in trivial:
 [source,sh]
 ----
-access_token=$(<$EVENTLINE_DIR/identities/gh/access_token)
+access_token=$(cat $EVENTLINE_DIR/identities/gh/access_token)
 ----
 
 Alternatively, in higher level languages, simply load `context.json` and
