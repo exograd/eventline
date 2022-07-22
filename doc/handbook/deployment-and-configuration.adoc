@@ -118,6 +118,22 @@ web interface. The default value is:
 address: "localhost:8087"
 ----
 
+`pg` (optional object) :: The configuration of the PostgreSQL server.
+
+`encryption_key` (string) :: The global encryption key used to encrypt
+sensitive information in the database. The key must be a 32 byte AES key
+encoded using https://en.wikipedia.org/wiki/Base64[Base64]. You can generate a
+key using OpenSSL:
++
+----
+openssl rand -base64 32
+----
+
+`web_http_server_uri` (optional string, default to `http://localhost:8087`) ::
+The URI which can be used to access the Eventline web interface from outside
+of the server. This URI will be used to generate webhook URIs among other
+thing.
+
 `connectors` (optional object) :: The configuration of each connector. Refer
 to the connector documentation for the settings available for each connector.
 
@@ -149,11 +165,19 @@ fields:
 listen on as a `<host>:<port>` string.
 
 `tls` (optional object) :: If set, use TLS for the connection. The object
-containing the following fields:
+contains the following fields:
 
     `certificate` (string) ::: The path of the TLS certificate file.
 
     `private_key` (string) ::: The path of the TLS private key.
+
+===== PostgreSQL specification
+
+The configuration of the PostgreSQL server is an object containing the
+following fields:
+
+`uri` (optional string) :: The URI of the PostgreSQL server. The default value
+is `postgres://eventline:eventline@localhost:5432/eventline`.
 
 ===== Notifications specifications
 
