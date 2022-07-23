@@ -11,7 +11,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/dhttp"
 	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 )
 
 var (
@@ -230,7 +230,7 @@ func (s *Service) refreshIdentity(conn pg.Conn, identity *eventline.Identity, sc
 
 func (s *Service) oauth2HTTPClient(identityId eventline.Id, sessionId *eventline.Id) (*http.Client, error) {
 
-	logger := s.Log.Child("oauth2", log.Data{
+	logger := s.Log.Child("oauth2", dlog.Data{
 		"identity": identityId.String(),
 	})
 

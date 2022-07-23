@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 )
 
 type Runner interface {
@@ -19,7 +19,7 @@ func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
 		return nil, fmt.Errorf("unknown runner %q", name)
 	}
 
-	logger := s.Log.Child("runner", log.Data{
+	logger := s.Log.Child("runner", dlog.Data{
 		"runner":        name,
 		"job_execution": data.JobExecution.Id.String(),
 	})

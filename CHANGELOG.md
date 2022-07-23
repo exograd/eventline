@@ -23,6 +23,8 @@ _Work in progress._
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half
   megabyte file.
+- Disable color for logging if the error output stream is not a character
+  device.
 
 ## v0.9.0
 First public release.

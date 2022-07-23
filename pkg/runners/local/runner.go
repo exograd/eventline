@@ -12,12 +12,12 @@ import (
 	"syscall"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 )
 
 type Runner struct {
 	runner *eventline.Runner
-	log    *log.Logger
+	log    *dlog.Logger
 
 	rootPath string
 }

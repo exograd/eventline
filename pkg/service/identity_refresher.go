@@ -8,11 +8,11 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 )
 
 type IdentityRefresher struct {
-	Log     *log.Logger
+	Log     *dlog.Logger
 	Service *Service
 
 	w *eventline.Worker

@@ -6,13 +6,13 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/dcrypto"
 	"github.com/exograd/go-daemon/dhttp"
+	"github.com/exograd/go-daemon/dlog"
 	"github.com/exograd/go-daemon/influx"
 	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-log"
 )
 
 type ServiceCfg struct {
-	Logger *log.LoggerCfg `json:"logger"`
+	Logger *dlog.LoggerCfg `json:"logger"`
 
 	DataDirectory string `json:"data_directory"`
 
@@ -40,9 +40,9 @@ type ServiceCfg struct {
 }
 
 func DefaultServiceCfg() ServiceCfg {
-	logger := &log.LoggerCfg{
+	logger := &dlog.LoggerCfg{
 		BackendType: "terminal",
-		Backend: &log.TerminalBackendCfg{
+		Backend: &dlog.TerminalBackendCfg{
 			Color:       true,
 			DomainWidth: 32,
 		},

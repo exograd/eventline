@@ -16,7 +16,7 @@ import (
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 )
 
 var RunnerDefs = map[string]*RunnerDef{}
@@ -49,7 +49,7 @@ type RunnerDef struct {
 }
 
 type RunnerInitData struct {
-	Log    *log.Logger
+	Log    *dlog.Logger
 	Daemon *daemon.Daemon
 
 	Def  *RunnerDef
@@ -80,7 +80,7 @@ type RunnerBehaviour interface {
 }
 
 type Runner struct {
-	Log       *log.Logger
+	Log       *dlog.Logger
 	Daemon    *daemon.Daemon
 	Cfg       RunnerCfg
 	Behaviour RunnerBehaviour

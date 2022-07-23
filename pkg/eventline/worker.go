@@ -6,11 +6,11 @@ import (
 
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 )
 
 type WorkerCfg struct {
-	Log    *log.Logger    `json:"-"`
+	Log    *dlog.Logger    `json:"-"`
 	Daemon *daemon.Daemon `json:"-"`
 
 	Behaviour WorkerBehaviour `json:"-"`
@@ -36,7 +36,7 @@ type WorkerBehaviour interface {
 type Worker struct {
 	Name   string
 	Cfg    WorkerCfg
-	Log    *log.Logger
+	Log    *dlog.Logger
 	Daemon *daemon.Daemon
 
 	timer            *time.Timer

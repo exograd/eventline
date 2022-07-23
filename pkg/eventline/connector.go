@@ -6,12 +6,12 @@ import (
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 )
 
 type ConnectorInitData struct {
 	Daemon           *daemon.Daemon
-	Log              *log.Logger
+	Log              *dlog.Logger
 	WebHTTPServerURI *url.URL
 }
 

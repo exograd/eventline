@@ -3,7 +3,7 @@ package generic
 import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 )
 
 type ConnectorCfg struct {
@@ -13,7 +13,7 @@ type ConnectorCfg struct {
 type Connector struct {
 	Def *eventline.ConnectorDef
 	Cfg *ConnectorCfg
-	Log *log.Logger
+	Log *dlog.Logger
 }
 
 func NewConnector() *Connector {

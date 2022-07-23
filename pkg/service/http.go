@@ -17,7 +17,7 @@ import (
 	"github.com/exograd/eventline/pkg/web"
 	"github.com/exograd/go-daemon/dhttp"
 	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 )
 
 var (
@@ -45,7 +45,7 @@ const (
 )
 
 type HTTPServer struct {
-	Log *log.Logger
+	Log *dlog.Logger
 
 	Pg *pg.Client // shortcut to avoid s.Service.Daemon.Pg
 

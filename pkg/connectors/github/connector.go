@@ -10,7 +10,7 @@ import (
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/dhttp"
 	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 	"github.com/google/go-github/v45/github"
 )
 
@@ -18,7 +18,7 @@ type Connector struct {
 	Def    *eventline.ConnectorDef
 	Cfg    *ConnectorCfg
 	Daemon *daemon.Daemon
-	Log    *log.Logger
+	Log    *dlog.Logger
 
 	webHTTPServerURI *url.URL
 }

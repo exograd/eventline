@@ -10,8 +10,8 @@ import (
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/dhttp"
+	"github.com/exograd/go-daemon/dlog"
 	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-log"
 )
 
 var (
@@ -121,7 +121,7 @@ func TestUnknownRoute(t *testing.T) {
 }
 
 func initTestHTTPClient() {
-	logger := log.DefaultLogger("http-client")
+	logger := dlog.DefaultLogger("http-client")
 	logger.Data["client"] = "test"
 
 	cfg := dhttp.ClientCfg{

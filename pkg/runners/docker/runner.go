@@ -7,12 +7,12 @@ import (
 
 	dockerclient "github.com/docker/docker/client"
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-log"
+	"github.com/exograd/go-daemon/dlog"
 )
 
 type Runner struct {
 	runner *eventline.Runner
-	log    *log.Logger
+	log    *dlog.Logger
 	cfg    *RunnerCfg
 
 	client *dockerclient.Client
