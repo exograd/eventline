@@ -13,8 +13,8 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-daemon/dlog"
+	"github.com/exograd/go-daemon/pg"
 )
 
 type Service struct {
@@ -83,6 +83,8 @@ func (s *Service) DaemonCfg() (daemon.DaemonCfg, error) {
 	cfg := daemon.NewDaemonCfg()
 
 	cfg.Logger = s.Cfg.Logger
+
+	cfg.API = s.Cfg.DaemonAPI
 
 	s.Cfg.APIHTTPServer.ErrorHandler = s.apiHTTPErrorHandler
 	cfg.HTTPServers["api"] = s.Cfg.APIHTTPServer

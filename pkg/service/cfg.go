@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/dcrypto"
 	"github.com/exograd/go-daemon/dhttp"
 	"github.com/exograd/go-daemon/dlog"
@@ -13,6 +14,8 @@ import (
 
 type ServiceCfg struct {
 	Logger *dlog.LoggerCfg `json:"logger"`
+
+	DaemonAPI *daemon.APICfg `json:"daemon_api"`
 
 	DataDirectory string `json:"data_directory"`
 
