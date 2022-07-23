@@ -33,7 +33,7 @@ see the login page of Eventline.
 ==== First connection
 
 The first time Eventline starts, it creates an account with username `admin`
-and `password`. Use these credentials to connect to the web interface.
+and password `admin`. Use these credentials to connect to the web interface.
 
 Start by going to the "Account" section and click the "Change password"
 button. Choose a strong password to protect the admin account.
