@@ -1,0 +1,14 @@
+[Unit]
+Description=Eventline
+Documentation=https://www.exograd.com/doc/eventline/handbook.html
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+Type=exec
+User=eventline
+Group=eventline
+ExecStart=/usr/bin/eventline -c /etc/eventline/eventline.yaml
+
+[Install]
+WantedBy=multi-user.target
