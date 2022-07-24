@@ -1,0 +1,22 @@
+data_directory: "/usr/share/eventline"
+
+api_http_server:
+  address: "localhost:8085"
+
+web_http_server:
+  address: "localhost:8087"
+
+web_http_server_uri: "http://localhost:8087"
+
+pg:
+  uri:
+    "postgres://eventline:eventline@localhost:5432/eventline"
+
+# You need to generate a random encryption, for example using OpenSSL:
+#
+# openssl rand -base64 32
+encryption_key: ""
+
+runners:
+  local:
+    root_directory: "/var/tmp/eventline/local-execution"
