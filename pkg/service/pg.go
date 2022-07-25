@@ -9,4 +9,5 @@ const PgAdvisoryLockId1 uint32 = 0x0100
 const (
 	PgAdvisoryLockId2ServiceInit   uint32 = 0x0001
 	PgAdvisoryLockId2JobScheduling uint32 = 0x0002
+	PgAdvisoryLockId2JobDeployment uint32 = 0x0003
 )

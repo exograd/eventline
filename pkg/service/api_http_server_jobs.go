@@ -80,6 +80,13 @@ func (s *APIHTTPServer) hJobsPUT(h *HTTPHandler) {
 	var subscriptionsCreatedOrUpdated bool
 
 	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+		id1 := PgAdvisoryLockId1
+		id2 := PgAdvisoryLockId2JobDeployment
+
+		if err := pg.TakeAdvisoryLock(conn, id1, id2); err != nil {
+			return fmt.Errorf("cannot take advisory lock: %w", err)
+		}
+
 		var validationErrors check.ValidationErrors
 
 		for i, spec := range specs {
@@ -203,6 +210,13 @@ func (s *APIHTTPServer) hJobsNamePUT(h *HTTPHandler) {
 	var subscriptionCreatedOrUpdated bool
 
 	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+		id1 := PgAdvisoryLockId1
+		id2 := PgAdvisoryLockId2JobDeployment
+
+		if err := pg.TakeAdvisoryLock(conn, id1, id2); err != nil {
+			return fmt.Errorf("cannot take advisory lock: %w", err)
+		}
+
 		if err := s.Service.ValidateJobSpec(conn, &spec, scope); err != nil {
 			return fmt.Errorf("invalid job specification: %w", err)
 		}
