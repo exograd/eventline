@@ -55,3 +55,24 @@ func (s *HTTPServer) AbortJobExecution(h *HTTPHandler, jeId eventline.Id) error 
 
 	return nil
 }
+
+func (s *HTTPServer) RestartJobExecution(h *HTTPHandler, jeId eventline.Id) error {
+	scope := h.Context.ProjectScope()
+
+	if _, err := s.Service.RestartJobExecution(jeId, scope); err != nil {
+		var unknownJobExecutionErr *eventline.UnknownJobExecutionError
+		var jobExecutionNotFinishedErr *eventline.JobExecutionNotFinishedError
+
+		if errors.As(err, &unknownJobExecutionErr) {
+			h.ReplyError(404, "unknown_job_execution", "%v", err)
+		} else if errors.As(err, &jobExecutionNotFinishedErr) {
+			h.ReplyError(400, "job_execution_not_finished", "%v", err)
+		} else {
+			h.ReplyInternalError(500, "cannot restart job execution: %v", err)
+		}
+
+		return err
+	}
+
+	return nil
+}

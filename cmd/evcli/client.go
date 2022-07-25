@@ -333,3 +333,9 @@ func (c *Client) AbortJobExecution(id eventline.Id) error {
 
 	return c.SendRequest("POST", uri, nil, nil)
 }
+
+func (c *Client) RestartJobExecution(id eventline.Id) error {
+	uri := NewURL("job_executions", "id", id.String(), "restart")
+
+	return c.SendRequest("POST", uri, nil, nil)
+}

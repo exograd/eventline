@@ -153,6 +153,10 @@ This command is the fastest way to start using Evcli.
 Replay an event as if it has just been created for the first time. Any job
 whose trigger matches the event will be instantiated.
 
+==== `restart-job-execution`
+
+Restart a specific job execution.
+
 ==== `set-config`
 
 Set the value of an entry in the configuration file.
