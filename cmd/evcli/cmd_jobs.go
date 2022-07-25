@@ -137,10 +137,26 @@ func cmdDeployJob(p *program.Program) {
 
 	job, err := app.Client.DeployJob(spec, dryRun)
 	if err != nil {
-		if dryRun {
-			p.Fatal("invalid job: %v", err)
+		isRequestBodyError, verrs := IsInvalidRequestBodyError(err)
+
+		if isRequestBodyError {
+			if dryRun {
+				p.Error("invalid job")
+			} else {
+				p.Error("cannot deploy job")
+			}
+
+			for _, verr := range verrs {
+				p.Error("%s: %v", filePath, verr)
+			}
+
+			os.Exit(1)
 		} else {
-			p.Fatal("cannot deploy job: %v", err)
+			if dryRun {
+				p.Fatal("invalid jobs: %v", err)
+			} else {
+				p.Fatal("cannot deploy jobs: %v", err)
+			}
 		}
 	}
 
@@ -159,21 +175,54 @@ func cmdDeployJobs(p *program.Program) {
 
 	app.IdentifyCurrentProject()
 
-	for _, filePath := range filePaths {
+	specs := make(eventline.JobSpecs, len(filePaths))
+
+	for i, filePath := range filePaths {
 		spec, err := LoadJobFile(filePath)
 		if err != nil {
 			p.Fatal("cannot load %q: %v", filePath, err)
 		}
 
-		p.Info("deploying job %q (%q)", spec.Name, filePath)
+		specs[i] = spec
+	}
 
-		if _, err := app.Client.DeployJob(spec, dryRun); err != nil {
+	p.Info("deploying %d jobs", len(specs))
+
+	if _, err := app.Client.DeployJobs(specs, dryRun); err != nil {
+		isRequestBodyError, verrs := IsInvalidRequestBodyError(err)
+
+		if isRequestBodyError {
 			if dryRun {
-				p.Fatal("invalid job %q (%q): %v",
-					spec.Name, filePath, err)
+				p.Error("invalid jobs")
 			} else {
-				p.Fatal("cannot deploy job %q (%q): %v",
-					spec.Name, filePath, err)
+				p.Error("cannot deploy jobs")
+			}
+
+			for _, verr := range verrs {
+				if len(verr.Pointer) == 0 {
+					p.Error("invalid empty error pointer")
+					continue
+				}
+
+				i, err := strconv.Atoi(verr.Pointer[0])
+				if err != nil || i < 0 || i >= len(filePaths) {
+					p.Error("invalid error pointer %v", verr.Pointer)
+					continue
+				}
+
+				filePath := filePaths[i]
+
+				verr.Pointer = verr.Pointer[1:]
+
+				p.Error("%s: %v", filePath, verr)
+			}
+
+			os.Exit(1)
+		} else {
+			if dryRun {
+				p.Fatal("invalid jobs: %v", err)
+			} else {
+				p.Fatal("cannot deploy jobs: %v", err)
 			}
 		}
 	}

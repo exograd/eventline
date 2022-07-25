@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
@@ -39,11 +40,26 @@ func (err *APIError) UnmarshalJSON(data []byte) error {
 			return fmt.Errorf("invalid jsv errors: %w", err)
 		}
 
-		err2.Data = errData
+		err2.Data = &errData
 	}
 
 	*err = APIError(err2)
 	return nil
+}
+
+func IsInvalidRequestBodyError(err error) (bool, check.ValidationErrors) {
+	var apiError *APIError
+
+	if !errors.As(err, &apiError) {
+		return false, nil
+	}
+
+	requestBodyErr, ok := apiError.Data.(*InvalidRequestBodyError)
+	if !ok {
+		return false, nil
+	}
+
+	return true, requestBodyErr.ValidationErrors
 }
 
 type LoginData struct {

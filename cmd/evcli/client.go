@@ -261,6 +261,7 @@ func (c *Client) DeployJob(spec *eventline.JobSpec, dryRun bool) (*eventline.Job
 		return nil, nil
 	} else {
 		var job eventline.Job
+
 		if err := c.SendRequest("PUT", uri, spec, &job); err != nil {
 			return nil, err
 		}
@@ -279,12 +280,21 @@ func (c *Client) DeployJobs(specs []*eventline.JobSpec, dryRun bool) ([]*eventli
 	}
 	uri.RawQuery = query.Encode()
 
-	var jobs []*eventline.Job
-	if err := c.SendRequest("POST", uri, specs, &jobs); err != nil {
-		return nil, err
-	}
+	if dryRun {
+		if err := c.SendRequest("PUT", uri, specs, nil); err != nil {
+			return nil, err
+		}
 
-	return jobs, nil
+		return nil, nil
+	} else {
+		var jobs []*eventline.Job
+
+		if err := c.SendRequest("PUT", uri, specs, &jobs); err != nil {
+			return nil, err
+		}
+
+		return jobs, nil
+	}
 }
 
 func (c *Client) DeleteJob(id string) error {

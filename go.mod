@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/docker/docker v20.10.17+incompatible
-	github.com/exograd/go-daemon v0.0.0-20220723145532-72dee64bd0a0
+	github.com/exograd/go-daemon v0.0.0-20220725083044-5bc04908c5d8
 	github.com/exograd/go-oauth2c v0.0.0-20220708172730-f3790ca07115
 	github.com/exograd/go-program v0.0.0-20220116124618-691d97553601
 	github.com/gobwas/glob v0.2.3

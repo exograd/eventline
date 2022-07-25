@@ -86,6 +86,8 @@ type JobSpec struct {
 	Steps       Steps             `json:"steps"`
 }
 
+type JobSpecs []*JobSpec
+
 type JobRunner struct {
 	Name          string           `json:"name"`
 	Parameters    RunnerParameters `json:"-"`

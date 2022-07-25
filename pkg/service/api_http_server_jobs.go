@@ -3,6 +3,7 @@ package service
 import (
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/check"
@@ -11,6 +12,9 @@ import (
 
 func (s *APIHTTPServer) setupJobRoutes() {
 	s.route("/jobs", "GET", s.hJobsGET,
+		HTTPRouteOptions{Project: true})
+
+	s.route("/jobs", "PUT", s.hJobsPUT,
 		HTTPRouteOptions{Project: true})
 
 	s.route("/jobs/id/{id}", "GET", s.hJobsIdGET,
@@ -60,6 +64,91 @@ func (s *APIHTTPServer) hJobsGET(h *HTTPHandler) {
 	}
 
 	h.ReplyJSON(200, page)
+}
+
+func (s *APIHTTPServer) hJobsPUT(h *HTTPHandler) {
+	scope := h.Context.ProjectScope()
+
+	var specs eventline.JobSpecs
+	if err := h.JSONRequestData(&specs); err != nil {
+		return
+	}
+
+	dryRun := h.HasQueryParameter("dry-run")
+
+	jobs := make(eventline.Jobs, len(specs))
+	var subscriptionsCreatedOrUpdated bool
+
+	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+		var validationErrors check.ValidationErrors
+
+		for i, spec := range specs {
+			if err := s.Service.ValidateJobSpec(conn, spec, scope); err != nil {
+				var verrs check.ValidationErrors
+
+				if errors.As(err, &verrs) {
+					for _, verr := range verrs {
+						verr.Pointer.Prepend(strconv.Itoa(i))
+					}
+
+					validationErrors = append(validationErrors, verrs...)
+				} else {
+					return fmt.Errorf("invalid job specification %d: %w",
+						i+1, err)
+				}
+			}
+		}
+
+		if validationErrors != nil {
+			return fmt.Errorf("invalid job specifications: %w",
+				validationErrors)
+		}
+
+		if dryRun {
+			return nil
+		}
+
+		for i, spec := range specs {
+			var err error
+			job, subscriptionCreatedOrUpdated, err :=
+				s.Service.CreateOrUpdateJob(conn, spec, scope)
+			if err != nil {
+				return fmt.Errorf("cannot create or update job: %w", err)
+			}
+
+			jobs[i] = job
+
+			if subscriptionCreatedOrUpdated {
+				subscriptionsCreatedOrUpdated = true
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		var validationErrors check.ValidationErrors
+
+		if errors.As(err, &validationErrors) {
+			h.ReplyRequestBodyValidationErrors(validationErrors)
+		} else {
+			h.ReplyInternalError(500, "%v", err)
+		}
+
+		return
+	}
+
+	if dryRun {
+		h.ReplyEmpty(204)
+		return
+	}
+
+	if subscriptionsCreatedOrUpdated {
+		if w := s.Service.FindWorker("subscription-worker"); w != nil {
+			w.WakeUp()
+		}
+	}
+
+	h.ReplyJSON(200, jobs)
 }
 
 func (s *APIHTTPServer) hJobsIdGET(h *HTTPHandler) {
@@ -115,7 +204,7 @@ func (s *APIHTTPServer) hJobsNamePUT(h *HTTPHandler) {
 
 	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
 		if err := s.Service.ValidateJobSpec(conn, &spec, scope); err != nil {
-			return fmt.Errorf("invalid job: %w", err)
+			return fmt.Errorf("invalid job specification: %w", err)
 		}
 
 		if dryRun {

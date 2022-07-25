@@ -78,8 +78,7 @@ validate the job instead of deploying it.
 Deploy one or more job files. The `--dry-run` command option can be used to
 validate the jobs instead of deploying them.
 
-Note that job files are deployed one by one; execution will stop at the first
-error.
+The operation is atomic: either all jobs are deployed, or none are.
 
 ==== `describe-job`
 
