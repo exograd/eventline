@@ -4,4 +4,4 @@
 </div>
 {{end}}
 
-{{template "jobs_modals.html"}}
+{{template "job_executions_modals.html"}}
