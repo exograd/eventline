@@ -22,11 +22,11 @@ func TestAPIJobs(t *testing.T) {
 	client.SetCurrentProject("main")
 
 	// Deploy a job
-	jobName := test.RandomName("job", "")
+	jobName1 := test.RandomName("job", "")
 	period := 3600
 
-	jobSpec := eventline.JobSpec{
-		Name: jobName,
+	jobSpec1 := eventline.JobSpec{
+		Name: jobName1,
 		Trigger: &eventline.Trigger{
 			Event: eventline.EventRef{
 				Connector: "time",
@@ -44,8 +44,8 @@ func TestAPIJobs(t *testing.T) {
 		},
 	}
 
-	req = client.NewRequest("PUT", "/jobs/name/"+url.PathEscape(jobName))
-	req.SetJSONBody(&jobSpec)
+	req = client.NewRequest("PUT", "/jobs/name/"+url.PathEscape(jobName1))
+	req.SetJSONBody(&jobSpec1)
 
 	res, err = req.Send()
 	require.NoError(err)
@@ -54,10 +54,10 @@ func TestAPIJobs(t *testing.T) {
 	var createdJob eventline.Job
 	assertResponseJSONBody(t, res, &createdJob)
 
-	jobId := createdJob.Id
+	jobId1 := createdJob.Id
 
 	// Update it
-	jobSpec.Steps = append(jobSpec.Steps, &eventline.Step{
+	jobSpec1.Steps = append(jobSpec1.Steps, &eventline.Step{
 		Label: "do something else",
 		Command: &eventline.StepCommand{
 			Name:      "ls",
@@ -65,8 +65,8 @@ func TestAPIJobs(t *testing.T) {
 		},
 	})
 
-	req = client.NewRequest("PUT", "/jobs/name/"+url.PathEscape(jobName))
-	req.SetJSONBody(&jobSpec)
+	req = client.NewRequest("PUT", "/jobs/name/"+url.PathEscape(jobName1))
+	req.SetJSONBody(&jobSpec1)
 
 	res, err = req.Send()
 	require.NoError(err)
@@ -76,7 +76,7 @@ func TestAPIJobs(t *testing.T) {
 	assertResponseJSONBody(t, res, &updatedJob)
 
 	// Fetch it by name
-	req = client.NewRequest("GET", "/jobs/name/"+url.PathEscape(jobName))
+	req = client.NewRequest("GET", "/jobs/name/"+url.PathEscape(jobName1))
 
 	res, err = req.Send()
 	require.NoError(err)
@@ -88,16 +88,50 @@ func TestAPIJobs(t *testing.T) {
 	}
 
 	// Delete it
-	req = client.NewRequest("DELETE", "/jobs/id/"+jobId.String())
+	req = client.NewRequest("DELETE", "/jobs/id/"+jobId1.String())
 
 	res, err = req.Send()
 	require.NoError(err)
 	require.Equal(204, res.StatusCode)
 
 	// Delete it again
-	req = client.NewRequest("DELETE", "/jobs/id/"+jobId.String())
+	req = client.NewRequest("DELETE", "/jobs/id/"+jobId1.String())
 
 	res, err = req.Send()
 	require.Error(err)
 	require.Equal(404, res.StatusCode)
+
+	// Deploy two jobs
+	jobName2 := test.RandomName("job", "")
+
+	jobSpec2 := eventline.JobSpec{
+		Name: jobName2,
+		Trigger: &eventline.Trigger{
+			Event: eventline.EventRef{
+				Connector: "time",
+				Event:     "tick",
+			},
+			Parameters: &ctime.Parameters{
+				Periodic: &period,
+			},
+		},
+		Steps: eventline.Steps{
+			&eventline.Step{
+				Label: "do something",
+				Code:  "echo 'hello world'",
+			},
+		},
+	}
+
+	jobSpecs := eventline.JobSpecs{&jobSpec1, &jobSpec2}
+
+	req = client.NewRequest("PUT", "/jobs")
+	req.SetJSONBody(jobSpecs)
+
+	res, err = req.Send()
+	require.NoError(err)
+	require.Equal(200, res.StatusCode)
+
+	var createdJobs eventline.Jobs
+	assertResponseJSONBody(t, res, &createdJobs)
 }
