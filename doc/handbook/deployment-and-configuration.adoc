@@ -16,7 +16,8 @@ Binaries are also released on a best effort basis for the following platforms:
 - Mac OS arm64 (M1).
 
 Eventline uses a https://www.postgresql.org[PostgreSQL database] version 14 or
-higher. It does not require local filesystem storage.
+higher; the https://www.postgresql.org/docs/current/pgcrypto.html[pgcrypto]
+extension must be installed. It does not require local filesystem storage.
 
 Eventline can also send metrics to an https://www.influxdata.com[InfluxDB]
 server.
