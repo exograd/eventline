@@ -1,10 +1,10 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"os"
 	"strings"
+
+	"github.com/peterh/liner"
 )
 
 type Color int
@@ -25,19 +25,19 @@ func Confirm(prompt string) bool {
 		return true
 	}
 
-	fmt.Printf("%s\n[yn] ", prompt)
+	line := liner.NewLiner()
+	defer line.Close()
 
-	r := bufio.NewReader(os.Stdin)
-	line, _, err := r.ReadLine()
+	line.SetCtrlCAborts(true)
+
+	response, err := line.Prompt("Are you sure? (yes or no) ")
 	if err != nil {
-		p.Fatal("cannot read stdin: %v", err)
+		p.Fatal("cannot read response: %v", err)
 	}
 
-	response := strings.ToLower(strings.TrimSpace(string(line)))
+	response = strings.ToLower(strings.TrimSpace(response))
 
 	switch response {
-	case "y":
-		fallthrough
 	case "yes":
 		return true
 	}
