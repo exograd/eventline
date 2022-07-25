@@ -326,6 +326,7 @@ func (s *Service) initWorkers() {
 	init("subscription-worker", NewSubscriptionWorker(s), nil)
 	init("event-worker", NewEventWorker(s), nil)
 	init("job-scheduler", NewJobScheduler(s), nil)
+	init("job-execution-gc", NewJobExecutionGC(s), nil)
 	init("notification-worker", NewNotificationWorker(s), nil)
 
 	for name, c := range eventline.Connectors {

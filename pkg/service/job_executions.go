@@ -194,10 +194,26 @@ func (s *Service) RestartJobExecution(jeId eventline.Id, scope eventline.Scope) 
 }
 
 func (s *Service) handleJobExecutionTermination(jeId eventline.Id) error {
+	now := time.Now().UTC()
+
 	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
 		var je eventline.JobExecution
-		if err := je.LoadNoScope(conn, jeId); err != nil {
+		if err := je.LoadForUpdateNoScope(conn, jeId); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
+		}
+
+		retention := s.Cfg.JobRetention
+		if je.JobSpec.Retention > 0 {
+			retention = je.JobSpec.Retention
+		}
+
+		if retention > 0 {
+			expirationTime := now.AddDate(0, 0, retention)
+			je.ExpirationTime = &expirationTime
+		}
+
+		if err := je.Update(conn); err != nil {
+			return fmt.Errorf("cannot update job execution: %w", err)
 		}
 
 		if err := s.SendJobExecutionNotification(conn, &je); err != nil {

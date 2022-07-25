@@ -14,6 +14,8 @@ _Work in progress._
   output data on the web interface.
 - `github/oauth2` identities can now be used as identity for the `docker`
   runner.
+- Add support for deletion of old job executions based on the `job_retention`
+  setting and the `retention` job field.
 
 ### Bug fixes
 - Remove initial blank line(s) in notification emails.

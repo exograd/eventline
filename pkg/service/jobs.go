@@ -250,15 +250,6 @@ func (s *Service) InstantiateJob(conn pg.Conn, job *eventline.Job, event *eventl
 		jobExecution.ScheduledTime = event.EventTime
 	}
 
-	retention := s.Cfg.JobRetention
-	if job.Spec.Retention != 0 {
-		retention = job.Spec.Retention
-	}
-	if retention > 0 {
-		expirationTime := now.AddDate(0, 0, retention)
-		jobExecution.ExpirationTime = &expirationTime
-	}
-
 	if err := jobExecution.Insert(conn); err != nil {
 		return nil, fmt.Errorf("cannot insert job execution: %w", err)
 	}
