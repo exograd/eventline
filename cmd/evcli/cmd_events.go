@@ -19,9 +19,9 @@ func addEventCommands() {
 func cmdReplayEvent(p *program.Program) {
 	app.IdentifyCurrentProject()
 
-	EventId := p.ArgumentValue("event-id")
+	eventId := p.ArgumentValue("event-id")
 
-	event, err := app.Client.ReplayEvent(EventId)
+	event, err := app.Client.ReplayEvent(eventId)
 	if err != nil {
 		p.Fatal("cannot replay event: %v", err)
 	}
