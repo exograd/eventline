@@ -75,8 +75,15 @@ validate the job instead of deploying it.
 
 ==== `deploy-jobs`
 
-Deploy one or more job files. The `--dry-run` command option can be used to
-validate the jobs instead of deploying them.
+Deploy one or more job files or directories. The `--dry-run` command option
+can be used to validate the jobs instead of deploying them.
+
+For each argument passed to the command:
+
+* If it is a file, it is assumed to be a job specification file and loaded directly.
+* If it is a directory, Evcli loads all files whose extension is `.yml` or
+  `.yaml` stored inside. If the `--recursive` option is set, Evcli will
+  recurse into nested directories.
 
 The operation is atomic: either all jobs are deployed, or none are.
 

@@ -2,14 +2,58 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
-	"strings"
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
 )
+
+func FindJobFiles(filesOrDirPaths []string, recursive bool) ([]string, error) {
+	var filePaths []string
+
+	var fn func(string, int) error
+	fn = func(currentPath string, depth int) error {
+		info, err := os.Stat(currentPath)
+		if err != nil {
+			return fmt.Errorf("cannot stat %q: %w", currentPath, err)
+		}
+
+		if info.IsDir() {
+			if recursive || depth == 0 {
+				entries, err := ioutil.ReadDir(currentPath)
+				if err != nil {
+					return fmt.Errorf("cannot list directory %q: %w",
+						currentPath, err)
+				}
+
+				for _, entry := range entries {
+					fullPath := path.Join(currentPath, entry.Name())
+					if err := fn(fullPath, depth+1); err != nil {
+						return err
+					}
+				}
+			}
+		} else {
+			ext := path.Ext(currentPath)
+			if ext == ".yml" || ext == ".yaml" {
+				filePaths = append(filePaths, currentPath)
+			}
+		}
+
+		return nil
+	}
+
+	for _, fileOrDirPath := range filesOrDirPaths {
+		if err := fn(fileOrDirPath, 0); err != nil {
+			return nil, err
+		}
+	}
+
+	return filePaths, nil
+}
 
 func LoadJobFile(filePath string) (*eventline.JobSpec, error) {
 	p.Debug(1, "loading job file %s", filePath)
@@ -30,26 +74,6 @@ func LoadJobFile(filePath string) (*eventline.JobSpec, error) {
 	}
 
 	return &spec, nil
-}
-
-func LoadJobFiles(dirPath string, ignoreSet *IgnoreSet) ([]*eventline.JobSpec, error) {
-	filePaths, err := FindJobFiles(dirPath, ignoreSet)
-	if err != nil {
-		return nil, fmt.Errorf("cannot find files: %w", err)
-	}
-
-	var specs []*eventline.JobSpec
-
-	for _, filePath := range filePaths {
-		spec, err := LoadJobFile(filePath)
-		if err != nil {
-			return nil, fmt.Errorf("cannot load %q: %w", filePath, err)
-		}
-
-		specs = append(specs, spec)
-	}
-
-	return specs, nil
 }
 
 func LoadSteps(spec *eventline.JobSpec, dirPath string) error {
@@ -78,55 +102,6 @@ func LoadScriptStep(step *eventline.Step, dirPath string) error {
 
 	return nil
 }
-
-func FindJobFiles(dirPath string, ignoreSet *IgnoreSet) ([]string, error) {
-	return findJobFiles(dirPath, dirPath, ignoreSet)
-}
-
-func findJobFiles(dirPath, curDirPath string, ignoreSet *IgnoreSet) ([]string, error) {
-	var filePaths []string
-
-	entries, err := os.ReadDir(curDirPath)
-	if err != nil {
-		return nil, fmt.Errorf("cannot read directory %s: %w", curDirPath, err)
-	}
-
-	for _, e := range entries {
-		fileName := e.Name()
-		if fileName[0] == '.' {
-			continue
-		}
-
-		if e.IsDir() {
-			subDirPath := path.Join(curDirPath, fileName)
-			filePaths2, err := findJobFiles(dirPath, subDirPath,
-				ignoreSet)
-			if err != nil {
-				return nil, err
-			}
-
-			filePaths = append(filePaths, filePaths2...)
-		} else {
-			ext := strings.ToLower(filepath.Ext(fileName))
-			if ext != ".yaml" && ext != ".yml" {
-				continue
-			}
-
-			filePath := path.Join(curDirPath, fileName)
-
-			relPath := filePath[len(dirPath):]
-			if match, why := ignoreSet.Match(relPath); match {
-				p.Debug(2, "ignoring job file %s (%s)", filePath, why)
-				continue
-			}
-
-			filePaths = append(filePaths, filePath)
-		}
-	}
-
-	return filePaths, nil
-}
-
 func ExportJob(spec *eventline.JobSpec, dirPath string) (string, error) {
 	for _, step := range spec.Steps {
 		if script := step.Script; script != nil {

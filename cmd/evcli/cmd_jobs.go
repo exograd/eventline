@@ -45,8 +45,10 @@ func addJobCommands() {
 		cmdDeployJobs)
 
 	c.AddFlag("n", "dry-run", "validate jobs but do not deploy them")
+	c.AddFlag("r", "recursive", "find job files in nested directories")
 
-	c.AddTrailingArgument("path", "the path of a job specification file")
+	c.AddTrailingArgument("path",
+		"the path of a job specification file or directory")
 
 	// delete-job
 	c = p.AddCommand("delete-job", "delete a job",
@@ -170,10 +172,16 @@ func cmdDeployJob(p *program.Program) {
 func cmdDeployJobs(p *program.Program) {
 	app.IdentifyCurrentProject()
 
-	filePaths := p.TrailingArgumentValues("path")
+	fileOrDirPaths := p.TrailingArgumentValues("path")
 	dryRun := p.IsOptionSet("dry-run")
+	recursive := p.IsOptionSet("recursive")
 
 	app.IdentifyCurrentProject()
+
+	filePaths, err := FindJobFiles(fileOrDirPaths, recursive)
+	if err != nil {
+		p.Fatal("%v")
+	}
 
 	specs := make(eventline.JobSpecs, len(filePaths))
 
