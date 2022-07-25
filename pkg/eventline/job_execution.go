@@ -50,7 +50,7 @@ type JobExecutionFinishedError struct {
 }
 
 func (err *JobExecutionFinishedError) Error() string {
-	return fmt.Sprintf("job %q is finished", err.Id)
+	return fmt.Sprintf("job execution %q is finished", err.Id)
 }
 
 type JobExecutionNotFinishedError struct {
@@ -58,7 +58,7 @@ type JobExecutionNotFinishedError struct {
 }
 
 func (err *JobExecutionNotFinishedError) Error() string {
-	return fmt.Sprintf("job %q is not finished yet", err.Id)
+	return fmt.Sprintf("job execution %q is not finished yet", err.Id)
 }
 
 type JobExecutionStatus string

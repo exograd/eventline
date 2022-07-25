@@ -158,25 +158,12 @@ func (s *WebHTTPServer) hJobExecutionsIdContentGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobExecutionsIdAbortPOST(h *HTTPHandler) {
-	scope := h.Context.ProjectScope()
-
 	jeId, err := h.IdRouteVariable("id")
 	if err != nil {
 		return
 	}
 
-	if _, err := s.Service.AbortJobExecution(jeId, scope); err != nil {
-		var unknownJobExecutionErr *eventline.UnknownJobExecutionError
-		var jobExecutionFinishedErr *eventline.JobExecutionFinishedError
-
-		if errors.As(err, &unknownJobExecutionErr) {
-			h.ReplyError(404, "unknown_job_execution", "%v", err)
-		} else if errors.As(err, &jobExecutionFinishedErr) {
-			h.ReplyError(400, "job_execution_finished", "%v", err)
-		} else {
-			h.ReplyInternalError(500, "cannot restart job execution: %v", err)
-		}
-
+	if err := s.AbortJobExecution(h, jeId); err != nil {
 		return
 	}
 

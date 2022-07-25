@@ -174,7 +174,7 @@ function evOnAbortJobExecutionClicked(event) {
         location.reload();
       })
       .catch (e => {
-        evShowError(`cannot abort job: ${e.message}`);
+        evShowError(`cannot abort job execution: ${e.message}`);
         evCloseModals();
       })
       .finally(() => {

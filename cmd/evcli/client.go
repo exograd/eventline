@@ -327,3 +327,9 @@ func (c *Client) FetchJobExecution(id eventline.Id) (*eventline.JobExecution, er
 
 	return &je, nil
 }
+
+func (c *Client) AbortJobExecution(id eventline.Id) error {
+	uri := NewURL("job_executions", "id", id.String(), "abort")
+
+	return c.SendRequest("POST", uri, nil, nil)
+}

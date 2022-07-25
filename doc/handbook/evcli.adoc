@@ -56,6 +56,11 @@ questions.
 
 === Commands
 
+==== `abort-job-execution`
+
+Abort a specific job execution. Execution is cancelled if it has not started,
+and interrupted if it has.
+
 ==== `create-project`
 
 Create a new project.
