@@ -21,6 +21,7 @@ _Work in progress._
 - Remove initial blank line(s) in notification emails.
 - Remove invalid expiration date for `github/oauth2` identities.
 - Fix job pagination in evcli.
+- Fix the abort and restart buttons on job execution pages.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half
