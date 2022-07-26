@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/exograd/eventline/pkg/eventline"
+	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/dcrypto"
 	"github.com/exograd/go-daemon/dhttp"
@@ -19,8 +20,8 @@ type ServiceCfg struct {
 
 	DataDirectory string `json:"data_directory"`
 
-	APIHTTPServer dhttp.ServerCfg `json:"api_http_server"`
-	WebHTTPServer dhttp.ServerCfg `json:"web_http_server"`
+	APIHTTPServer *dhttp.ServerCfg `json:"api_http_server"`
+	WebHTTPServer *dhttp.ServerCfg `json:"web_http_server"`
 
 	Influx *influx.ClientCfg `json:"influx"`
 
@@ -58,10 +59,10 @@ func DefaultServiceCfg() ServiceCfg {
 
 		DataDirectory: "data",
 
-		APIHTTPServer: dhttp.ServerCfg{
+		APIHTTPServer: &dhttp.ServerCfg{
 			Address: "localhost:8085",
 		},
-		WebHTTPServer: dhttp.ServerCfg{
+		WebHTTPServer: &dhttp.ServerCfg{
 			Address: "localhost:8087",
 		},
 
@@ -74,4 +75,39 @@ func DefaultServiceCfg() ServiceCfg {
 
 		Notifications: DefaultNotificationsCfg(),
 	}
+}
+
+func (cfg *ServiceCfg) Check(c *check.Checker) {
+	// Note that some fields are optional in the documentation but mandatory
+	// here. These values are set in the default configuration: they must be
+	// provided for Eventline to work, but we define reasonable default values
+	// so that the user does not have to set them in most cases.
+	//
+	// Also, we do not check the encryption key, since it is validated by its
+	// UnmashalJSON method.
+	//
+	// Finally, connectors, workers and runners are currently handled later in
+	// the initialization phase. This is clearly something we could improve in
+	// the future.
+
+	c.CheckObject("logger", cfg.Logger)
+	c.CheckObject("daemon_api", cfg.DaemonAPI)
+
+	c.CheckStringNotEmpty("data_directory", cfg.DataDirectory)
+
+	c.CheckObject("api_http_server", cfg.APIHTTPServer)
+	c.CheckObject("web_http_server", cfg.WebHTTPServer)
+
+	c.CheckOptionalObject("influx", cfg.Influx)
+
+	c.CheckObject("pg", cfg.Pg)
+
+	c.CheckStringURI("web_http_server_uri", cfg.WebHTTPServerURI)
+
+	c.CheckIntMin("max_parallel_jobs", cfg.MaxParallelJobs, 1)
+	c.CheckIntMin("job_retention", cfg.JobRetention, 1)
+
+	c.CheckIntMin("session_retention", cfg.SessionRetention, 1)
+
+	c.CheckObject("notifications", cfg.Notifications)
 }

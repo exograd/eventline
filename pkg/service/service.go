@@ -71,12 +71,27 @@ func NewService(data ServiceData) *Service {
 	return s
 }
 
-func (s *Service) ServiceCfg() interface{} {
+func (s *Service) DefaultServiceCfg() interface{} {
 	cfg := DefaultServiceCfg()
 
 	s.Cfg = cfg
 
 	return &s.Cfg
+}
+
+func (s *Service) ValidateServiceCfg() error {
+	// Postprocessing
+	if s.Cfg.Pg.SchemaDirectory == "" {
+		s.Cfg.Pg.SchemaDirectory =
+			path.Join(s.Cfg.DataDirectory, "pg", "schemas")
+	}
+
+	// Validation
+	c := check.NewChecker()
+
+	s.Cfg.Check(c)
+
+	return c.Error()
 }
 
 func (s *Service) DaemonCfg() (daemon.DaemonCfg, error) {
@@ -87,17 +102,12 @@ func (s *Service) DaemonCfg() (daemon.DaemonCfg, error) {
 	cfg.API = s.Cfg.DaemonAPI
 
 	s.Cfg.APIHTTPServer.ErrorHandler = s.apiHTTPErrorHandler
-	cfg.HTTPServers["api"] = s.Cfg.APIHTTPServer
+	cfg.HTTPServers["api"] = *s.Cfg.APIHTTPServer
 
 	s.Cfg.WebHTTPServer.ErrorHandler = s.webHTTPErrorHandler
-	cfg.HTTPServers["web"] = s.Cfg.WebHTTPServer
+	cfg.HTTPServers["web"] = *s.Cfg.WebHTTPServer
 
 	cfg.Influx = s.Cfg.Influx
-
-	if s.Cfg.Pg.SchemaDirectory == "" {
-		s.Cfg.Pg.SchemaDirectory =
-			path.Join(s.Cfg.DataDirectory, "pg", "schemas")
-	}
 	cfg.Pg = s.Cfg.Pg
 
 	return cfg, nil

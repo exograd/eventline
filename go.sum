@@ -24,8 +24,8 @@ github.com/docker/go-connections v0.4.0 h1:El9xVISelRB7BuFusrZozjnkIM5YnzCViNKoh
 github.com/docker/go-connections v0.4.0/go.mod h1:Gbd7IOopHjR8Iph03tsViu4nIes5XhDvyHbTtUxmeec=
 github.com/docker/go-units v0.4.0 h1:3uh0PgVws3nIA0Q+MwDC8yjEPf9zjRfZZWXZYDct3Tw=
 github.com/docker/go-units v0.4.0/go.mod h1:fgPhTUdO+D/Jk86RDLlptpiXQzgHJF7gydDDbaIK4Dk=
-github.com/exograd/go-daemon v0.0.0-20220725083044-5bc04908c5d8 h1:7HQDBvMBhz97UbPeQM3buw10Kd1vqzdGYiRtwx1uFeo=
-github.com/exograd/go-daemon v0.0.0-20220725083044-5bc04908c5d8/go.mod h1:icO64PIYTq1jq2qGwm+L/mfZagoovM2MmjbpIQa6/ys=
+github.com/exograd/go-daemon v0.0.0-20220726073553-a2f344c5afd0 h1:IjrXjmX9tOvY13dj0z6loD4LEERX8f0K6+zguXN8YSg=
+github.com/exograd/go-daemon v0.0.0-20220726073553-a2f344c5afd0/go.mod h1:icO64PIYTq1jq2qGwm+L/mfZagoovM2MmjbpIQa6/ys=
 github.com/exograd/go-oauth2c v0.0.0-20220708172730-f3790ca07115 h1:Himyp+kshZqoS+1903Hi6pUPYyj9ObnnUW8xUSJdJG4=
 github.com/exograd/go-oauth2c v0.0.0-20220708172730-f3790ca07115/go.mod h1:UizCX27fpNTMpj++xgKSE4KXC78t+C/KOCb7p07iz8s=
 github.com/exograd/go-program v0.0.0-20220116124618-691d97553601 h1:+sUEGQIw/dFhYD70RbevikJmSbbqVkGjtDZlbaviamk=
@@ -37,8 +37,6 @@ github.com/go-logfmt/logfmt v0.5.0/go.mod h1:wCYkCAKZfumFQihp8CzCvQ3paCTfi41vtzG
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
 github.com/go-test/deep v1.0.7 h1:/VSMRlnY/JSyqxQUzQLKVMAskpY/NZKFA5j2P+0pP2M=
 github.com/go-test/deep v1.0.7/go.mod h1:QV8Hv/iy04NyLBxAdO9njL0iVPN1S4d/A3NVv1V36o8=
-github.com/gobwas/glob v0.2.3 h1:A4xDbljILXROh+kObIiy5kIaPYD8e96x1tgBhUI5J+Y=
-github.com/gobwas/glob v0.2.3/go.mod h1:d3Ez4x06l9bZtSvzIay5+Yzi0fmZzPgnTbPcKjJAkT8=
 github.com/gofrs/uuid v4.0.0+incompatible h1:1SD/1F5pU8p29ybwgQSwpQk+mwdRrXCYuPhW6m+TnJw=
 github.com/gofrs/uuid v4.0.0+incompatible/go.mod h1:b2aQJv3Z4Fp6yNu3cdSllBxTCLRxnplIgP/c0N/04lM=
 github.com/gogo/protobuf v1.3.2 h1:Ov1cvc58UF3b5XjBnZv7+opcTcQFZebYjWzi34vdm4Q=
