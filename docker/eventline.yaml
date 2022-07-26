@@ -30,6 +30,8 @@ connectors:
 max_parallel_jobs: {{ env "EVENTLINE_MAX_PARALLEL_JOBS" }}
 job_retention: {{ env "EVENTLINE_JOB_RETENTION" }}
 
+session_retention: {{ env "EVENTLINE_SESSION_RETENTION" }}
+
 runners:
   local:
     root_directory: "/var/tmp/eventline/local-execution"

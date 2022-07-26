@@ -37,6 +37,8 @@ type ServiceCfg struct {
 	MaxParallelJobs int `json:"max_parallel_jobs"`
 	JobRetention    int `json:"job_retention"` // days
 
+	SessionRetention int `json:"session_retention"` // days
+
 	Runners map[string]json.RawMessage `json:"runners"`
 
 	Notifications *NotificationsCfg `json:"notifications"`

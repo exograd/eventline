@@ -1,6 +1,7 @@
 package eventline
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -103,6 +104,24 @@ DELETE FROM sessions
   WHERE id = $1;
 `
 	return pg.Exec(conn, query, s.Id)
+}
+
+func DeleteOldSessions(conn pg.Conn, retention int) (int64, error) {
+	ctx := context.Background()
+
+	now := time.Now().UTC()
+	minDate := now.AddDate(0, 0, -retention)
+
+	query := `
+DELETE FROM sessions
+  WHERE creation_time < $1
+`
+	res, err := conn.Exec(ctx, query, minDate)
+	if err != nil {
+		return -1, err
+	}
+
+	return res.RowsAffected(), nil
 }
 
 func (s *Session) FromRow(row pgx.Row) error {

@@ -16,6 +16,8 @@ _Work in progress._
   runner.
 - Add support for deletion of old job executions based on the `job_retention`
   setting and the `retention` job field.
+- Add support for deletion of old sessions based on the `session_retention`
+  setting.
 
 ### Bug fixes
 - Remove initial blank line(s) in notification emails.

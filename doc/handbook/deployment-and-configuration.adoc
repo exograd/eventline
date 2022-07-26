@@ -90,6 +90,9 @@ setting.
 
 `EVENTLINE_JOB_RETENTION` :: The value to use for the `job_retention` setting.
 
+`EVENTLINE_SESSION_RETENTION` :: The value to use for the `session_retention`
+setting.
+
 `EVENTLINE_NOTIFICATIONS_SMTP_SERVER_ADDRESS` (optional, default to `localhost:25`) ::
 The address of the SMTP server to use for notifications.
 
@@ -221,6 +224,9 @@ which can run in parallel for the entire platform.
 `job_retention` (optional integer) :: If set, a number of days after which old
 job executions will be deleted. Note that changing this setting will not
 affect job executions which have already been terminated.
+
+`session_retention` (optional integer) :: If set, a number of days after which
+sessions will be deleted.
 
 `runners` (optional object) :: The configuration of each runner. Refer to the
 <<chapter-runners,runner documentation>> for the settings available for each

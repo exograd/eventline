@@ -328,6 +328,7 @@ func (s *Service) initWorkers() {
 	init("job-scheduler", NewJobScheduler(s), nil)
 	init("job-execution-gc", NewJobExecutionGC(s), nil)
 	init("notification-worker", NewNotificationWorker(s), nil)
+	init("session-gc", NewSessionGC(s), nil)
 
 	for name, c := range eventline.Connectors {
 		cdef := c.Definition()

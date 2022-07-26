@@ -371,7 +371,6 @@ DELETE FROM job_executions
 	}
 
 	return res.RowsAffected(), nil
-
 }
 
 func (jes JobExecutions) Page(cursor *Cursor) *Page {
