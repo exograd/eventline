@@ -30,6 +30,7 @@ _Work in progress._
   megabyte file.
 - Disable color for logging if the error output stream is not a character
   device.
+- Improve validation of the configuration file.
 
 ## v0.9.0
 First public release.
