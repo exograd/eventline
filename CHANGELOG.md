@@ -20,10 +20,7 @@ _Work in progress._
   setting.
 
 ### Bug fixes
-- Remove initial blank line(s) in notification emails.
-- Remove invalid expiration date for `github/oauth2` identities.
 - Fix job pagination in evcli.
-- Fix the abort and restart buttons on job execution pages.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half
@@ -31,6 +28,15 @@ _Work in progress._
 - Disable color for logging if the error output stream is not a character
   device.
 - Improve validation of the configuration file.
+
+## v0.9.1
+### Bug fixes
+- Remove initial blank line(s) in notification emails.
+- Remove invalid expiration date for `github/oauth2` identities.
+- Fix the abort and restart buttons on job execution pages.
+
+### Misc
+- Use a stable tag in the docker-compose setup.
 
 ## v0.9.0
 First public release.
