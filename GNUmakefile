@@ -53,7 +53,9 @@ docker build --no-cache							\
   --label org.opencontainers.image.created=$(shell date -u +%FT%TZ)	\
   --label org.opencontainers.image.version=$(BUILD_ID)			\
   --label org.opencontainers.image.revision=$(shell git rev-parse HEAD)	\
-  --tag $1:latest .
+  --tag $1:$(patsubst v%,%,$(BUILD_ID))					\
+  --tag $1:latest							\
+  .
 endef
 
 define docker_build
