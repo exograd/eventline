@@ -39,8 +39,7 @@ Eventline makes it trivial to write various kinds of jobs. For example:
 ---
 name: "export-clients"
 trigger:
-  connector: "time"
-  event: "tick"
+  event: "time/tick"
   parameters:
     daily:
       hour: 23
