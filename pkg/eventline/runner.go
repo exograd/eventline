@@ -15,8 +15,8 @@ import (
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-daemon/dlog"
+	"github.com/exograd/go-daemon/pg"
 )
 
 var RunnerDefs = map[string]*RunnerDef{}
@@ -504,6 +504,17 @@ func (rd *RunnerData) FileSet() (*FileSet, error) {
 
 			fs.AddFile(filePath, buf.Bytes(), 0700)
 		}
+	}
+
+	// Parameters
+	parameterFields, err := JSONFields(rd.ExecutionContext.Parameters)
+	if err != nil {
+		return nil, fmt.Errorf("cannot extract parameter fields: %w", err)
+	}
+
+	for name, value := range parameterFields {
+		filePath := path.Join("parameters", name)
+		fs.AddFile(filePath, []byte(value), 0600)
 	}
 
 	// Event fields

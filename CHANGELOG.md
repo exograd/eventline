@@ -21,6 +21,7 @@ _Work in progress._
   setting and the `retention` job field.
 - Add support for deletion of old sessions based on the `session_retention`
   setting.
+- Inject job parameters as files in `$EVENTLINE_DIR/parameters`.
 
 ### Bug fixes
 - Fix job pagination in evcli.

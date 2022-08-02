@@ -124,6 +124,10 @@ during execution.
 
 `context.json` :: The execution context.
 
+`parameters/` :: A directory containing a file for each parameter of the job
+if there are any. For example, if the job has a `username` parameter, its
+value is stored in `parameters/username`.
+
 `event/` :: A directory containing a file for each field in the event if there
 is one. For example, in a `github/raw` event, the delivery id is stored in
 `event/delivery_id`.
