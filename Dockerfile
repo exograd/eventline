@@ -19,7 +19,7 @@ RUN <<EOF
     apk --no-cache add curl postgresql14-client
 
     addgroup -S eventline
-    adduser -G eventline -g Eventline -H -D eventline
+    adduser -G eventline -g Eventline -D eventline
 EOF
 
 USER eventline:eventline
