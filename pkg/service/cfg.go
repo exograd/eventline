@@ -91,7 +91,7 @@ func (cfg *ServiceCfg) Check(c *check.Checker) {
 	// the future.
 
 	c.CheckObject("logger", cfg.Logger)
-	c.CheckObject("daemon_api", cfg.DaemonAPI)
+	c.CheckOptionalObject("daemon_api", cfg.DaemonAPI)
 
 	c.CheckStringNotEmpty("data_directory", cfg.DataDirectory)
 
@@ -104,10 +104,17 @@ func (cfg *ServiceCfg) Check(c *check.Checker) {
 
 	c.CheckStringURI("web_http_server_uri", cfg.WebHTTPServerURI)
 
-	c.CheckIntMin("max_parallel_jobs", cfg.MaxParallelJobs, 1)
-	c.CheckIntMin("job_retention", cfg.JobRetention, 1)
+	if cfg.MaxParallelJobs != 0 {
+		c.CheckIntMin("max_parallel_jobs", cfg.MaxParallelJobs, 1)
+	}
 
-	c.CheckIntMin("session_retention", cfg.SessionRetention, 1)
+	if cfg.JobRetention != 0 {
+		c.CheckIntMin("job_retention", cfg.JobRetention, 1)
+	}
+
+	if cfg.SessionRetention != 0 {
+		c.CheckIntMin("session_retention", cfg.SessionRetention, 1)
+	}
 
 	c.CheckObject("notifications", cfg.Notifications)
 }
