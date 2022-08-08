@@ -6,6 +6,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
+	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
 )
 
@@ -211,7 +212,17 @@ func (s *WebHTTPServer) hProjectsIdConfigurationPOST(h *HTTPHandler) {
 	}
 
 	var cfg ProjectConfiguration
-	if err := h.JSONRequestObject(&cfg); err != nil {
+
+	extraChecks := func(c *check.Checker) {
+		ncfg := s.Service.Cfg.Notifications
+
+		ns := cfg.ProjectNotificationSettings
+		c.WithChild("project_notification_settings", func() {
+			ns.CheckEmailAddresses(c, ncfg.AllowedDomains)
+		})
+	}
+
+	if err := h.JSONRequestObject2(&cfg, extraChecks); err != nil {
 		return
 	}
 

@@ -15,10 +15,11 @@ import (
 )
 
 type NotificationsCfg struct {
-	SMTPServer    *SMTPServerCfg `json:"smtp_server"`
-	FromAddress   string         `json:"from_address"`
-	SubjectPrefix string         `json:"subject_prefix"`
-	Signature     string         `json:"signature"`
+	SMTPServer     *SMTPServerCfg `json:"smtp_server"`
+	FromAddress    string         `json:"from_address"`
+	SubjectPrefix  string         `json:"subject_prefix"`
+	Signature      string         `json:"signature"`
+	AllowedDomains []string       `json:"allowed_domains"`
 }
 
 type SMTPServerCfg struct {
@@ -29,7 +30,14 @@ type SMTPServerCfg struct {
 
 func (cfg *NotificationsCfg) Check(c *check.Checker) {
 	c.CheckObject("smtp_server", cfg.SMTPServer)
+
 	c.CheckStringNotEmpty("from_address", cfg.FromAddress)
+
+	c.WithChild("allowed_domains", func() {
+		for i, domain := range cfg.AllowedDomains {
+			c.CheckStringNotEmpty(i, domain)
+		}
+	})
 }
 
 func (cfg *SMTPServerCfg) Check(c *check.Checker) {

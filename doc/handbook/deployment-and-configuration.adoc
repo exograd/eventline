@@ -284,6 +284,15 @@ the `Subject` header field.
 `signature` (optional string) :: A character string to insert as signature at
 the end of all emails.
 
+`allowed_domains` (optional string array) :: A list of domains which can used
+in notification email addresses. If the array is empty, all domains are
+allowed.
+
+TIP: the `allowed_domains` setting is useful to make sure you that all
+notifications are sent to email addresses you control: this way you can limit
+the chances of losing notifications due to a mistake, and you guarantee that
+you will not send emails to someone out of your organization.
+
 ===== SMTP server specification
 
 The configuration of the SMTP server is an object containing the following

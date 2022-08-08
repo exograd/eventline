@@ -3,6 +3,7 @@ package eventline
 import (
 	"errors"
 	"net/mail"
+	"strings"
 
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
@@ -20,11 +21,53 @@ type ProjectNotificationSettings struct {
 }
 
 func (ps *ProjectNotificationSettings) Check(c *check.Checker) {
+	// Email addresses are validated in CheckEmailAddresses because we need
+	// access to the list of allowed domains.
+}
+
+func (ps *ProjectNotificationSettings) CheckEmailAddresses(c *check.Checker, allowedDomains []string) {
 	c.WithChild("email_addresses", func() {
-		for i, address := range ps.EmailAddresses {
-			if _, err := mail.ParseAddress(address); err != nil {
+		for i, as := range ps.EmailAddresses {
+			a, err := mail.ParseAddress(as)
+			if err != nil {
 				c.AddError(i, "invalid_email_address",
 					"invalid email address: %v", err)
+				continue
+			}
+
+			address := a.Address
+
+			idx := strings.LastIndex(address, "@")
+			if idx == -1 {
+				c.AddError(i, "invalid_email_address",
+					"invalid email address: missing '@'")
+				continue
+			}
+
+			if idx == len(address)-1 {
+				c.AddError(i, "invalid_email_address",
+					"invalid email address: empty domain")
+				continue
+			}
+
+			domain := address[idx+1:]
+
+			if len(allowedDomains) == 0 {
+				// All domains are allowed by default
+				continue
+			}
+
+			allowed := false
+			for _, d := range allowedDomains {
+				if domain == d {
+					allowed = true
+				}
+			}
+
+			if !allowed {
+				c.AddError(i, "email_address_domain_not_allowed",
+					"email address domain %q is not allowed", domain)
+				continue
 			}
 		}
 	})

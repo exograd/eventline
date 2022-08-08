@@ -22,6 +22,8 @@ _Work in progress._
 - Add support for deletion of old sessions based on the `session_retention`
   setting.
 - Inject job parameters as files in `$EVENTLINE_DIR/parameters`.
+- Add a notification setting to allow a specific list of email address
+  domains.
 
 ### Bug fixes
 - Fix job pagination in evcli.
