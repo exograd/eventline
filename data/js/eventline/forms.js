@@ -58,8 +58,18 @@ function evSubmitForm(form, button, options) {
     })
     .catch(e => {
       if ((e instanceof EvAPIError) && e.code == "invalid_request_body") {
-        evShowError("Invalid form data.");
-        evAnnotateInvalidForm(form, e.data.validation_errors);
+        try {
+          // If evAnnotateInvalidForm fails, we want to log the error message
+          // returned by the API; even if it is hard to read, it is better
+          // than nothing.
+          evAnnotateInvalidForm(form, e.data.validation_errors);
+          evShowError("Invalid form data.");
+        } catch (e2) {
+          console.error(e2)
+          evShowError(e.message);
+        }
+
+
       } else {
         evShowError(e.message);
       }
@@ -77,14 +87,12 @@ function evAnnotateInvalidForm(form, validationErrors) {
     const message = e.message;
 
     if (pointer === "") {
-      console.error(`invalid top-level value error: ${message}`);
-      return;
+      throw new Error(`invalid top-level value error: ${message}`);
     }
 
     const input = form.querySelector("[name='" + pointer + "']");
     if (input === null) {
-      console.error(`no input element found for pointer ${pointer}`);
-      return;
+      throw new Error(`no input element found for pointer ${pointer}`);
     }
 
     const control = input.closest(".control");
