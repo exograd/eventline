@@ -83,16 +83,34 @@ function evAnnotateInvalidForm(form, validationErrors) {
   evClearFormErrorAnnotations(form);
 
   validationErrors.forEach(e => {
-    const pointer = e.pointer;
+    const pointerString = e.pointer;
+    const pointer = evParseJSONPointer(pointerString);
+
     const message = e.message;
 
-    if (pointer === "") {
+    if (pointerString === "") {
       throw new Error(`invalid top-level value error: ${message}`);
     }
 
-    const input = form.querySelector("[name='" + pointer + "']");
+    let input = form.querySelector("[name='" + pointerString + "']");
     if (input === null) {
-      throw new Error(`no input element found for pointer ${pointer}`);
+      // Hack: string lists use an input field with class ev-list-input; they
+      // expect comma-separated values, and are submitted as a JSON string
+      // array. This means that errors on string list elements have a pointer
+      // to an element which does not really exist.
+      //
+      // The solution will be to introduce a proper multi-string selector. In
+      // the mean time, we check the parent element, and report the error on
+      // it if it has the ev-list-input class.
+      pointer.pop();
+      parentString = evFormatJSONPointer(pointer);
+
+      const parent = form.querySelector("[name='" + parentString + "']");
+      if (parent && parent.classList.contains("ev-list-input")) {
+        input = parent;
+      } else {
+        throw new Error(`no input element found for pointer ${pointerString}`);
+      }
     }
 
     const control = input.closest(".control");
