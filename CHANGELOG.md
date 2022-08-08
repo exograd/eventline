@@ -26,6 +26,7 @@ _Work in progress._
 ### Bug fixes
 - Fix job pagination in evcli.
 - Fix the Docker image so that evcli can be executed inside.
+- Always provide =EVENTLINE_DIR= as an absolute path.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half

@@ -179,5 +179,5 @@ executed in the Eventline platform.
 
 `EVENTLINE_JOB_NAME` ::  The name of the current job.
 
-`EVENTLINE_DIR` :: The path of the directory containing Eventline data,
-including the context file.
+`EVENTLINE_DIR` :: The absolute path of the directory containing Eventline
+data, including the context file.

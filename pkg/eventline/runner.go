@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
@@ -148,7 +149,13 @@ func NewRunner(data RunnerInitData) (*Runner, error) {
 
 	r.Behaviour = data.Def.InstantiateBehaviour(r)
 
-	r.Environment["EVENTLINE_DIR"] = r.Behaviour.DirPath()
+	dirPath := r.Behaviour.DirPath()
+	absDirPath, err := filepath.Abs(dirPath)
+	if err != nil {
+		return nil, fmt.Errorf("cannot compute absolute path: %w", err)
+	}
+
+	r.Environment["EVENTLINE_DIR"] = absDirPath
 
 	return r, nil
 }

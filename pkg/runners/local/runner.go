@@ -50,7 +50,7 @@ func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
 }
 
 func (r *Runner) DirPath() string {
-	return "."
+	return r.rootPath
 }
 
 func (r *Runner) Init(ctx context.Context) error {
