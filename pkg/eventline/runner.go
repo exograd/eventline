@@ -595,10 +595,6 @@ func (r *Runner) updateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution,
 			return fmt.Errorf("cannot update job execution: %w", err)
 		}
 
-		// if err := s.SendJobExecutionNotification(conn, je); err != nil {
-		// 	return fmt.Errorf("cannot send notification: %w", err)
-		// }
-
 		return nil
 	})
 	if err != nil {
@@ -648,10 +644,6 @@ func (r *Runner) updateJobExecutionAbortion(jeId Id, scope Scope) (*JobExecution
 				}
 			}
 		}
-
-		// if err := s.SendJobExecutionNotification(conn, je); err != nil {
-		// 	return fmt.Errorf("cannot send notification: %w", err)
-		// }
 
 		return nil
 	})
@@ -703,10 +695,6 @@ func (r *Runner) updateJobExecutionFailure(jeId Id, jeErr error, scope Scope) (*
 				}
 			}
 		}
-
-		// if err := s.SendJobExecutionNotification(conn, je); err != nil {
-		// 	return fmt.Errorf("cannot send notification: %w", err)
-		// }
 
 		return nil
 	})
