@@ -93,6 +93,11 @@ values, allowing users to track the execution process.
 Users can affect this lifecycle by aborting or restarting jobs. Both actions
 can be done on the web interface, with Evcli or with the HTTP API.
 
+[#job-execution-refresh]
+=== Refresh
+
+*TODO*
+
 ==== Abortion
 
 Created or started job executions can be aborted. If execution has not started

@@ -226,6 +226,16 @@ of jobs which can run in parallel for the entire platform.
 which old job executions will be deleted. Note that changing this setting will
 not affect job executions which have already been terminated.
 
+`job_execution_refresh_interval` (optional integer, default: 10) :: The number
+of seconds between two job execution refresh. See
+<<job-execution-refresh,execution documentation>> for more information on the
+refresh process.
+
+`job_execution_timeout` (optional integer, default: 60) :: The number of
+seconds without refresh after which a job is considered abandonned. See
+<<job-execution-refresh,execution documentation>> for more information on the
+refresh process.
+
 `session_retention` (optional integer) :: If set, a number of days after which
 sessions will be deleted.
 

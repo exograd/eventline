@@ -35,8 +35,10 @@ type ServiceCfg struct {
 
 	Workers map[string]eventline.WorkerCfg `json:"workers"`
 
-	MaxParallelJobExecutions int `json:"max_parallel_job_executions"`
-	JobExecutionRetention    int `json:"job_execution_retention"` // days
+	MaxParallelJobExecutions    int `json:"max_parallel_job_executions"`
+	JobExecutionRetention       int `json:"job_execution_retention"`        // days
+	JobExecutionRefreshInterval int `json:"job_execution_refresh_interval"` // seconds
+	JobExecutionTimeout         int `json:"job_execution_timeout'`          // seconds
 
 	SessionRetention int `json:"session_retention"` // days
 
@@ -72,6 +74,9 @@ func DefaultServiceCfg() ServiceCfg {
 		},
 
 		WebHTTPServerURI: "http://localhost:8087",
+
+		JobExecutionRefreshInterval: 10,
+		JobExecutionTimeout:         60,
 
 		Notifications: DefaultNotificationsCfg(),
 	}
@@ -111,6 +116,15 @@ func (cfg *ServiceCfg) Check(c *check.Checker) {
 
 	if cfg.JobExecutionRetention != 0 {
 		c.CheckIntMin("job_execution_retention", cfg.JobExecutionRetention, 1)
+	}
+
+	if cfg.JobExecutionRefreshInterval != 0 {
+		c.CheckIntMin("job_execution_refresh_interval",
+			cfg.JobExecutionRefreshInterval, 1)
+	}
+
+	if cfg.JobExecutionTimeout != 0 {
+		c.CheckIntMin("job_execution_timeout", cfg.JobExecutionTimeout, 1)
 	}
 
 	if cfg.SessionRetention != 0 {
