@@ -61,6 +61,7 @@ While the `latest` tag usually points to the latest available release, it is
 strongly recommended not to use it and to always use a specific version tag to
 avoid unexpected updates.
 
+[#configuration]
 ===== Configuration
 
 When running in this Docker image, Eventline can be configured two ways.
@@ -228,12 +229,12 @@ not affect job executions which have already been terminated.
 
 `job_execution_refresh_interval` (optional integer, default: 10) :: The number
 of seconds between two job execution refresh. See
-<<job-execution-refresh,execution documentation>> for more information on the
+<<job-execution-timeout,execution documentation>> for more information on the
 refresh process.
 
 `job_execution_timeout` (optional integer, default: 120) :: The number of
 seconds without refresh after which a job is considered abandonned. See
-<<job-execution-refresh,execution documentation>> for more information on the
+<<job-execution-timeout,execution documentation>> for more information on the
 refresh process.
 
 `session_retention` (optional integer) :: If set, a number of days after which

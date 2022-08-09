@@ -93,10 +93,29 @@ values, allowing users to track the execution process.
 Users can affect this lifecycle by aborting or restarting jobs. Both actions
 can be done on the web interface, with Evcli or with the HTTP API.
 
-[#job-execution-refresh]
-=== Refresh
+[#job-execution-timeout]
+=== Timeouts
 
-*TODO*
+Job executions are refreshed on a regular basis once they have been started.
+A separate worker monitors jobs and stops those which have not been refreshed
+for some time. This mechanism is useful in two situations:
+
+* If Eventline is killed, for example due to `SIGKILL` or a server failure,
+  jobs which were running will ultimately be detected and stopped instead of
+  staying in a `started` status forever.
+
+* If a runner is stuck due to an external system or because of an unexpected
+  error, the job execution associated with it will ultimately be stopped.
+
+This system is controlled by controlled by two settings:
+
+`job_execution_refresh_interval` :: the interval between two refresh in
+seconds.
+
+`job_execution_timeout` :: the time after which a non-refreshed job execution
+is considered dead in seconds.
+
+See the <<configuration,configuration documentation>> for more information.
 
 ==== Abortion
 

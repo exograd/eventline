@@ -27,6 +27,11 @@ _Work in progress._
 - Inject job parameters as files in `$EVENTLINE_DIR/parameters`.
 - Add a notification setting to allow a specific list of email address
   domains.
+- Add the `job-execution-watcher` worker to detect and stop jobs which have
+  timed out, i.e. executions which have not been refreshed for some time. Job
+  executions are now refreshed regularly (the interval is controlled by the
+  `job_execution_refresh_interval` setting). The timeout duration is
+  controlled by the `job_execution_timeout` setting.
 
 ### Bug fixes
 - Fix job pagination in evcli.
