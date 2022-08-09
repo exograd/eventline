@@ -39,6 +39,7 @@ While you can run Eventline directly from the tarball directory, you will want
 something more practical for production. As such, binary tarballs are
 generally only used by people building packages or images themselves.
 
+[#freebsd-package]
 ==== FreeBSD package
 
 FreeBSD packages are available in the Exograd pkg repository. In order to
@@ -60,6 +61,7 @@ pkg install eventline
 
 The repository provides both `eventline` and `eventline-experimental`.
 
+[#ubuntu-package]
 ==== Ubuntu package
 
 Ubuntu packages are available in the Exograd APT repository. In order to

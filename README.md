@@ -65,12 +65,40 @@ evcli deploy-job export-clients.yaml
 ```
 
 ## Running Eventline
+### Docker
 The simplest way to run Eventline is to use the [Docker
 Compose](misc/docker-compose.yaml) setup, which pulls the official
 `exograd/eventline` Docker image.
 
 Refer to the documentation for a [quick start
 guide](https://www.exograd.com/doc/eventline/handbook.html#_getting_started).
+
+### FreeBSD
+Eventline is packaged for FreeBSD.
+
+```sh
+mkdir -p /usr/local/etc/pkg/repos
+curl -sSfL -o /usr/local/etc/pkg/repos/exograd-public.conf \
+     https://pkg.exograd.com/public/freebsd/exograd.conf
+pkg update
+pkg install eventline
+```
+
+Refer to the documentation for [more
+information](https://www.exograd.com/doc/eventline/handbook.html#freebsd-package).
+
+### Ubuntu
+Eventline is packaged for Ubuntu:
+
+```sh
+curl -sSfL -o /etc/apt/sources.list.d/exograd-public.list \
+     https://pkg.exograd.com/public/ubuntu/exograd.list
+apt-get update
+apt-get install eventline
+```
+
+Refer to the documentation for [more
+information](https://www.exograd.com/doc/eventline/handbook.html#ubuntu-package).
 
 ## Documentation
 The Eventline handbook is available both [in the
