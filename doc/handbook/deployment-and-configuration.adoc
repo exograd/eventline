@@ -45,7 +45,27 @@ _Coming soon_.
 
 ==== Ubuntu package
 
-_Coming soon_.
+Ubuntu packages are available in the Exograd APT repository. In order to
+install them, you first need to add the repository as a source for APT:
+
+[source,sh]
+----
+curl -sSfL -o /etc/apt/sources.list.d/exograd-public.list \
+     https://pkg.exograd.com/public/ubuntu/exograd.list
+----
+
+CAUTION: The package repository is only available over HTTPS for security. You
+will need to install the `ca-certificates` packages.
+
+Then you can update the package index and install Eventline:
+
+[source,sh]
+----
+apt-get update
+apt-get install eventline
+----
+
+The repository provides both `eventline` and `eventline-experimental`.
 
 ==== Archlinux package
 
