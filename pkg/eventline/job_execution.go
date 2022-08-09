@@ -356,6 +356,16 @@ UPDATE job_executions SET
 		je.RefreshTime, je.ExpirationTime, je.FailureMessage)
 }
 
+func (je *JobExecution) UpdateRefreshTime(conn pg.Conn) error {
+	query := `
+UPDATE job_executions SET
+    refresh_time = $2
+  WHERE id = $1;
+`
+	return pg.Exec(conn, query,
+		je.Id, je.RefreshTime)
+}
+
 func DeleteExpiredJobExecutions(conn pg.Conn) (int64, error) {
 	ctx := context.Background()
 

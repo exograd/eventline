@@ -38,7 +38,7 @@ type ServiceCfg struct {
 	MaxParallelJobExecutions    int `json:"max_parallel_job_executions"`
 	JobExecutionRetention       int `json:"job_execution_retention"`        // days
 	JobExecutionRefreshInterval int `json:"job_execution_refresh_interval"` // seconds
-	JobExecutionTimeout         int `json:"job_execution_timeout'`          // seconds
+	JobExecutionTimeout         int `json:"job_execution_timeout"`          // seconds
 
 	SessionRetention int `json:"session_retention"` // days
 

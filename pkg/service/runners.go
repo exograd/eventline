@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/dlog"
@@ -24,6 +25,9 @@ func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
 		"job_execution": data.JobExecution.Id.String(),
 	})
 
+	refreshIntervalSeconds := s.Cfg.JobExecutionRefreshInterval
+	refreshInterval := time.Duration(refreshIntervalSeconds) * time.Second
+
 	initData := eventline.RunnerInitData{
 		Log:    logger,
 		Daemon: s.Daemon,
@@ -33,6 +37,8 @@ func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
 		Data: data,
 
 		TerminationChan: s.jobExecutionTerminationChan,
+
+		RefreshInterval: refreshInterval,
 
 		StopChan: s.runnerStopChan,
 		Wg:       &s.runnerWg,

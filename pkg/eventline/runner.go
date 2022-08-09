@@ -59,6 +59,8 @@ type RunnerInitData struct {
 
 	TerminationChan chan<- Id
 
+	RefreshInterval time.Duration
+
 	StopChan <-chan struct{}
 	Wg       *sync.WaitGroup
 }
@@ -98,6 +100,13 @@ type Runner struct {
 	FileSet     *FileSet
 	Scope       Scope
 
+	// Keep a private copy to avoid potential concurrency issues with
+	// JobExecution since we need the id in both the main goroutine and the
+	// refresh goroutine.
+	jeId Id
+
+	refreshInterval time.Duration
+
 	terminationChan chan<- Id
 
 	StopChan <-chan struct{}
@@ -124,6 +133,10 @@ func NewRunner(data RunnerInitData) (*Runner, error) {
 		Environment: data.Data.Environment(),
 		FileSet:     fileSet,
 		Scope:       NewProjectScope(data.Data.Project.Id),
+
+		jeId: data.Data.JobExecution.Id,
+
+		refreshInterval: data.RefreshInterval,
 
 		terminationChan: data.TerminationChan,
 
@@ -178,12 +191,15 @@ func (r *Runner) Stopping() bool {
 
 func (r *Runner) main() {
 	defer r.Wg.Done()
+
+	endChan := make(chan struct{})
+	defer close(endChan)
+
 	defer r.Behaviour.Terminate()
 
 	var cse *StepExecution
 
-	jeId := r.JobExecution.Id
-	defer func() { r.terminationChan <- jeId }()
+	defer func() { r.terminationChan <- r.jeId }()
 
 	defer func() {
 		if value := recover(); value != nil {
@@ -193,7 +209,7 @@ func (r *Runner) main() {
 			panicErr := fmt.Errorf("panic: %s", msg)
 
 			if cse != nil {
-				_, _, err := r.updateStepExecutionFailure(jeId, cse.Id,
+				_, _, err := r.updateStepExecutionFailure(r.jeId, cse.Id,
 					panicErr, r.Scope)
 				if err != nil {
 					r.HandleError(fmt.Errorf("cannot update step %d: %w",
@@ -211,6 +227,8 @@ func (r *Runner) main() {
 		return
 	}
 
+	go r.mainRefresh(endChan)
+
 	r.Log.Info("starting execution")
 
 	for i, se := range r.StepExecutions {
@@ -227,7 +245,7 @@ func (r *Runner) main() {
 		// because we want to set the current step execution (cse) after the
 		// start but before calling executeStep, to make sure the recovery
 		// function works as intended.
-		_, _, err := r.updateStepExecutionStart(jeId, se.Id, r.Scope)
+		_, _, err := r.updateStepExecutionStart(r.jeId, se.Id, r.Scope)
 		if err != nil {
 			r.HandleError(fmt.Errorf("cannot update step %d: %w",
 				se.Position, err))
@@ -244,9 +262,28 @@ func (r *Runner) main() {
 
 	r.Log.Info("execution finished")
 
-	if _, err := r.updateJobExecutionSuccess(jeId, r.Scope); err != nil {
+	if _, err := r.updateJobExecutionSuccess(r.jeId, r.Scope); err != nil {
 		r.Log.Error("cannot update job: %v", err)
 		return
+	}
+}
+
+func (r *Runner) mainRefresh(endChan <-chan struct{}) {
+	ticker := time.NewTicker(r.refreshInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+
+		case <-endChan:
+			return
+		}
+
+		if _, err := r.refreshJobExecution(); err != nil {
+			r.Log.Error("cannot refresh job execution: %v", err)
+			return
+		}
 	}
 }
 
@@ -781,4 +818,33 @@ func (r *Runner) UpdateStepExecutionOutput(se *StepExecution, data []byte) error
 		err = se.UpdateOutput(conn, data)
 		return
 	})
+}
+
+func (r *Runner) refreshJobExecution() (*JobExecution, error) {
+	var je JobExecution
+
+	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+		if err := je.LoadForUpdate(conn, r.jeId, r.Scope); err != nil {
+			return fmt.Errorf("cannot load job execution: %w", err)
+		}
+
+		if je.Finished() {
+			return &JobExecutionFinishedError{Id: r.jeId}
+		}
+
+		now := time.Now().UTC()
+
+		je.RefreshTime = &now
+
+		if err := je.UpdateRefreshTime(conn); err != nil {
+			return fmt.Errorf("cannot update job execution: %w", err)
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &je, nil
 }
