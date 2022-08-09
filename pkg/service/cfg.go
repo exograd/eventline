@@ -35,8 +35,8 @@ type ServiceCfg struct {
 
 	Workers map[string]eventline.WorkerCfg `json:"workers"`
 
-	MaxParallelJobs int `json:"max_parallel_jobs"`
-	JobRetention    int `json:"job_retention"` // days
+	MaxParallelJobExecutions int `json:"max_parallel_job_executions"`
+	JobExecutionRetention    int `json:"job_execution_retention"` // days
 
 	SessionRetention int `json:"session_retention"` // days
 
@@ -104,12 +104,13 @@ func (cfg *ServiceCfg) Check(c *check.Checker) {
 
 	c.CheckStringURI("web_http_server_uri", cfg.WebHTTPServerURI)
 
-	if cfg.MaxParallelJobs != 0 {
-		c.CheckIntMin("max_parallel_jobs", cfg.MaxParallelJobs, 1)
+	if cfg.MaxParallelJobExecutions != 0 {
+		c.CheckIntMin("max_parallel_job_executions",
+			cfg.MaxParallelJobExecutions, 1)
 	}
 
-	if cfg.JobRetention != 0 {
-		c.CheckIntMin("job_retention", cfg.JobRetention, 1)
+	if cfg.JobExecutionRetention != 0 {
+		c.CheckIntMin("job_execution_retention", cfg.JobExecutionRetention, 1)
 	}
 
 	if cfg.SessionRetention != 0 {

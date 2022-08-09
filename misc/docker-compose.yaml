@@ -9,8 +9,8 @@ services:
       # Make sure to generate your own key, for example using:
       #   openssl rand -base64 32
       EVENTLINE_ENCRYPTION_KEY: "1knbmkE/Cw8bkNd2VTPhB9zHQVs+D6vix8Yv0Gpyhfk="
-      EVENTLINE_MAX_PARALLEL_JOBS: 10
-      EVENTLINE_JOB_RETENTION: 90
+      EVENTLINE_MAX_PARALLEL_JOB_EXECUTIONS: 10
+      EVENTLINE_JOB_EXECUTION_RETENTION: 90
       EVENTLINE_SESSION_RETENTION: 30
       # You will need to provide the address of your own SMTP server to
       # actually send notification emails.

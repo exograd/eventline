@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-daemon/dlog"
+	"github.com/exograd/go-daemon/pg"
 )
 
 type JobScheduler struct {
@@ -41,7 +41,7 @@ func (js *JobScheduler) ProcessJob() (bool, error) {
 			return fmt.Errorf("cannot take advisory lock: %w", err)
 		}
 
-		if max := js.Service.Cfg.MaxParallelJobs; max > 0 {
+		if max := js.Service.Cfg.MaxParallelJobExecutions; max > 0 {
 			globalScope := eventline.NewGlobalScope()
 
 			n, err := eventline.CountStartedJobExecutions(conn, globalScope)

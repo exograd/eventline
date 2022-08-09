@@ -202,7 +202,7 @@ func (s *Service) handleJobExecutionTermination(jeId eventline.Id) error {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
 
-		retention := s.Cfg.JobRetention
+		retention := s.Cfg.JobExecutionRetention
 		if je.JobSpec.Retention > 0 {
 			retention = je.JobSpec.Retention
 		}

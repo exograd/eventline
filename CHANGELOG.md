@@ -4,6 +4,9 @@ _Work in progress._
 
 ### Misc
 - Add index to prevent potential performance issue during project deletion.
+- Rename settings:
+  - `max_parallel_jobs` to `max_parallel_job_executions`.
+  - `job_retention` to `job_execution_retention`.
 
 ### Features
 - Add pagination support for the `list-projects` evcli command.

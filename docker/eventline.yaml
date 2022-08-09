@@ -27,8 +27,8 @@ connectors:
     webhook_secret: {{ . }}
     {{ end }}
 
-max_parallel_jobs: {{ env "EVENTLINE_MAX_PARALLEL_JOBS" }}
-job_retention: {{ env "EVENTLINE_JOB_RETENTION" }}
+max_parallel_job_executions: {{ env "EVENTLINE_MAX_PARALLEL_JOB_EXECUTIONS" }}
+job_execution_retention: {{ env "EVENTLINE_JOB_EXECUTION_RETENTION" }}
 
 session_retention: {{ env "EVENTLINE_SESSION_RETENTION" }}
 
