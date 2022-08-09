@@ -263,7 +263,7 @@ func (r *Runner) main() {
 	r.Log.Info("execution finished")
 
 	if _, err := r.updateJobExecutionSuccess(r.jeId, r.Scope); err != nil {
-		r.Log.Error("cannot update job: %v", err)
+		r.Log.Error("cannot update job execution: %v", err)
 		return
 	}
 }
@@ -661,7 +661,7 @@ func (r *Runner) updateJobExecutionAbortion(jeId Id, scope Scope) (*JobExecution
 		je.RefreshTime = nil
 
 		if err := je.Update(conn); err != nil {
-			return fmt.Errorf("cannot update job: %w", err)
+			return fmt.Errorf("cannot update job execution: %w", err)
 		}
 
 		if err := ses.LoadByJobExecutionId(conn, jeId); err != nil {
@@ -712,7 +712,7 @@ func (r *Runner) updateJobExecutionFailure(jeId Id, jeErr error, scope Scope) (*
 		je.RefreshTime = nil
 
 		if err := je.Update(conn); err != nil {
-			return fmt.Errorf("cannot update job: %w", err)
+			return fmt.Errorf("cannot update job execution: %w", err)
 		}
 
 		if err := ses.LoadByJobExecutionId(conn, jeId); err != nil {
