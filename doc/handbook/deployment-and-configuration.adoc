@@ -41,7 +41,24 @@ generally only used by people building packages or images themselves.
 
 ==== FreeBSD package
 
-_Coming soon_.
+FreeBSD packages are available in the Exograd pkg repository. In order to
+install them, you first need to add the repository as a pkg source:
+
+[source,sh]
+----
+curl -sSfL -o /usr/local/etc/pkg/repos/exograd-public.conf \
+     https://pkg.exograd.com/public/freebsd/exograd.conf
+----
+
+Then you can update the package index and install Eventline:
+
+[source,sh]
+----
+pkg update
+pkg install eventline
+----
+
+The repository provides both `eventline` and `eventline-experimental`.
 
 ==== Ubuntu package
 
@@ -54,7 +71,7 @@ curl -sSfL -o /etc/apt/sources.list.d/exograd-public.list \
      https://pkg.exograd.com/public/ubuntu/exograd.list
 ----
 
-CAUTION: The package repository is only available over HTTPS for security. You
+NOTE: The package repository is only available over HTTPS for security. You
 will need to install the `ca-certificates` packages.
 
 Then you can update the package index and install Eventline:
