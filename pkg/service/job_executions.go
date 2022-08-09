@@ -193,6 +193,41 @@ func (s *Service) RestartJobExecution(jeId eventline.Id, scope eventline.Scope) 
 	return &je, nil
 }
 
+func (s *Service) UpdateJobExecutionFailure(conn pg.Conn, je *eventline.JobExecution, format string, args ...interface{}) error {
+	var ses eventline.StepExecutions
+
+	now := time.Now().UTC()
+
+	je.Status = eventline.JobExecutionStatusFailed
+	je.EndTime = &now
+	je.FailureMessage = fmt.Sprintf(format, args...)
+	je.RefreshTime = nil
+
+	if err := je.Update(conn); err != nil {
+		return fmt.Errorf("cannot update job execution: %w", err)
+	}
+
+	if err := ses.LoadByJobExecutionId(conn, je.Id); err != nil {
+		return fmt.Errorf("cannot load step executions: %w", err)
+	}
+
+	for _, se := range ses {
+		if !se.Finished() {
+			se.Status = eventline.StepExecutionStatusAborted
+			if se.StartTime != nil {
+				se.EndTime = &now
+			}
+
+			if err := se.Update(conn); err != nil {
+				return fmt.Errorf("cannot update step %d: %w",
+					se.Position, err)
+			}
+		}
+	}
+
+	return nil
+}
+
 func (s *Service) handleJobExecutionTermination(jeId eventline.Id) error {
 	now := time.Now().UTC()
 

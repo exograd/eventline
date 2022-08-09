@@ -232,6 +232,32 @@ SELECT je1.id, je1.project_id, je1.job_id, je1.job_spec, je1.event_id,
 	return &je, nil
 }
 
+func LoadDeadJobExecution(conn pg.Conn, timeout int) (*JobExecution, error) {
+	now := time.Now().UTC()
+	maxRefreshTime := now.Add(-time.Duration(timeout) * time.Second)
+
+	query := `
+SELECT id, project_id, job_id, job_spec, event_id,
+       parameters, creation_time, update_time, scheduled_time,
+       status, start_time, end_time, refresh_time,
+       expiration_time, failure_message
+  FROM job_executions
+  WHERE status = 'started'
+    AND refresh_time < $1
+  LIMIT 1
+  FOR UPDATE SKIP LOCKED;
+`
+	var je JobExecution
+	err := pg.QueryObject(conn, &je, query, maxRefreshTime)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return &je, nil
+}
+
 func (jes *JobExecutions) LoadByEvent(conn pg.Conn, eventId Id) error {
 	query := `
 SELECT id, project_id, job_id, job_spec, event_id, parameters,

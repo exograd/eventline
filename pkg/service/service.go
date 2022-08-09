@@ -337,6 +337,7 @@ func (s *Service) initWorkers() {
 	init("event-worker", NewEventWorker(s), nil)
 	init("job-scheduler", NewJobScheduler(s), nil)
 	init("job-execution-gc", NewJobExecutionGC(s), nil)
+	init("job-execution-watcher", NewJobExecutionWatcher(s), nil)
 	init("notification-worker", NewNotificationWorker(s), nil)
 	init("session-gc", NewSessionGC(s), nil)
 

@@ -231,7 +231,7 @@ of seconds between two job execution refresh. See
 <<job-execution-refresh,execution documentation>> for more information on the
 refresh process.
 
-`job_execution_timeout` (optional integer, default: 60) :: The number of
+`job_execution_timeout` (optional integer, default: 120) :: The number of
 seconds without refresh after which a job is considered abandonned. See
 <<job-execution-refresh,execution documentation>> for more information on the
 refresh process.

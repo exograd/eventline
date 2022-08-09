@@ -76,7 +76,7 @@ func DefaultServiceCfg() ServiceCfg {
 		WebHTTPServerURI: "http://localhost:8087",
 
 		JobExecutionRefreshInterval: 10,
-		JobExecutionTimeout:         60,
+		JobExecutionTimeout:         120,
 
 		Notifications: DefaultNotificationsCfg(),
 	}
