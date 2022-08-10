@@ -339,7 +339,9 @@ func (s *Service) initWorkers() {
 	init("job-execution-gc", NewJobExecutionGC(s), nil)
 	init("job-execution-watcher", NewJobExecutionWatcher(s), nil)
 	init("notification-worker", NewNotificationWorker(s), nil)
-	init("session-gc", NewSessionGC(s), nil)
+	if s.Cfg.SessionRetention > 0 {
+		init("session-gc", NewSessionGC(s), nil)
+	}
 
 	for name, c := range eventline.Connectors {
 		cdef := c.Definition()
