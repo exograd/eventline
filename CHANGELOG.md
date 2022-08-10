@@ -37,6 +37,7 @@ _Work in progress._
 - Fix job pagination in evcli.
 - Fix the Docker image so that evcli can be executed inside.
 - Always provide =EVENTLINE_DIR= as an absolute path.
+- Fix incorrect validation of the `tls` field in http server configuration.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half
