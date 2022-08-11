@@ -2,12 +2,6 @@
 ## v1.0.0
 _Work in progress._
 
-### Misc
-- Add index to prevent potential performance issue during project deletion.
-- Rename settings:
-  - `max_parallel_jobs` to `max_parallel_job_executions`.
-  - `job_retention` to `job_execution_retention`.
-
 ### Features
 - Add pagination support for the `list-projects` evcli command.
 - Add a `--wait` option to the `execute-job` evcli command which monitors
@@ -48,6 +42,10 @@ _Work in progress._
 - Disable color for logging if the error output stream is not a character
   device.
 - Improve validation of the configuration file.
+- Add index to prevent potential performance issue during project deletion.
+- Rename settings:
+  - `max_parallel_jobs` to `max_parallel_job_executions`.
+  - `job_retention` to `job_execution_retention`.
 
 ## v0.9.1
 ### Bug fixes
