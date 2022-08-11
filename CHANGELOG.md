@@ -40,6 +40,7 @@ _Work in progress._
 - Fix incorrect validation of the `tls` field in http server configuration.
 - Fix immediate session deletion issue when session retention is not
   configured or equal to zero.
+- Fix incorrect validation of the influxdb client configuration.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half
