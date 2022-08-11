@@ -30,7 +30,7 @@ _Work in progress._
 ### Bug fixes
 - Fix job pagination in evcli.
 - Fix the Docker image so that evcli can be executed inside.
-- Always provide =EVENTLINE_DIR= as an absolute path.
+- Always provide `EVENTLINE_DIR` as an absolute path.
 - Fix incorrect validation of the `tls` field in http server configuration.
 - Fix immediate session deletion issue when session retention is not
   configured or equal to zero.
