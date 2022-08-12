@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"os"
 	"path"
+	"time"
 )
 
 type FileSet struct {
@@ -72,6 +73,8 @@ func (s *FileSet) Write(rootPath string) error {
 }
 
 func (s *FileSet) TarArchive(buf *bytes.Buffer) error {
+	now := time.Now().UTC()
+
 	w := tar.NewWriter(buf)
 
 	for filePath, file := range s.Files {
@@ -89,6 +92,7 @@ func (s *FileSet) TarArchive(buf *bytes.Buffer) error {
 			Name:     filePath,
 			Size:     int64(len(file.Content)),
 			Mode:     mode,
+			ModTime:  now,
 		}
 
 		if err := w.WriteHeader(&header); err != nil {
