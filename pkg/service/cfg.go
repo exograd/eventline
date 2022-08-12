@@ -88,8 +88,10 @@ func (cfg *ServiceCfg) Check(c *check.Checker) {
 	// provided for Eventline to work, but we define reasonable default values
 	// so that the user does not have to set them in most cases.
 	//
-	// Also, we do not check the encryption key, since it is validated by its
-	// UnmashalJSON method.
+	// Also, we do not check the value of the encryption key, since it is
+	// validated by its UnmarshalJSON method. We still have to check that it
+	// is present, since UnmarshalJSON will not be called if the field is not
+	// set.
 	//
 	// Finally, connectors, workers and runners are currently handled later in
 	// the initialization phase. This is clearly something we could improve in
@@ -106,6 +108,9 @@ func (cfg *ServiceCfg) Check(c *check.Checker) {
 	c.CheckOptionalObject("influx", cfg.Influx)
 
 	c.CheckObject("pg", cfg.Pg)
+
+	c.Check("encryption_key", !cfg.EncryptionKey.IsZero(),
+		"invalid_value", "missing encryption key")
 
 	c.CheckStringURI("web_http_server_uri", cfg.WebHTTPServerURI)
 

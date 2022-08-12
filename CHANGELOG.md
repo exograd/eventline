@@ -39,6 +39,8 @@ _Work in progress._
 - Fix incorrect validation of the influxdb client configuration.
 - Fix initialization so that the program exits when HTTP server initialization
   fails.
+- Fix configuration validation so that it fails when there is no encryption
+  key.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half
