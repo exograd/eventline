@@ -41,6 +41,7 @@ _Work in progress._
   fails.
 - Fix configuration validation so that it fails when there is no encryption
   key.
+- Fix file permissions when executing in a container as a non-root user.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half

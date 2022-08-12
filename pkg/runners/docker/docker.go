@@ -180,6 +180,17 @@ func (r *Runner) copyFiles(ctx context.Context) error {
 
 	r.runner.FileSet.AddPrefix("/eventline")
 
+	// We do not control which user is going to execute the code (it depends
+	// on the image). Therefore we have to make files readable (and
+	// executable) by any user.
+	for _, file := range r.runner.FileSet.Files {
+		if (file.Mode & 0700) != 0 {
+			file.Mode = file.Mode | 0755
+		} else {
+			file.Mode = file.Mode | 0644
+		}
+	}
+
 	var buf bytes.Buffer
 	if err := r.runner.FileSet.TarArchive(&buf); err != nil {
 		return fmt.Errorf("cannot generate tar archive: %w", err)

@@ -80,18 +80,11 @@ func (s *FileSet) TarArchive(buf *bytes.Buffer) error {
 	for filePath, file := range s.Files {
 		typeFlag := tar.TypeReg
 
-		var mode int64
-		if file.Mode == 0 {
-			mode = 0600
-		} else {
-			mode = int64(file.Mode)
-		}
-
 		header := tar.Header{
 			Typeflag: byte(typeFlag),
 			Name:     filePath,
 			Size:     int64(len(file.Content)),
-			Mode:     mode,
+			Mode:     int64(file.Mode),
 			ModTime:  now,
 		}
 
