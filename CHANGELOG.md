@@ -26,6 +26,8 @@ _Work in progress._
   executions are now refreshed regularly (the interval is controlled by the
   `job_execution_refresh_interval` setting). The timeout duration is
   controlled by the `job_execution_timeout` setting.
+- Add a `--validate-cfg` command line flag to exit after configuration
+  validation but before starting the service.
 
 ### Bug fixes
 - Fix job pagination in evcli.
@@ -35,6 +37,8 @@ _Work in progress._
 - Fix immediate session deletion issue when session retention is not
   configured or equal to zero.
 - Fix incorrect validation of the influxdb client configuration.
+- Fix initialization so that the program exits when HTTP server initialization
+  fails.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half
