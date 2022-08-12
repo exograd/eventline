@@ -28,6 +28,8 @@ _Work in progress._
   controlled by the `job_execution_timeout` setting.
 - Add a `--validate-cfg` command line flag to exit after configuration
   validation but before starting the service.
+- Add an `allowed_runners` setting to provide a list of the runners allowed in
+  submitted jobs.
 
 ### Bug fixes
 - Fix job pagination in evcli.

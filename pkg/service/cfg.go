@@ -42,7 +42,8 @@ type ServiceCfg struct {
 
 	SessionRetention int `json:"session_retention"` // days
 
-	Runners map[string]json.RawMessage `json:"runners"`
+	AllowedRunners []string                   `json:"allowed_runners"`
+	Runners        map[string]json.RawMessage `json:"runners"`
 
 	Notifications *NotificationsCfg `json:"notifications"`
 }
@@ -82,7 +83,7 @@ func DefaultServiceCfg() ServiceCfg {
 	}
 }
 
-func (cfg *ServiceCfg) Check(c *check.Checker) {
+func (cfg *ServiceCfg) Check(c *check.Checker, s *Service) {
 	// Note that some fields are optional in the documentation but mandatory
 	// here. These values are set in the default configuration: they must be
 	// provided for Eventline to work, but we define reasonable default values
@@ -135,6 +136,12 @@ func (cfg *ServiceCfg) Check(c *check.Checker) {
 	if cfg.SessionRetention != 0 {
 		c.CheckIntMin("session_retention", cfg.SessionRetention, 1)
 	}
+
+	c.WithChild("allowed_runners", func() {
+		for i, r := range cfg.AllowedRunners {
+			c.CheckStringValue(i, r, s.runnerNames)
+		}
+	})
 
 	c.CheckObject("notifications", cfg.Notifications)
 }

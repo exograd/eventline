@@ -39,6 +39,7 @@ type Service struct {
 
 	connectors map[string]eventline.Connector
 
+	runnerNames    []string
 	runnerDefs     map[string]*eventline.RunnerDef
 	runnerStopChan chan struct{}
 	runnerWg       sync.WaitGroup
@@ -51,6 +52,11 @@ func NewService(data ServiceData) *Service {
 	hash.Write([]byte(data.BuildId))
 	buildIdHash := hex.EncodeToString(hash.Sum(nil))
 
+	runnerNames := make([]string, len(data.Runners))
+	for i, r := range data.Runners {
+		runnerNames[i] = r.Name
+	}
+
 	s := &Service{
 		Data: data,
 
@@ -62,6 +68,7 @@ func NewService(data ServiceData) *Service {
 
 		connectors: make(map[string]eventline.Connector),
 
+		runnerNames:    runnerNames,
 		runnerDefs:     make(map[string]*eventline.RunnerDef),
 		runnerStopChan: make(chan struct{}),
 
@@ -89,7 +96,7 @@ func (s *Service) ValidateServiceCfg() error {
 	// Validation
 	c := check.NewChecker()
 
-	s.Cfg.Check(c)
+	s.Cfg.Check(c, s)
 
 	return c.Error()
 }

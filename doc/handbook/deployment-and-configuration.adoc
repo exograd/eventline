@@ -291,6 +291,10 @@ refresh process.
 `session_retention` (optional integer) :: If set, a number of days after which
 sessions will be deleted.
 
+`allowed_runners` (optional string array) :: If set, a list of the runners
+which can be used in submitted jobs. Jobs using other runners will be rejected
+during deployment.
+
 `runners` (optional object) :: The configuration of each runner. Refer to the
 <<chapter-runners,runner documentation>> for the settings available for each
 runner.

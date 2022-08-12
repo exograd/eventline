@@ -7,6 +7,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	rlocal "github.com/exograd/eventline/pkg/runners/local"
+	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
 )
@@ -140,6 +141,13 @@ func (s *Service) CreateOrUpdateJob(conn pg.Conn, spec *eventline.JobSpec, scope
 			Name:       "local",
 			Parameters: &rlocal.RunnerParameters{},
 		}
+	}
+
+	runnerAllowed := len(s.Cfg.AllowedRunners) == 0 ||
+		utils.StringsContain(s.Cfg.AllowedRunners, spec.Runner.Name)
+	if !runnerAllowed {
+		return nil, false,
+			fmt.Errorf("runner %q is not allowed", spec.Runner.Name)
 	}
 
 	projectId := scope.(*eventline.ProjectScope).ProjectId
