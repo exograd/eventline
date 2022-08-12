@@ -42,6 +42,7 @@ _Work in progress._
 - Fix configuration validation so that it fails when there is no encryption
   key.
 - Fix file permissions when executing in a container as a non-root user.
+- Add missing dependencies to the Systemd unit file.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half

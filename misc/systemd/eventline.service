@@ -2,7 +2,9 @@
 Description=Eventline
 Documentation=https://www.exograd.com/doc/eventline/handbook.html
 After=network.target network-online.target
-Requires=network-online.target
+Requires=network-online.target docker
+Wants=docker.service postgresql.service
+After=docker.service postgresql.service
 
 [Service]
 Type=exec
