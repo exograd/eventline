@@ -56,6 +56,8 @@ _Work in progress._
 - Rename settings:
   - `max_parallel_jobs` to `max_parallel_job_executions`.
   - `job_retention` to `job_execution_retention`.
+- Do not create events for periodic timer ticks which occurred when the server
+  was down.
 
 ## v0.9.1
 ### Bug fixes

@@ -2,11 +2,12 @@ package time
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-daemon/dlog"
+	"github.com/exograd/go-daemon/pg"
 )
 
 type Worker struct {
@@ -65,24 +66,29 @@ func (w *Worker) ProcessJob() (bool, error) {
 }
 
 func (w *Worker) processSubscription(conn pg.Conn, s *Subscription, es *eventline.Subscription) (*eventline.Event, error) {
-	// The most important value here is expectedTick, which is the time the
-	// event was supposed to be generated; the actual time can be higher since
-	// there is always a delay (the time needed for the worker to pick up the
-	// subscription).
-	//
-	// The next tick is computed based on this tick to avoid potential
-	// drifting.
-
 	w.Log.Info("processing subscription %q", s.Id)
 
 	params := es.Parameters.(*Parameters)
 
-	expectedTick := s.NextTick
+	var etime time.Time
 
-	s.LastTick = &expectedTick
-	s.NextTick = params.NextTick(expectedTick)
+	if params.Periodic == nil {
+		// For non-periodic timers, we want to emit events for all ticks. If a
+		// job is supposed to run every day at 2am, we want it executed even
+		// if Eventline was down between 1am and 3am.
+		etime = s.NextTick
+	} else {
+		// For periodic timers, we do not want to emit events for ticks which
+		// happened while Eventline was down. If the server is not running for
+		// 2 hours, the last thing we want is creating 240 events for a 30
+		// second timer.
+		etime = time.Now().UTC()
+	}
 
-	event := es.NewEvent("time", "tick", &expectedTick, &TickEvent{})
+	s.LastTick = &etime
+	s.NextTick = params.NextTick(etime)
+
+	event := es.NewEvent("time", "tick", &etime, &TickEvent{})
 	if err := event.Insert(conn); err != nil {
 		return nil, fmt.Errorf("cannot insert event: %w", err)
 	}

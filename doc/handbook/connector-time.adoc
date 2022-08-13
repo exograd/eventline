@@ -31,11 +31,13 @@ the day of the week between `monday` and `sunday`. Other fields are optional.
 The `time/tick` event is emitted when a timer goes off.
 
 Job triggered by `time/tick` events are instantiated when the timer goes off.
-Eventline will instantiate job executions for past, missed datetimes. For
-example, if Eventline is down for a whole day and a job is supposed to be run
-every hour, it will instantiate a job execution for every hour as soon as it
-goes up. These executions will be queued for scheduling and executed
-sequentially or concurrently depending on the job definition.
+
+For non-periodic triggers, Eventline will instantiate job executions for past,
+missed datetimes. For example, if Eventline is down for a whole day and a job
+is supposed to be run every hour, it will instantiate a job execution for
+every hour as soon as it goes up. These executions will be queued for
+scheduling and executed sequentially or concurrently depending on the job
+definition.
 
 TIP: In `time/tick` events, the `event_time` field is the date the timer was
 supposed to go off, while the `creation_time` is the date the event was
