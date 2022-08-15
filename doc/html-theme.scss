@@ -110,6 +110,10 @@ body.book {
         &.sectlevel2 {
           margin-left: $size-7;
         }
+
+        &.sectlevel3 {
+          margin-left: $size-6;
+        }
       }
 
       a {
@@ -173,6 +177,13 @@ body.book {
 
     h4 {
       border-bottom: 1.0px solid $text;
+
+      font-size: $size-4;
+      font-weight: $subtitle-weight;
+    }
+
+    h5 {
+      border-bottom: 0.5px dotted $text;
 
       font-size: $size-4;
       font-weight: $subtitle-weight;

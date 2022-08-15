@@ -7,10 +7,11 @@
 :doctype: book
 :description: Reference for the Eventline scheduling platform
 :toc: left
-:toclevels: 2
+:toclevels: 3
 :toc-title: Table of Contents
 :toc-placement: left
 :sectnums:
+:sectnumlevels: 2
 :source-highlighter: rouge
 
 include::preface.adoc[]
