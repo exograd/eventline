@@ -3,7 +3,9 @@
 The `dockerhub` connector is used to provide identities related to the
 https://hub.docker.com[DockerHub] platform.
 
-==== Identity: `password`
+==== Identities
+
+===== `password`
 
 The `dockerhub/password` identity is used for password authentication. It can
 be used for authentication in runners `docker` and `kubernetes`.
@@ -14,12 +16,12 @@ It contains the following fields:
 
 `password` (string) :: The password of the DockerHub account.
 
-==== Identity: `token`
+===== `token`
 
 The `dockerhub/token` identity is used for access token authentication. It can
 be used for authentication in runners `docker` and `kubernetes`.
 
-===== Data fields
+.Data fields
 
 `username` (string) :: The username of the DockerHub account.
 

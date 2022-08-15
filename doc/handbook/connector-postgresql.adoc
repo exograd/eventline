@@ -3,18 +3,20 @@
 The `postgresql` connector provides identities for the
 https://www.postgresql.org[PostgreSQL] database.
 
-==== Identity: `password`
+==== Identities
+
+===== `password`
 
 The `postgresql/password` identity is used to connect to a PostgreSQL
 database.
 
-===== Data fields
+.Data fields
 
 `user` (string) :: The PostgreSQL user.
 
 `password` (string) :: The PostgreSQL password.
 
-===== Environment variables
+.Environment variables
 
 `PGUSER` :: The PostgreSQL user.
 

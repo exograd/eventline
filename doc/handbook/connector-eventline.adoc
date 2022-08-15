@@ -5,16 +5,18 @@ Eventline platform itself.
 
 It is currently only used for Eventline API keys.
 
-==== Identity: `api_key`
+==== Identities
+
+===== `api_key`
 
 The `eventline/api_key` identity is used to connect to the Eventline platform
 with Evcli.
 
-===== Data fields
+.Data fields
 
 `key` (string) :: The API key.
 
-===== Environment variables
+.Environment variables
 
 `EVENTLINE_API_KEY` :: The API key.
 

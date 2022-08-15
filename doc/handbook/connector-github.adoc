@@ -3,14 +3,19 @@
 The `github` connector provides identities and events for the
 https://github.com[GitHub] platform.
 
-==== Identity: `oauth2`
+==== Identities
+
+===== `oauth2`
 
 The `github/oauth2` identity contains a username and an OAuth2 access token.
 
 During the creation of the identity, you will be redirected to the GitHub
 website to authorize the creation of a new access token.
 
-===== Data fields
+This identity can be used for authentication in runners `docker` and
+`kubernetes`.
+
+.Data fields
 
 `username` (string) :: The name of the GitHub account.
 
@@ -18,7 +23,7 @@ website to authorize the creation of a new access token.
 
 include::generic-oauth2-data-fields.adoc[]
 
-===== Environment variables
+.Environment variables
 
 `GITHUB_USER` :: The name of the GitHub account.
 
@@ -27,30 +32,29 @@ include::generic-oauth2-data-fields.adoc[]
 These environment variables are used by the
 https://github.com/cli/cli[official GitHub command line tool] among others.
 
-==== Identity `token`
+===== `token`
 
 The `github/token` identity is used to store GitHub
 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token[personal
 access tokens].
 
-NOTE: `github/token` identities used in triggers require the following scopes:
-
-* `admin:repo_hook`
-* `admin:org_hook`
-* `read:packages`
+NOTE: `github/token` identities used in triggers require the `admin:repo_hook`
+and `admin:org_hook` scopes. Using them as runner identities (e.g. for the
+`docker` runner) will also require the `read:packages` scope.
 
 You may need to add additional permissions if you intend to use this identity
 in jobs for other purposes, for example to interact with the GitHub API.
 
-This identity be used for authentication in runners `docker` and `kubernetes`.
+This identity can be used for authentication in runners `docker` and
+`kubernetes`.
 
-===== Data fields
+.Data fields
 
 `username` (string) :: The name of the GitHub account.
 
 `token` (string) :: The GitHub private access token.
 
-===== Environment variables
+.Environment variables
 
 `GITHUB_USER` :: The name of the GitHub account.
 
@@ -59,7 +63,7 @@ This identity be used for authentication in runners `docker` and `kubernetes`.
 These environment variables are used by the
 https://github.com/cli/cli[official GitHub command line tool] among others.
 
-==== Event subscription parameters
+==== Subscription parameters
 
 `organization` (string) :: The name of the GitHub organization.
 
@@ -69,13 +73,15 @@ Setting only `organization` will subscribe to events for all repositories in
 the origanization, while settings both fields will subscribe to events for a
 single repository.
 
-==== Event: `raw`
+==== Events
+
+===== `raw`
 
 The `github/raw` event is used to access raw data from GitHub events and is
 emitted for every single organization or repository event. It can be used when
 other events do not contain the required information.
 
-===== Data fields
+.Data fields
 
 `delivery_id` (string) :: The delivery id of the event. See the
 https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#delivery-headers[GitHub
@@ -89,29 +95,29 @@ WARNING: Subscribing to `github/raw` events will potentially result in lots of
 events created and lots of jobs executed. Make sure you actually need this
 kind of low level access to event data.
 
-==== Event: `repository_creation`
+===== `repository_creation`
 
 The `github/repository_creation` event is emitted when a repository is created
 in an organization.
 
-===== Data fields
+.Data fields
 
 `organization` (string) :: The name of the GitHub organization.
 
 `repository` (string) :: The name of the repository.
 
-==== Event: `repository_deletion`
+===== `repository_deletion`
 
 The `github/repository_deletion` event is emitted when a repository is deleted
 in an organization.
 
-===== Data fields
+.Data fields
 
 `organization` (string) :: The name of the GitHub organization.
 
 `repository` (string) :: The name of the repository.
 
-==== Event: `tag_creation`
+===== `tag_creation`
 
 The `github/tag_creation` event is emitted when a tag is created in a
 repository.
@@ -119,7 +125,7 @@ repository.
 NOTE: Due to a GitHub limitation, this event will not be emitted if more than
 three tags are pushed at the same time.
 
-===== Data fields
+.Data fields
 
 `organization` (string) :: The name of the GitHub organization.
 
@@ -129,12 +135,12 @@ three tags are pushed at the same time.
 
 `revision` (string) :: The hash of the revision associated with the tag.
 
-==== Event: `tag_deletion`
+===== `tag_deletion`
 
 The `github/tag_deletion` event is emitted when a tag is deleted in a
 repository.
 
-===== Data fields
+.Data fields
 
 `organization` (string) :: The name of the GitHub organization.
 
@@ -144,12 +150,12 @@ repository.
 
 `revision` (string) :: The hash of the revision associated with the tag.
 
-==== Event: `branch_creation`
+===== `branch_creation`
 
 The `github/tag_created` event is emitted when a branch is created in a
 repository.
 
-===== Data fields
+.Data fields
 
 `organization` (string) :: The name of the GitHub organization.
 
@@ -159,12 +165,12 @@ repository.
 
 `revision` (string) :: The hash of the revision the branch starts from.
 
-==== Event: `branch_deletion`
+===== `branch_deletion`
 
 The `github/branch_deleted` event is emitted when a branch is deleted in a
 repository.
 
-===== Data fields
+.Data fields
 
 `organization` (string) :: The name of the GitHub organization.
 
@@ -175,12 +181,12 @@ repository.
 `revision` (string) :: The hash of the revision the branch pointed to when the
 deletion occurred.
 
-==== Event: `push`
+===== `push`
 
 The `github/push` event is emitted when one or more commits are pushed in a
 repository.
 
-===== Data fields
+.Data fields
 
 `organization` (string) :: The name of the GitHub organization.
 
@@ -195,7 +201,7 @@ repository.
 `new_revision` (string) :: The hash of the revision the branch pointed to
 after the push.
 
-===== Examples
+==== Examples
 
 .Commits on the `stable` branch
 [source,yaml]

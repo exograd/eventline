@@ -3,7 +3,7 @@
 The `time` connector provides a way to execute jobs using various kind of
 timers.
 
-==== Event subscription parameters
+==== Subscription parameters
 
 Parameters must include one of the following fields:
 
@@ -26,7 +26,9 @@ object containing four fields `day`, `hour`, `minute`, and `second` indicating
 the precise activation time. The mandatory `day` field is a string indicating
 the day of the week between `monday` and `sunday`. Other fields are optional.
 
-==== Event: `tick`
+==== Events
+
+===== `tick`
 
 The `time/tick` event is emitted when a timer goes off.
 
@@ -44,7 +46,7 @@ supposed to go off, while the `creation_time` is the date the event was
 actually created. You may need both values depending on the work you are
 doing.
 
-===== Examples
+==== Examples
 
 .Periodic timer
 [source,yaml]

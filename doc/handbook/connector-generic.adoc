@@ -3,29 +3,31 @@
 The `generic` connector is used to provide generic identities to store
 credentials for whom there are no dedicated connectors.
 
-==== Identity: `api_key`
+==== Identities
+
+===== `api_key`
 
 A generic API key.
 
-===== Data fields
+.Data fields
 
 `key` (string) :: The API key.
 
-==== Identity: `password`
+===== `password`
 
 A generic login and password pair, the login being optional.
 
-===== Data fields
+.Data fields
 
 `login` (optional string) :: The login.
 
 `password` (string) :: The password.
 
-==== Identity: `ssh_key`
+===== `ssh_key`
 
 A SSH key.
 
-===== Data fields
+.Data fields
 
 `private_key` (string) :: The private key in PEM format.
 
@@ -38,14 +40,14 @@ file which does not end with a new line character (`\n`). Eventline will
 automatically add one at the end of each field of this identity if there is
 not already one present.
 
-==== Identity: `oauth2`
+===== `oauth2`
 
 The `generic/oauth2` identity can be used for any platform which complies with
 OAuth2 specifications. If `discovery` is true, Eventline will use OAuth2
 discovery (https://datatracker.ietf.org/doc/html/rfc8414[RFC 8414]) to find
 other endpoints.
 
-===== Data fields
+.Data fields
 
 `issuer` (string) :: The issuer URI.
 

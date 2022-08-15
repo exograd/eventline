@@ -5,13 +5,15 @@ platform.
 
 NOTE: The `slack` connector is only available in Eventline Pro.
 
-==== Identity: `oauth2_bot`
+==== Identities
+
+===== `oauth2_bot`
 
 The `slack/oauth2_bot` identity is used to store
 https://api.slack.com/authentication/token-types#bot[Slack bot tokens]. It is
 used to interact with the Slack API independently of any user account.
 
-===== Data fields
+.Data fields
 
 `scopes` (string array) :: The list of OAuth2 scopes.
 
@@ -25,7 +27,7 @@ the https://api.slack.com/messaging/webhooks[incoming webhook] if the
 https://api.slack.com/messaging/webhooks[incoming webhook] if the
 `incoming-webhook` scope was selected.
 
-==== Identity: `oauth2_user`
+===== `oauth2_user`
 
 The `slack/oauth2_user` identity is used to store
 https://api.slack.com/authentication/token-types#user[Slack user tokens]. It

@@ -189,7 +189,13 @@ body.book {
       font-weight: $subtitle-weight;
     }
 
-    h5 {
+    h6 {
+      font-size: $size-5;
+      font-weight: $subtitle-weight;
+    }
+
+    .title {
+      // Used for captions
       font-size: $size-5;
       font-weight: $subtitle-weight;
     }
