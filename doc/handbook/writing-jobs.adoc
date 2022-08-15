@@ -185,8 +185,9 @@ used to inject the value of this parameter during execution.
 ==== Filter specification
 
 Each filter is an object made of a path and zero or more predicates. The path
-is a JSON pointer (see https://datatracker.ietf.org/doc/html/rfc6901[RFC
-6901]) applied to the data of the event.
+is a JSON pointer (see
+https://datatracker.ietf.org/doc/html/rfc6901[RFC 6901]) applied to the data
+of the event.
 
 Predicates are additional members which are applied to the value referenced by
 the path. An event matches a filter if all predicates are true.

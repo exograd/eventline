@@ -42,7 +42,7 @@ not already one present.
 
 The `generic/oauth2` identity can be used for any platform which complies with
 OAuth2 specifications. If `discovery` is true, Eventline will use OAuth2
-discovery (https://datatracker.ietf.org/doc/html/rfc8414[RFC 8414]) to find
+discovery (https://datatracker.ietf.org/doc/html/rfc8414[RFC 8414]) to find
 other endpoints.
 
 ===== Data fields
