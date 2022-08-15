@@ -39,7 +39,6 @@ $(foreach dir,$(GO_PKGS),$(call go_make1,$(dir))
 )
 endef
 
-DOC_PDF = doc/handbook.pdf
 DOC_HTML = doc/handbook/handbook.html
 
 ASCIIDOCTOR_OPTIONS = -v -a revnumber=$(BUILD_ID)
@@ -82,39 +81,27 @@ vet:
 test:
 	go test $(GO_TEST_OPTIONS) ./...
 
-doc: doc-html doc-pdf
+doc: doc-html
 
 doc-html: $(DOC_HTML)
 
-doc-pdf: $(DOC_PDF)
-
 .SECONDEXPANSION:
-%.html: $$(wildcard doc/**/*.adoc) doc/html-theme.css
+%.html: $$(wildcard doc/**/*.adoc) doc/theme.css
 	asciidoctor --backend html \
 	            --destination-dir $(dir $@) \
 	            -a docinfo=shared \
 	            -a nofooter \
 	            -a rouge-style=base16.dark \
 	            -a stylesdir=.. \
-	            -a stylesheet=html-theme.css \
+	            -a stylesheet=theme.css \
 	            $(ASCIIDOCTOR_OPTIONS) \
 	            $(subst .html,.adoc,$@)
 
 # For some reason, using the compressed style breaks @font-face blocks. I have
 # no idea why it breaks here but not in Eventline. I will take a patch to fix
 # this if someone find the root cause.
-doc/html-theme.css: doc/html-theme.scss
+doc/theme.css: doc/theme.scss
 	sass --no-error-css --no-source-map --style expanded $<:$@
-
-.SECONDEXPANSION:
-%.pdf: $$(wildcard doc/**/*.adoc) doc/pdf-theme.yml
-	asciidoctor-pdf --backend pdf \
-	                --destination-dir doc/ \
-	                $(ASCIIDOCTOR_OPTIONS) \
-	                -a rouge-style=base16.solarized.light \
-	                -a pdf-theme=doc/pdf-theme.yml \
-	                -a pdf-fontsdir=doc/fonts \
-	                $(basename $@)/$(basename $(notdir $@)).adoc
 
 docker-images: build doc FORCE
 	$(call docker_build)
@@ -129,7 +116,6 @@ install: build doc
 	cp -r data/pg $(sharedir)/eventline
 	cp -r data/templates $(sharedir)/eventline
 	mkdir -p $(docdir)/eventline
-	cp -r $(DOC_PDF) $(docdir)/eventline
 	mkdir -p $(docdir)/eventline/html
 	cp -r $(DOC_HTML) $(docdir)/eventline/html
 	cp -r $(dir $(DOC_HTML))images $(docdir)/eventline/html
@@ -146,7 +132,6 @@ install-flat: build doc
 	cp -r data/pg $(DESTDIR)/data
 	cp -r data/templates $(DESTDIR)/data
 	mkdir -p $(DESTDIR)/doc
-	cp -r $(DOC_PDF) $(DESTDIR)/doc
 	mkdir -p $(DESTDIR)/doc/html
 	cp -r $(DOC_HTML) $(DESTDIR)/doc/html
 	cp -r $(dir $(DOC_HTML))images $(DESTDIR)/doc/html
@@ -156,12 +141,12 @@ install-flat: build doc
 clean:
 	$(call evweb_make,clean)
 	$(RM) $(BIN_DIR)/*
-	$(RM) $(DOC_PDF) $(DOC_HTML) doc/html-theme.css
+	$(RM) $(DOC_HTML) doc/theme.css
 
 FORCE:
 
 .PHONY: all assets build evcli clean
 .PHONY: check vet test
-.PHONY: doc doc-html doc-pdf
+.PHONY: doc doc-html
 .PHONE: docker-images
 .PHONY: install install-flat

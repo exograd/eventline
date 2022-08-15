@@ -101,10 +101,10 @@ Refer to the documentation for [more
 information](https://www.exograd.com/doc/eventline/handbook.html#ubuntu-package).
 
 ## Documentation
-The Eventline handbook is available both [in the
-repository](doc/handbook/handbook.adoc) and
-[online](https://www.exograd.com/doc/eventline/handbook.html). It is also
-distributed with GitHub releases in PDF and in HTML.
+The Eventline handbook is available [in the
+repository](doc/handbook/handbook.adoc), on the [Exograd
+website](https://www.exograd.com/doc/eventline/handbook.html) and in each
+GitHub release.
 
 ## Commercial use
 We also provide Eventline Pro with multiple extensions and commercial support.
