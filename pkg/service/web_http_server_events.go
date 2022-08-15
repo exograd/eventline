@@ -48,10 +48,7 @@ func (s *WebHTTPServer) hEventsGET(h *HTTPHandler) {
 		var jobIds eventline.Ids
 		for _, element := range page.Elements {
 			event := element.(*eventline.Event)
-
-			if event.JobId != nil {
-				jobIds = append(jobIds, *event.JobId)
-			}
+			jobIds = append(jobIds, event.JobId)
 		}
 
 		jobNames, err = eventline.LoadJobNamesById(conn, jobIds)
@@ -100,11 +97,9 @@ func (s *WebHTTPServer) hEventsIdGET(h *HTTPHandler) {
 			return fmt.Errorf("cannot load event: %w", err)
 		}
 
-		if event.JobId != nil {
-			job = new(eventline.Job)
-			if err := job.Load(conn, *event.JobId, scope); err != nil {
-				return fmt.Errorf("cannot load job: %w", err)
-			}
+		job = new(eventline.Job)
+		if err := job.Load(conn, event.JobId, scope); err != nil {
+			return fmt.Errorf("cannot load job: %w", err)
 		}
 
 		if err := jobExecutions.LoadByEvent(conn, eventId); err != nil {

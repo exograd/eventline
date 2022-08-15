@@ -35,7 +35,7 @@
         </td>
 
         <td class="is-narrow">
-          {{$name := (index $.Data.JobNames .JobId.ValueOrZero)}}
+          {{$name := (index $.Data.JobNames .JobId)}}
           {{if $name}}
           <a href="/jobs/id/{{.JobId}}">{{$name}}</a>
           {{else}}

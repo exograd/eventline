@@ -334,8 +334,7 @@ Events are represented as JSON objects containing the following fields:
 `project_id` (identifier) :: The identifier of the project the event is
 part of.
 
-`job_id` (optional identifier) :: The identifier of the job at the origin of
-the event.
+`job_id` (identifier) :: The identifier of the job at the origin of the event.
 
 `creation_time` (date) :: The date the event was created.
 

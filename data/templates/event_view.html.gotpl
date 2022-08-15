@@ -43,11 +43,9 @@
 
     <div class="column is-2 is-narrow">
       <div class="buttons is-right">
-        {{if .JobId}}
         <button name="replay" class="button" data-id="{{.Id}}">
           Replay
         </button>
-        {{end}}
       </div>
     </div>
   </div>

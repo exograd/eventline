@@ -40,7 +40,7 @@ type NewEvent struct {
 type Event struct {
 	Id              Id          `json:"id"`
 	ProjectId       Id          `json:"project_id"`
-	JobId           *Id         `json:"job_id,omitempty"`
+	JobId           Id          `json:"job_id"`
 	CreationTime    time.Time   `json:"creation_time"`
 	EventTime       time.Time   `json:"event_time"`
 	Connector       string      `json:"connector"`
@@ -190,17 +190,13 @@ func (es Events) Page(cursor *Cursor) *Page {
 }
 
 func (e *Event) FromRow(row pgx.Row) error {
-	var jobId, originalEventId Id
+	var originalEventId Id
 	var rawData []byte
 
-	err := row.Scan(&e.Id, &e.ProjectId, &jobId, &e.CreationTime, &e.EventTime,
+	err := row.Scan(&e.Id, &e.ProjectId, &e.JobId, &e.CreationTime, &e.EventTime,
 		&e.Connector, &e.Name, &rawData, &e.Processed, &originalEventId)
 	if err != nil {
 		return err
-	}
-
-	if !jobId.IsZero() {
-		e.JobId = &jobId
 	}
 
 	if !originalEventId.IsZero() {

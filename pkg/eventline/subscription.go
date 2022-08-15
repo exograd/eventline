@@ -74,12 +74,10 @@ func (s *Subscription) NewEvent(cname, ename string, etime *time.Time, data Even
 		etime = &now
 	}
 
-	jobId := *s.JobId
-
 	return &Event{
 		Id:           GenerateId(),
 		ProjectId:    *s.ProjectId,
-		JobId:        &jobId,
+		JobId:        *s.JobId,
 		CreationTime: now,
 		EventTime:    *etime,
 		Connector:    cname,

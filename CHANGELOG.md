@@ -58,6 +58,7 @@ _Work in progress._
   - `job_retention` to `job_execution_retention`.
 - Do not create events for periodic timer ticks which occurred when the server
   was down.
+- The job id is now mandatory in event objects.
 
 ## v0.9.1
 ### Bug fixes

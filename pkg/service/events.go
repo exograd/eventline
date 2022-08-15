@@ -44,7 +44,7 @@ func (s *Service) ProcessEvent(conn pg.Conn, event *eventline.Event, scope event
 
 	// Load the job
 	var job eventline.Job
-	if err := job.Load(conn, *event.JobId, scope); err != nil {
+	if err := job.Load(conn, event.JobId, scope); err != nil {
 		return false, fmt.Errorf("cannot load job %q: %w", event.JobId, err)
 	}
 

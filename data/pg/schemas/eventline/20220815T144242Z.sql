@@ -1,0 +1,2 @@
+ALTER TABLE events
+  ALTER COLUMN job_id SET NOT NULL;
