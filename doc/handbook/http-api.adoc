@@ -1,3 +1,136 @@
 == HTTP API
 
+The Eventline HTTP API lets users access the various features of the platform
+in a programmatic way.
+
+=== Interface
+
+==== Endpoint
+
+The API is available on a separate endpoint. The HTTP
+interface is configured by the `api_http_server` setting. See the
+<<configuration-specification,configuration documentation>> for more
+information. The default port is 8085.
+
+==== Authentication
+
+Access to the API requires a valid <<api-keys,API key>>. Authentication is
+based on the HTTP `Authorization` header field with the `Bearer` scheme.
+
+For example, for the fictional API key `082ef11a-908f-4fae-819c-eb98b7fd98f6`,
+requests must include the following header field:
+
+----
+Authorization: Bearer 082ef11a-908f-4fae-819c-eb98b7fd98f6
+----
+
+==== Project selection
+
+Most API routes operate on a specific <<chapter-projects,project>>. This
+project must be identified in each request by sending its identifier using the
+`X-Eventline-Project-Id` header field.
+
+For example, for a fictional project whose identifier is
+`23B1NoaoigGQfmiP9PB9X2nJh4W`, requests must include the following header
+field:
+
+----
+X-Eventline-Project-Id: 23B1NoaoigGQfmiP9PB9X2nJh4W
+----
+
+When an API route does not depend on a project, the `X-Eventline-Project-Id`
+can be omitted from the request.
+
+TIP: In order to obtain the identifier of a project using its name, you can
+use the `GET /projects/name/{name}` route to fetch the project by name and
+read the `id` field.
+
+==== Error handling
+
+The Eventline API uses conventional HTTP status codes to indicate success or
+failure. In general, 2xx status codes indicate success, 4xx status codes
+indicate an error caused by the request, and 5xx status codes indicate an
+error in the Eventline platform.
+
+Error responses sent by Eventline servers will contain a body representing an
+<<data-errors,error object>>.
+
+CAUTION: It is possible to receive error responses with a body which is not
+encoded in JSON, for example for errors coming from a load balancer or reverse
+proxy. Clients should use the `Content-Type` header field to determine the
+format of the body. Errors originating from Eventline API servers will always
+have the `application/json` content type.
+
+==== Pagination
+
+Various API routes return collections of elements. Most of these routes use
+pagination to group elements.
+
+Paginated routes return a single object representing the page, i.e. the
+required subset of the collection of elements.
+
+===== Cursors
+
+Pagination is controlled by cursors. A cursor contains the parameters
+controlling the selection of elements to be returned and their order.
+
+Each cursor contains the following parameters:
+
+`before` (optional string) :: An opaque key; return elements positioned before the
+element designated by the key in the defined order.
+
+`after` (optional string) :: An opaque key; return elements positioned after the element designated by the key in the defined order.
+
+`size` (optional integer, default to 20) :: The number of elements to return,
+between 0 and 100.
+
+`sort` (optional string) :: The sort to apply to elements. Different types of
+elements support different sorts; all elements support the `id` sort. The
+default sort depends on the type of the element.
+
+`order` (optional string, default to `asc`) :: The order to use for elements,
+either `asc` for ascending order or `desc` for descending order.
+
+Cursors must include one and only one of the `before` and `after` parameters.
+
+===== Requests
+
+When sending requests to fetch elements, the cursor is passed using HTTP query
+parameters. The `before` and `after` parameters must be Base64-encoded (see
+https://datatracker.ietf.org/doc/html/rfc4648[RFC 4648]).
+
+For example, sending a request to
+`/jobs?after=TWpOQ2VFTlZOVVJvT1RCQ00xaFdSalJWY210WGNtNXFaRU5Q&size=5&order=id&order=desc`
+will result in a response containing up to 5 jobs at position
+`MjNCeENVNURoOTBCM1hWRjRVcmtXcm5qZENP` in the whole list of pipelines ordered
+by id.
+
+All paginated requests may result in pages containing less elements that the
+number required using the `size` parameter.
+
+===== Responses
+
+When cursors are sent in responses, for example to indicate the previous or
+next page, they are represented as JSON objects.
+
+For example:
+
+[source,json]
+----
+{
+  "after": "MjNCeENVNURoOTBCM1hWRjRVcmtXcm5qZENP",
+  "size": 5,
+  "order": "id",
+  "order": "desc"
+}
+----
+
+The response to a paginated query is a single <<data-page,page object>>.
+
+=== Data
+
+_Coming soon._
+
+=== Routes
+
 _Coming soon._

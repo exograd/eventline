@@ -10,6 +10,7 @@ absolute (e.g. "2022-07-15T17:11:50Z") or relative (e.g. "3 hours ago").
 Default page size :: The number of elements displayed on a page listing
 multiple elements, for example the event list page.
 
+[#api-keys]
 === API keys
 
 Each account can define multiple API keys. Keys are used to access the HTTP

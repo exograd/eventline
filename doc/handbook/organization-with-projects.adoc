@@ -1,3 +1,4 @@
+[#chapter-projects]
 == Organization with projects
 
 It is easy to create lots of jobs and identities and end up having trouble
