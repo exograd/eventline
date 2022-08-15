@@ -41,6 +41,7 @@ instantiates associated jobs.
 See the <<chapter-connectors,connector documentation>> for a list of all
 events in each connector.
 
+[#event-replay]
 ==== Replay
 
 Event replay is an advanced feature designed to help people re-execute jobs as
@@ -70,6 +71,7 @@ CAUTION: If you define a job to be executable with either a trigger or manual
 execution, you need to make sure that the code executed by the job handle the
 fact that there may or may not be an available event.
 
+[#job-execution-lifecycle]
 === Lifecycle
 
 Job executions have one of the following status:

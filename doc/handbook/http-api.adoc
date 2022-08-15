@@ -69,6 +69,7 @@ pagination to group elements.
 Paginated routes return a single object representing the page, i.e. the
 required subset of the collection of elements.
 
+[#data-cursors]
 ===== Cursors
 
 Pagination is controlled by cursors. A cursor contains the parameters
@@ -125,12 +126,408 @@ For example:
 }
 ----
 
-The response to a paginated query is a single <<data-page,page object>>.
+The response to a paginated query is a single <<data-pages,page object>>.
 
 === Data
 
-_Coming soon._
+==== Data format
+
+Unless mentioned otherwise, requests and responses contain data formatted
+using https://www.json.org[JSON] as described by
+https://datatracker.ietf.org/doc/html/rfc8259[RFC 8259].
+
+Note that as mandated by RFC 8259, JSON documents must be encoded used UTF-8
+and must not start with a BOM (Byte Order Mark).
+
+[#data-errors]
+==== Errors
+
+Error objects contain the following fields:
+
+`error` (string) :: A human-readable description of the error.
+
+`code` (string) :: An error code identifying the precise reason which caused
+the error.
+
+`data` (optional value) :: A value, usually an object, containing additional
+data related to the error.
+
+.Example
+[source,json]
+----
+{
+  "error": "route not found",
+  "code": "route_not_found",
+  "data": {
+    "target": "\/foo\/bar"
+  }
+}
+----
+
+==== Identifiers
+
+Most objects in Eventline are referenced by their unique identifier.
+Identifiers are https://github.com/segmentio/ksuid[KSUID]. They are
+represented in JSON by strings containing the textual representation of the
+KSUID, e.g. `"23BUGaDgMUxucZnXMzyUEGRcujl"`.
+
+==== Names
+
+Names are used as human-readable identifiers for various elements.
+
+Names must only contain lower case alphanumeric characters, dash characters
+('-') or underscore characters ('_'); they must also start an alphanumeric
+character. For example, "build-archive" and "run\_http\_test\_42" are valid
+names; "-register" and "Send Notifications" are not. Additionally, names must
+contain at least one character, and must not contain more than 100 characters.
+
+==== Dates
+
+Dates are represented as JSON strings containing the
+https://datatracker.ietf.org/doc/html/rfc3339[RFC 3339] representation of the
+date and time.
+
+For example, `"2021-10-15T15:07:39Z"` is a valid date.
+
+Eventline always represents dates using Coordinated Universal Time (UTC).
+
+[#data-pages]
+==== Pages
+
+The response to a paginated query is a page, represented by a JSON object
+containing the following fields:
+
+`elements` (array) :: The list of elements contained in the page.
+
+`previous` (optional object) :: The <<data-cursors,cursor>> corresponding to
+the previous page if there is one.
+
+`next` (optional object) :: The <<data-cursors,cursor>> corresponding to the
+next page if there is one.
+
+.Example
+[source,json]
+----
+{
+  "elements": [
+    {
+      "id": "22bQgVViNfTUAaToCrk9fMXPGsj",
+      "name": "project-1",
+    },
+    {
+      "id": "23E0dGLAnH943qkNMvMEZeFsWya",
+      "name": "project-2",
+    }
+  ],
+  "next": {
+    "after": "MjNFMGRHTEFuSDk0M3FrTk12TUVaZUZzV3lh",
+    "size": 2,
+    "sort": "name",
+    "order": "asc"
+  }
+}
+----
+
+[#data-accounts]
+==== Accounts
+
+Accounts are represented as JSON objects containing the following fields:
+
+`id` (identifier) :: The identifier of the account.
+
+`creation_time` (date) :: The date the account was created.
+
+`username` (string) :: The name of the user owning the account. The username
+must contain at least 3 characters and no more than 100 characters.
+
+`role` (string) :: The role of the account, either `user` or `admin`.
+
+`last_login_time` (optional date) :: The date of the last time someone used
+this account to access Eventline.
+
+`last_project_id` (optional identifier) :: The identifier of the last project
+selected as current project for this account.
+
+`settings` (object) :: An object containing settings used by the account.
+
+[#data-projects]
+==== Projects
+
+Projets are represented as JSON objects containing the following fields:
+
+`id` (identifier) :: The identifier of the project.
+
+`name` (name) :: The name of the project.
+
+[#data-jobs]
+==== Jobs
+
+Jobs are represented as JSON objects containing the following fields:
+
+`id` (identifier) :: The identifier of the job.
+
+`project_id` (identifier) :: The identifier of the project the job is part of.
+
+`creation_time` (date) :: The date the job was created.
+
+`update_time` (date) :: The date the job was last modified.
+
+`disabled` (optional boolean, default to `false`) :: Whether the job is
+disabled or not.
+
+`spec` (object) :: The specification of the job. See the
+<<job-specification,job documentation>> for more information.
+
+[#data-job-executions]
+==== Job executions
+
+Job executions are represented as JSON objects containing the following
+fields:
+
+`id` (identifier) :: The identifier of the execution.
+
+`project_id` (identifier) :: The identifier of the project the execution is
+part of.
+
+`job_id` (identifier) :: The identifier of the job.
+
+`job_spec` (object) :: A copy of the <<job-specification,specification>> of
+the job.
+
+`event_id` (optional identifier) :: If the job execution was triggered by an
+event, the identifier of the event.
+
+`parameters` (optional object) :: If the job was executed without any event,
+the set of parameters used.
+
+`creation_time` (date) :: The date the execution was created.
+
+`update_time` (date) :: The date the execution was last modified.
+
+`scheduled_time` (date) :: The date execution is supposed to start.
+
+`status` (string) :: The current status of the execution, either `created`,
+`started`, `aborted`, `successful` or `failed`. See the
+<<job-execution-lifecycle,job execution documentation>> for more information.
+
+`start_time` (optional date) :: The date execution started.
+
+`end_time` (optional date) :: The date execution ended.
+
+`refresh_time` (optional date) :: The date execution was last refreshed. See
+the <<job-execution-timeout,job execution documentation>> for more
+information.
+
+`expiration_time` (optional date) :: The date the job execution will be
+deleted for being too old.
+
+`failure_message` (optional string) :: If execution failed, the last error
+message encountered.
+
+[#data-events]
+==== Events
+
+Events are represented as JSON objects containing the following fields:
+
+`id` (identifier) :: The identifier of the event.
+
+`project_id` (identifier) :: The identifier of the project the event is
+part of.
+
+`job_id` (optional identifier) :: The identifier of the job at the origin of
+the event.
+
+`creation_time` (date) :: The date the event was created.
+
+`event_time` (date) :: The date the event actually happened.
+
+`connector` (string) :: The name of the connector.
+
+`name` (string) :: The name of the event.
+
+`data` (object) :: The set of data contained by the event. Depends on the
+connector and name. See the documentation of the event in the
+<<chapter-connectors,connector section>> for more information.
+
+`processed` (optional boolean, default to `false`) :: Whether the event was processed
+for job instantiation or not.
+
+`original_event_id` (optional identifier) :: If the event is associated with a
+<<event-replay,replayed event>>, the identifier of the original event.
+
+.Example
+[source,json]
+----
+{
+  "id": "22gBNze4y3o57HpES4WC8MwKvwo",
+  "project_id": "1zY1y6offsPNwvhFxgpteVO0GvM",
+  "job_id": "22g5sGMNkKvAtoH1BBMP2aDtUGb",
+  "creation_time": "2021-12-23T08:48:33Z",
+  "event_time": "2021-12-23T08:48:32Z",
+  "connector": "github",
+  "name": "push",
+  "data": {
+    "branch": "test",
+    "new_revision": "f1d2d2f924e986ac86fdf7b36c94bcdf32beec15",
+    "old_revision": "62cdb7020ff920e5aa642c3d4066950dd1f01f4d",
+    "organization": "example",
+    "repository": "my-project"
+  }
+}
+----
 
 === Routes
 
-_Coming soon._
+==== Accounts
+
+===== `GET /account`
+
+Fetch the account of the API key used to send the request. The response is an
+<<data-accounts,account object>>.
+
+==== Projects
+
+===== `GET /projects`
+
+Fetch a paginated list of projects.
+
+The response is a page of <<data-projects,project objects>>.
+
+===== `POST /projects`
+
+Create a new project.
+
+The request must be a JSON object containing the following field:
+
+`name` (name) :: The name of the project.
+
+The response is the <<data-projects,project object>> which was created.
+
+===== `GET /projects/id/{id}`
+
+Fetch a project by identifier.
+
+The response is a <<data-projects,project object>>.
+
+===== `GET /projects/name/{name}`
+
+Fetch a project by name.
+
+The response is a <<data-projects,project object>>.
+
+===== `PUT /projects/id/{id}`
+
+Update an existing project.
+
+The request must be a JSON object containing the following field:
+
+`name` (name) :: The name of the project.
+
+The response is the modified <<data-projects,project object>>.
+
+===== `DELETE /projects/id/{id}`
+
+Delete a project by identifier.
+
+==== Jobs
+
+===== `GET /jobs`
+
+Fetch a paginated list of jobs.
+
+The response is a page of <<data-jobs,job objects>>.
+
+===== `PUT /jobs`
+
+Deploy a set of jobs in the current project. If jobs already exist with the
+same names, they are updated. If not, new jobs are created. The operation is
+atomic: if one of the job cannot be deployed, none will be.
+
+The request is an array of <<job-specification,job specification objects>>.
+
+The response is an array of <<data-jobs,job objects>> representing the jobs
+created or updated from the specifications.
+
+If the `dry-run` query parameter is set, Eventline validates job
+specifications but does not deploy them.
+
+===== `GET /jobs/id/{id}`
+
+Fetch a job by identifier.
+
+The response is a <<data-jobs,job object>>.
+
+===== `DELETE /jobs/id/{id}`
+
+Delete a job by identifier.
+
+===== `GET /jobs/name/{name}`
+
+Fetch a job by name.
+
+The response is a <<data-jobs,job object>>.
+
+===== `PUT /jobs/name/{name}`
+
+Deploy a single job in the current project. If a job already exists with this
+name, it is updated; if not, a new job is created.
+
+The request is a <<job-specification,job specification object>>.
+
+The response is a <<data-jobs,job object>> representing the job created or
+updated from the specifications.
+
+If the `dry-run` query parameter is set, Eventline validates the job
+specification but does not deploy it.
+
+===== `POST /jobs/id/{id}/enable`
+
+Enable a job by identifier. Nothing is done if the job is already enabled.
+
+===== `POST /jobs/id/{id}/disable`
+
+Disable a job by identifier. Nothing is done if the job is already disabled.
+
+===== `POST /jobs/id/{id}/execute`
+
+Execute a job by identifier.
+
+The request is a JSON object containing the following field:
+
+`parameters` (object) :: The set of parameters to use for execution.
+
+The response is a <<data-job-executions,job execution object>>.
+
+==== Job executions
+
+===== `GET /job_executions/id/{id}`
+
+Fetch a job execution by identifier.
+
+The response is a <<data-job-executions,job execution object>>.
+
+===== `POST /job_executions/id/{id}/abort`
+
+Abort a created or started job execution by identifier.
+
+===== `POST /job_executions/id/{id}/restart`
+
+Restart a finished job execution by identifier.
+
+==== Events
+
+===== `GET /events`
+
+Fetch a paginated list of events.
+
+The response is a page of <<data-events,event objects>>.
+
+===== `GET /events/id/{id}`
+
+Fetch an event by identifier.
+
+The response is an <<data-events,event object>>.
+
+===== `POST /events/id/{id}/replay`
+
+Replay an event by identifier.

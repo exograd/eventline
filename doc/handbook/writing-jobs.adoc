@@ -105,6 +105,7 @@ script file as you would expect.
 
 === Reference
 
+[#job-specification]
 ==== Job specification
 
 A job is an object containing the following fields:
