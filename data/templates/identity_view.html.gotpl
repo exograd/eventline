@@ -47,7 +47,7 @@
       {{end}}
     </div>
 
-    <div class="column is-5">
+    <div class="column is-5 ev-identity-data">
       <dl>
         {{template "identity_data_view.html" $}}
       </dl>

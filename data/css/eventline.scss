@@ -404,6 +404,15 @@ form.ev-subscription {
   }
 }
 
+// Identity data
+.ev-identity-data {
+  dd {
+    max-height: 8em;
+    white-space: pre;
+    overflow: auto;
+  }
+}
+
 // Metrics
 .ev-metrics {
   svg {

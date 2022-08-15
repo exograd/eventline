@@ -5,21 +5,21 @@
 <dd class="{{if .Verbatim}}is-family-monospace{{end}}
            {{if .Secret}}ev-secret{{end}}"
            {{if eq .Type "date"}}title="{{$.Context.FormatAltDate .Value}}"{{end}}>
-  {{if (or (eq .Type "string") (not .Type))}}
-  {{.Value}}
-  {{else if eq .Type "string_list"}}
-  {{join .Value ", "}}
-  {{else if eq .Type "enum_list"}}
-  {{join .Value ", "}}
-  {{else if eq .Type "date"}}
-  {{$.Context.FormatDate .Value}}
-  {{else if eq .Type "uri"}}
-  {{.Value}}
-  {{else if eq .Type "text_block"}}
-  {{.Value}}
-  {{else if eq .Type "boolean"}}
-  {{.Value}}
-  {{end}}
+  {{- if (or (eq .Type "string") (not .Type)) -}}
+  {{- .Value -}}
+  {{- else if eq .Type "string_list" -}}
+  {{- join .Value ", " -}}
+  {{- else if eq .Type "enum_list" -}}
+  {{- join .Value ", " -}}
+  {{- else if eq .Type "date" -}}
+  {{- $.Context.FormatDate .Value -}}
+  {{- else if eq .Type "uri" -}}
+  {{- .Value -}}
+  {{- else if eq .Type "text_block" -}}
+  {{- .Value -}}
+  {{- else if eq .Type "boolean" -}}
+  {{- .Value -}}
+  {{- end -}}
 </dd>
 {{end}}
 {{end}}
