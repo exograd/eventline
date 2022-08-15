@@ -23,6 +23,21 @@ A generic login and password pair, the login being optional.
 
 `password` (string) :: The password.
 
+===== `gpg_key`
+
+A GPG key.
+
+NOTE: While GPG keys are technically PGP keys, the name "GPG" has become so
+widely used that using "PGP" would be confusing for most users.
+
+.Data fields
+
+`private_key` (string) :: The private key in ASCII armor format.
+
+`public_key` (optional string) :: The public key in ASCII armor format.
+
+`password` (optional string) :: The password protecting the private key.
+
 ===== `ssh_key`
 
 A SSH key.

@@ -23,6 +23,7 @@ func NewConnector() *Connector {
 	def.AddIdentity(APIKeyIdentityDef())
 	def.AddIdentity(SSHKeyIdentityDef())
 	def.AddIdentity(OAuth2IdentityDef())
+	def.AddIdentity(GPGKeyIdentityDef())
 
 	return &Connector{
 		Def: def,
