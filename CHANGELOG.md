@@ -46,6 +46,7 @@ _Work in progress._
   key.
 - Fix file permissions when executing in a container as a non-root user.
 - Add missing dependencies to the Systemd unit file.
+- Fix filter serialization.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half

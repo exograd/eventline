@@ -20,27 +20,35 @@ type Filter struct {
 
 type Filters []*Filter
 
+func (pf *Filter) MarshalJSON() ([]byte, error) {
+	type Filter2 Filter
+	f := Filter2(*pf)
+
+	if f.MatchesRE != nil {
+		f.Matches = f.MatchesRE.String()
+	}
+
+	if f.DoesNotMatchRE != nil {
+		f.DoesNotMatch = f.DoesNotMatchRE.String()
+	}
+
+	return json.Marshal(f)
+}
+
 func (f *Filter) Check(c *check.Checker) {
 	var err error
 
-	f.MatchesRE, err = regexp.Compile(f.Matches)
-	c.Check("matches", err == nil,
-		"invalid_regexp", "invalid regexp: %v", err)
+	if f.Matches != "" {
+		f.MatchesRE, err = regexp.Compile(f.Matches)
+		c.Check("matches", err == nil,
+			"invalid_regexp", "invalid regexp: %v", err)
+	}
 
-	f.DoesNotMatchRE, err = regexp.Compile(f.DoesNotMatch)
-	c.Check("does_not_match", err == nil,
-		"invalid_regexp", "invalid regexp: %v", err)
-}
-
-func (pf *Filter) MarshalJSON() ([]byte, error) {
-	type Filter2 Filter
-
-	f := Filter2(*pf)
-
-	f.Matches = f.MatchesRE.String()
-	f.DoesNotMatch = f.DoesNotMatchRE.String()
-
-	return json.Marshal(f)
+	if f.DoesNotMatch != "" {
+		f.DoesNotMatchRE, err = regexp.Compile(f.DoesNotMatch)
+		c.Check("does_not_match", err == nil,
+			"invalid_regexp", "invalid regexp: %v", err)
+	}
 }
 
 func (f *Filter) Match(obj interface{}) bool {
