@@ -39,7 +39,7 @@ func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
 }
 
 func (r *Runner) DirPath() string {
-	return "/eventline"
+	return "/tmp/eventline/execution"
 }
 
 func (r *Runner) Init(ctx context.Context) error {

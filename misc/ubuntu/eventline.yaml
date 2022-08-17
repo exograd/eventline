@@ -16,7 +16,3 @@ pg:
 #
 # openssl rand -base64 32
 encryption_key: ""
-
-runners:
-  local:
-    root_directory: "/var/tmp/eventline/local-execution"

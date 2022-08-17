@@ -31,8 +31,9 @@ to include a `runner` field.
 
 The `local` runner supports the following settings:
 
-`root_directory` (optional string, default to `tmp/local-execution`) :: The
-directory used to store temporary data during the execution of each job.
+`root_directory` (optional string, default to `/tmp/eventline/execution`) ::
+The directory used to store temporary data during the execution of each job.
+The path must be absolute.
 
 ==== Parameters
 

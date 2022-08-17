@@ -178,7 +178,7 @@ func (r *Runner) copyFiles(ctx context.Context) error {
 		AllowOverwriteDirWithFile: true,
 	}
 
-	r.runner.FileSet.AddPrefix("/eventline")
+	r.runner.FileSet.AddPrefix(r.DirPath())
 
 	// We do not control which user is going to execute the code (it depends
 	// on the image). Therefore we have to make files readable (and
@@ -207,7 +207,7 @@ func (r *Runner) startContainer(ctx context.Context) error {
 
 func (r *Runner) exec(ctx context.Context, se *eventline.StepExecution, step *eventline.Step, stdout, stderr io.WriteCloser) error {
 	// Create an execution process
-	cmdName, cmdArgs := r.runner.StepCommand(se, step, "/eventline")
+	cmdName, cmdArgs := r.runner.StepCommand(se, step, r.DirPath())
 	cmd := append([]string{cmdName}, cmdArgs...)
 
 	execCfg := dockertypes.ExecConfig{

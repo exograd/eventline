@@ -26,7 +26,7 @@ func RunnerDef() *eventline.RunnerDef {
 	return &eventline.RunnerDef{
 		Name: "local",
 		Cfg: &RunnerCfg{
-			RootDirectory: "tmp/local-execution",
+			RootDirectory: "/tmp/eventline/execution",
 		},
 		InstantiateParameters: NewRunnerParameters,
 		InstantiateBehaviour:  NewRunner,
