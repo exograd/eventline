@@ -224,6 +224,7 @@ When applied to a `github/push` event, this filters will match push events on
 branches whose name starts with `feature-` but not if the repository is named
 `tests`.
 
+[#runner-specification]
 ==== Runner specification
 
 A runner is an object containing the following fields:
@@ -233,6 +234,10 @@ A runner is an object containing the following fields:
 `parameters` (optional object) :: The set of parameters associated to the
 runner. Refer to the runner documentation to know which parameters are
 available for each runner.
+
+`identity` (optional string) :: The name of an identity to use for
+authentication purposes associated with the runner. Refer to the runner
+documentation to know which identities can be used for each runner.
 
 ==== Step specification
 
