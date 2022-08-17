@@ -131,7 +131,7 @@ func (r *Runner) ExecuteStep(ctx context.Context, se *eventline.StepExecution, s
 
 	case <-ctx.Done():
 		if err := session.Signal(ssh.SIGKILL); err != nil {
-			r.log.Error("cannot kill program: %w", err)
+			r.log.Error("cannot kill program: %v", err)
 		}
 
 		err = context.Canceled
