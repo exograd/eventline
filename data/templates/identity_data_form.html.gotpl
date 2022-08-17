@@ -6,7 +6,8 @@
   <div class="control">
     {{/* String */}}
     {{if (or (eq .Type "string") (not .Type))}}
-    <input name="/data/{{.Key}}" class="input"
+    <input name="/data/{{.Key}}"
+           class="input {{if .Verbatim}}is-family-monospace{{end}}"
            {{if .Secret}}autocomplete="off"{{end}}
            {{with .Value}}value="{{.}}"{{end}}>
     {{/* String list */}}
@@ -49,7 +50,7 @@
            {{with .Value}}value="{{.}}"{{end}}>
     {{/* Text block */}}
     {{else if eq .Type "text_block"}}
-    <textarea name="/data/{{.Key}}" class="textarea">{{.Value}}</textarea>
+    <textarea name="/data/{{.Key}}" class="textarea {{if .Verbatim}}is-family-monospace{{end}}">{{.Value}}</textarea>
     {{/* Boolean */}}
     {{else if eq .Type "boolean"}}
     <label class="radio">
