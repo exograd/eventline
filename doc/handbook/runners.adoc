@@ -4,6 +4,10 @@
 Eventline has the ability to run jobs in different environments using runners.
 Each job can select the runner to use for execution and its parameters.
 
+CAUTION: Running job in an environment means that sensible data can be stored
+and accessed during execution. Make sure to take into account users and
+programs who can access system when they are executing Eventline jobs.
+
 The default runner is the most basic one, the local runner.
 
 === `local`
