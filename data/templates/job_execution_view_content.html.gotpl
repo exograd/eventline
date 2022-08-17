@@ -129,14 +129,14 @@
           {{with .Command}}
           <div class="block">
             <h2 class="subtitle">Command</h2>
-            <pre><code>{{.Name}}{{range .Arguments}} {{.}}{{end}}</pre>
+            <pre><code>{{.Name}}{{range .Arguments}} {{.}}{{end}}</code></pre>
           </div>
           {{end}}
 
           {{with .Script}}
           <div class="block">
             <h2 class="subtitle">Script</h2>
-            <pre><code>{{.Path}}{{range .Arguments}} {{.}}{{end}}</pre>
+            <pre><code>{{.Path}}{{range .Arguments}} {{.}}{{end}}</code></pre>
           </div>
           <div class="block ev-code">
             <h2 class="subtitle">Code</h2>
