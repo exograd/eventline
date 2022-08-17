@@ -113,7 +113,7 @@ runner:
   parameters:
     host: "my-server.example.com"
     user: "my-user"
-  identity: "my-ssh-key
+  identity: "my-ssh-key"
 ----
 
 ==== OpenSSH server configuration
