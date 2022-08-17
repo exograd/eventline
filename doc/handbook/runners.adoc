@@ -126,6 +126,9 @@ configuration file at `/etc/ssh/sshd_config` and add the following setting:
 AcceptEnv EVENTLINE EVENTLINE_*
 ----
 
+If you want to use other environment variables in your jobs, you will have to
+add them to the `AcceptEnv` setting as well.
+
 Do not forget to restart the SSH daemon.
 
 WARNING: If this setting is not added, jobs using the `ssh` runner will fail
