@@ -10,6 +10,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	rdocker "github.com/exograd/eventline/pkg/runners/docker"
 	rlocal "github.com/exograd/eventline/pkg/runners/local"
+	rssh "github.com/exograd/eventline/pkg/runners/ssh"
 )
 
 type ServiceData struct {
@@ -31,4 +32,5 @@ var Connectors = []eventline.Connector{
 var Runners = []*eventline.RunnerDef{
 	rdocker.RunnerDef(),
 	rlocal.RunnerDef(),
+	rssh.RunnerDef(),
 }

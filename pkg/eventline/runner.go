@@ -603,6 +603,21 @@ func (r *Runner) StepCommand(se *StepExecution, s *Step, rootPath string) (name 
 	return
 }
 
+func (r *Runner) StepCommandString(se *StepExecution, s *Step, rootPath string) string {
+	name, args := r.StepCommand(se, s, rootPath)
+
+	var buf bytes.Buffer
+
+	buf.WriteString(name)
+
+	for _, arg := range args {
+		buf.WriteByte(' ')
+		buf.WriteString(utils.ShellEscape(arg))
+	}
+
+	return buf.String()
+}
+
 func (r *Runner) updateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution, error) {
 	var je JobExecution
 

@@ -13,8 +13,8 @@ Eventline lets you execute jobs the way you want:
 |--------------|------------------------------------|---------------|
 | `local`      | Local execution.                   | Eventline     |
 | `docker`     | Execution in a Docker container.   | Eventline     |
+| `ssh`        | Remote execution.                  | Eventline     |
 | `kubernetes` | Execution in a Kubernetes cluster. | Eventline Pro |
-| `ssh`        | Remote execution.                  | _Coming soon_ |
 
 ## Connectors
 Connectors include support for various identities, which are used to store

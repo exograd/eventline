@@ -31,6 +31,7 @@ _Work in progress._
 - Add an `allowed_runners` setting to provide a list of the runners allowed in
   submitted jobs.
 - Add a `generic/gpg_key` identity to store GPG keys.
+- Add a new `ssh` runner to execute remote jobs.
 
 ### Bug fixes
 - Fix job pagination in evcli.

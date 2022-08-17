@@ -39,6 +39,10 @@ The path must be absolute.
 
 There are no parameters for jobs using the `local` runner.
 
+==== Identity
+
+The `local` runner does not use any identity.
+
 === `docker`
 
 The `docker` runner executes jobs in containers executed by the
@@ -88,6 +92,78 @@ that can be used during execution.
 `memory_limit` (optional integer) :: Set a limit to the amount of memory in
 megabytes that can be used during execution.
 
+==== Identity
+
+_TODO_
+
+=== `ssh`
+
+The `ssh` runner uses the https://en.wikipedia.org/wiki/Secure_Shell[Secure
+Shell Protocol] to execute the job on a remote server.
+
+.Example
+[source,yaml]
+----
+runner:
+  name: "ssh"
+  parameters:
+    host: "my-server.example.com"
+    user: "my-user"
+  identity: "my-ssh-key
+----
+
+==== OpenSSH server configuration
+
+The OpenSSH server does not let clients set arbitrary environment variables.
+In order to be able to run Eventline jobs on a server, edit the SSH daemon
+configuration file at `/etc/ssh/sshd_config` and add the following setting:
+
+----
+AcceptEnv EVENTLINE EVENTLINE_*
+----
+
+Do not forget to restart the SSH daemon.
+
+WARNING: If this setting is not added, jobs using the `ssh` runner will fail
+with the `ssh: setenv failed` error message.
+
+==== Configuration
+
+The `ssh` runner supports the following settings:
+
+`root_directory` (optional string, default to `/tmp/eventline/execution`) ::
+The directory used to store temporary data during the execution of each job on
+the remote server. The path must be absolute.
+
+==== Parameters
+
+Jobs using the `ssh` runner support the following parameter:
+
+`host` (string) :: The hostname or IP address of the server to connect to.
+
+`port` (optional integer, default to 22) :: The port number to use.
+
+`user` (optional string, default to `root`) :: The user to connect as.
+
+`host_key` (optional string) :: The expected host key of the server as a
+public key encoded using Base64.
+
+`host_key_algorithm` (optional string) :: The algorithm of the host key if
+`host_key` is provided. Must be one of `ssh-dss`, `ssh-rsa`,
+`ecdsa-sha2-nistp256`, `ecdsa-sha2-nistp384`, `ecdsa-sha2-nistp521` and
+`ssh-ed25519`
+
+TIP: You can obtain the host key of a remote server using `ssh-keyscan`.
+
+==== Identity
+
+The following identities can be used with the runner:
+
+`generic/password` :: Authenticate using the password in the identity.
+The `login` field is ignored.
+
+`generic/ssh_key` :: Authenticate using the private key in the identity.
+
 === `kubernetes`
 
 The `kubernetes` runner executes jobs in a https://kubernetes.io[Kubernetes
@@ -127,3 +203,7 @@ Jobs using the `kubernetes` runner support the following parameters:
 
 `namespace` (optional string) :: The namespace to create the pod into. If not
 set, the runner uses the namespace defined in the configuration.
+
+==== Identity
+
+_TODO_
