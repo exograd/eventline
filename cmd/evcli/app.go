@@ -241,5 +241,5 @@ func (a *App) updateLastBuildIdCheckDate(t time.Time) error {
 }
 
 func (a *App) lastBuildIdCheckPath() string {
-	return path.Join(a.HomePath, ".cache", "evcli", "last-build-id-check")
+	return path.Join(a.HomePath, ".evcli", "last-build-id-check")
 }

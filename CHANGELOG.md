@@ -62,6 +62,8 @@ _Work in progress._
 - Do not create events for periodic timer ticks which occurred when the server
   was down.
 - The job id is now mandatory in event objects.
+- Store the file containing the last build id check date in `$HOME/.evcli` for
+  consistency.
 
 ## v0.9.1
 ### Bug fixes
