@@ -14,11 +14,11 @@ rcvar="eventline_enable"
 : ${eventline_cfg_path:="/usr/local/etc/eventline/eventline.yaml"}
 : ${eventline_syslog_tag:="eventline"}
 
-procname="/usr/local/bin/eventline"
+procname="daemon"
 pidfile="/var/run/eventline/$name.pid"
 
 command="/usr/sbin/daemon"
-command_args="-p $pidfile -u $name -T $eventline_syslog_tag -R 5 $procname -c $eventline_cfg_path"
+command_args="-P $pidfile -u $name -T $eventline_syslog_tag -R 5 /usr/local/bin/eventline -c $eventline_cfg_path"
 
 required_files="$eventline_cfg_path"
 
