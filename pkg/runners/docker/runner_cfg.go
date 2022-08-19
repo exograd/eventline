@@ -1,6 +1,10 @@
 package docker
 
-import "github.com/exograd/go-daemon/check"
+import (
+	"net/url"
+
+	"github.com/exograd/go-daemon/check"
+)
 
 type RunnerCfg struct {
 	URI               string `json:"uri,omitempty"`
@@ -10,4 +14,16 @@ type RunnerCfg struct {
 }
 
 func (cfg *RunnerCfg) Check(c *check.Checker) {
+	if cfg.URI != "" {
+		uri, err := url.Parse(cfg.URI)
+		if err == nil {
+			if uri.Scheme != "unix" && uri.Scheme != "tcp" {
+				c.AddError("uri", "invalid_uri_scheme",
+					"uri scheme must be either unix or tcp")
+			}
+		} else {
+			c.AddError("uri", "invalid_uri_format",
+				"string must be a valid uri")
+		}
+	}
 }

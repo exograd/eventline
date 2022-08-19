@@ -44,18 +44,11 @@ func (r *Runner) DirPath() string {
 
 func (r *Runner) Init(ctx context.Context) error {
 	// Create the client
-	var err error
-
-	if r.cfg.URI == "" {
-		r.client, err = newLocalClient()
-	} else {
-		r.client, err = newTCPClient(r.cfg.URI, r.cfg.CACertificatePath,
-			r.cfg.CertificatePath, r.cfg.PrivateKeyPath)
-	}
-
+	client, err := r.newClient()
 	if err != nil {
 		return fmt.Errorf("cannot create client: %w", err)
 	}
+	r.client = client
 
 	// Pull the image
 	if err := r.pullImage(ctx); err != nil {

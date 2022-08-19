@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 
 	dockertypes "github.com/docker/docker/api/types"
 	dockercontainer "github.com/docker/docker/api/types/container"
@@ -17,19 +18,24 @@ import (
 	"github.com/exograd/eventline/pkg/utils"
 )
 
-func newLocalClient() (*dockerclient.Client, error) {
+func (r Runner) newClient() (*dockerclient.Client, error) {
 	opts := []dockerclient.Opt{
 		dockerclient.WithAPIVersionNegotiation(),
 	}
 
-	return dockerclient.NewClientWithOpts(opts...)
-}
+	if r.cfg.URI != "" {
+		uri, err := url.Parse(r.cfg.URI)
+		if err != nil {
+			return nil, fmt.Errorf("cannot parse uri: %w", err)
+		}
 
-func newTCPClient(uri, caCertPath, certPath, keyPath string) (*dockerclient.Client, error) {
-	opts := []dockerclient.Opt{
-		dockerclient.WithAPIVersionNegotiation(),
-		dockerclient.WithHost(uri),
-		dockerclient.WithTLSClientConfig(caCertPath, certPath, keyPath),
+		if uri.Scheme == "tcp" {
+			opts = append(opts, dockerclient.WithHost(r.cfg.URI))
+
+			opts = append(opts,
+				dockerclient.WithTLSClientConfig(r.cfg.CACertificatePath,
+					r.cfg.CertificatePath, r.cfg.PrivateKeyPath))
+		}
 	}
 
 	return dockerclient.NewClientWithOpts(opts...)

@@ -68,9 +68,9 @@ runner:
 
 The `docker` runner supports the following settings:
 
-`uri` (optional string) :: The URI of the Docker HTTP endpoint. If set,
-Eventline will connect to the Docker daemon in TCP mode instead of using the
-local UNIX socket.
+`uri` (optional string) :: The URI of the Docker HTTP endpoint. The scheme
+must be either `unix` or `tcp`. If it is not set, Eventline will let the
+Docker server pick the default URI (usually `unix:///var/run/docker.sock`).
 
 `ca_certificate_path` (optional string) :: The path of the CA certificate file
 to use to connect to the Docker daemon.
