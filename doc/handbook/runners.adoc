@@ -81,8 +81,13 @@ use to connect to the Docker daemon.
 `private_key_path` (optional string) :: The path of the private key file to
 use to connect to the Docker daemon.
 
-WARNING: Using HTTP to connect to the Docker daemon is experimental; it is not
-recommended for security reasons.
+`mount_points` (optional array) :: A list of mount points; each mount point is
+an object containing the following fields:
++
+`source` (string) ::: The path of the file or directory on the host.
+`target` (string) ::: The path of the file or directory in the container.
+`read_only` (boolean) ::: Whether to mount the source in read-only mode
+or not.
 
 ==== Parameters
 

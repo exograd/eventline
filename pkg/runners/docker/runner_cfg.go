@@ -7,10 +7,22 @@ import (
 )
 
 type RunnerCfg struct {
-	URI               string `json:"uri,omitempty"`
-	CACertificatePath string `json:"ca_certificate_path,omitempty"`
-	CertificatePath   string `json:"certificate_path,omitempty"`
-	PrivateKeyPath    string `json:"private_key_path,omitempty"`
+	URI               string                `json:"uri,omitempty"`
+	CACertificatePath string                `json:"ca_certificate_path,omitempty"`
+	CertificatePath   string                `json:"certificate_path,omitempty"`
+	PrivateKeyPath    string                `json:"private_key_path,omitempty"`
+	MountPoints       []RunnerCfgMountPoint `json:"mount_points,omitempty"`
+}
+
+type RunnerCfgMountPoint struct {
+	Source   string `json:"source"`
+	Target   string `json:"target"`
+	ReadOnly bool   `json:"read_only,omitempty"`
+}
+
+func (cfg *RunnerCfgMountPoint) Check(c *check.Checker) {
+	c.CheckStringNotEmpty("source", cfg.Source)
+	c.CheckStringNotEmpty("target", cfg.Target)
 }
 
 func (cfg *RunnerCfg) Check(c *check.Checker) {

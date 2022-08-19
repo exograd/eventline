@@ -11,6 +11,7 @@ import (
 
 	dockertypes "github.com/docker/docker/api/types"
 	dockercontainer "github.com/docker/docker/api/types/container"
+	dockermount "github.com/docker/docker/api/types/mount"
 	dockerclient "github.com/docker/docker/client"
 	dockerjsonmessage "github.com/docker/docker/pkg/jsonmessage"
 	dockerstdcopy "github.com/docker/docker/pkg/stdcopy"
@@ -140,8 +141,19 @@ func (r *Runner) createContainer(ctx context.Context) error {
 		resources.Memory = int64(limit * 1_000_000)
 	}
 
+	mounts := make([]dockermount.Mount, len(r.cfg.MountPoints))
+	for i, p := range r.cfg.MountPoints {
+		mounts[i] = dockermount.Mount{
+			Type:     dockermount.TypeBind,
+			Source:   p.Source,
+			Target:   p.Target,
+			ReadOnly: p.ReadOnly,
+		}
+	}
+
 	hostCfg := dockercontainer.HostConfig{
 		Resources: resources,
+		Mounts:    mounts,
 	}
 
 	res, err := r.client.ContainerCreate(ctx, &containerCfg, &hostCfg, nil,

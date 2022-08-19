@@ -32,6 +32,7 @@ _Work in progress._
   submitted jobs.
 - Add a `generic/gpg_key` identity to store GPG keys.
 - Add a new `ssh` runner to execute remote jobs.
+- Add support for mount points to the `docker` runner.
 
 ### Bug fixes
 - Fix job pagination in evcli.
