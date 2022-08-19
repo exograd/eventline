@@ -30,12 +30,19 @@ func (r Runner) newClient() (*dockerclient.Client, error) {
 			return nil, fmt.Errorf("cannot parse uri: %w", err)
 		}
 
-		if uri.Scheme == "tcp" {
+		switch uri.Scheme {
+		case "unix":
+			opts = append(opts, dockerclient.WithHost(r.cfg.URI))
+
+		case "tcp":
 			opts = append(opts, dockerclient.WithHost(r.cfg.URI))
 
 			opts = append(opts,
 				dockerclient.WithTLSClientConfig(r.cfg.CACertificatePath,
 					r.cfg.CertificatePath, r.cfg.PrivateKeyPath))
+
+		default:
+			return nil, fmt.Errorf("unhandled uri scheme %q", uri.Scheme)
 		}
 	}
 
