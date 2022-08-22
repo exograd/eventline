@@ -6,7 +6,7 @@ import (
 )
 
 type GPGKeyIdentity struct {
-	PrivateKey string `json:"private_key"`
+	PrivateKey string `json:"private_key,omitempty"`
 	PublicKey  string `json:"public_key,omitempty"`
 	Password   string `json:"password,omitempty"`
 }
@@ -17,7 +17,11 @@ func GPGKeyIdentityDef() *eventline.IdentityDef {
 }
 
 func (i *GPGKeyIdentity) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("private_key", i.PrivateKey)
+	if i.PrivateKey == "" && i.PublicKey == "" {
+		msg := "gpg key must contain either a private key or a public key"
+		c.AddError("private_key", "missing_value", msg)
+		c.AddError("public_key", "missing_value", msg)
+	}
 }
 
 func (i *GPGKeyIdentity) Def() *eventline.IdentityDataDef {
@@ -28,6 +32,7 @@ func (i *GPGKeyIdentity) Def() *eventline.IdentityDataDef {
 		Label:    "Private key",
 		Value:    i.PrivateKey,
 		Type:     eventline.IdentityDataTypeTextBlock,
+		Optional: true,
 		Secret:   true,
 		Verbatim: true,
 	})
