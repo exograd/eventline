@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/exograd/go-daemon/pg"
 )
@@ -35,8 +36,17 @@ func (ctx *ExecutionContext) Load(conn pg.Conn, je *JobExecution) error {
 		return fmt.Errorf("cannot load identities: %w", err)
 	}
 
+	now := time.Now().UTC()
+
 	ctx.Identities = make(map[string]*Identity)
 	for _, identity := range identities {
+		identity.LastUseTime = &now
+
+		if err := identity.UpdateLastUseTime(conn); err != nil {
+			return fmt.Errorf("cannot update identity %q: %w",
+				identity.Id, err)
+		}
+
 		ctx.Identities[identity.Name] = identity
 	}
 

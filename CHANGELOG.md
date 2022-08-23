@@ -49,6 +49,8 @@ _Work in progress._
 - Fix file permissions when executing in a container as a non-root user.
 - Add missing dependencies to the Systemd unit file.
 - Fix filter serialization.
+- Update the last use time of all identities injected in the job during
+  execution.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half
