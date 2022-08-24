@@ -51,6 +51,7 @@ _Work in progress._
 - Fix filter serialization.
 - Update the last use time of all identities injected in the job during
   execution.
+- Fix decoding of validation errors with no data in evcli.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half

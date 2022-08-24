@@ -36,11 +36,13 @@ func (err *APIError) UnmarshalJSON(data []byte) error {
 	case "invalid_request_body":
 		var errData InvalidRequestBodyError
 
-		if err := json.Unmarshal(err2.RawData, &errData); err != nil {
-			return fmt.Errorf("invalid jsv errors: %w", err)
-		}
+		if err2.RawData != nil {
+			if err := json.Unmarshal(err2.RawData, &errData); err != nil {
+				return fmt.Errorf("invalid jsv errors: %w", err)
+			}
 
-		err2.Data = &errData
+			err2.Data = &errData
+		}
 	}
 
 	*err = APIError(err2)
