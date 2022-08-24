@@ -185,9 +185,6 @@ func (r *Runner) Stopping() bool {
 func (r *Runner) main() {
 	defer r.Wg.Done()
 
-	endChan := make(chan struct{})
-	defer close(endChan)
-
 	defer r.Behaviour.Terminate()
 
 	var cse *StepExecution
@@ -215,12 +212,24 @@ func (r *Runner) main() {
 		}
 	}()
 
-	if err := r.initExecution(); err != nil {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go func() {
+		select {
+		case <-r.StopChan:
+			cancel()
+
+		case <-ctx.Done():
+		}
+	}()
+
+	if err := r.initExecution(ctx); err != nil {
 		r.HandleError(err)
 		return
 	}
 
-	go r.mainRefresh(endChan)
+	go r.mainRefresh(ctx, cancel)
 
 	r.Log.Info("starting execution")
 
@@ -247,7 +256,7 @@ func (r *Runner) main() {
 
 		cse = se
 
-		if err := r.executeStep(se, step); err != nil {
+		if err := r.executeStep(ctx, se, step); err != nil {
 			r.HandleError(err)
 			return
 		}
@@ -261,7 +270,7 @@ func (r *Runner) main() {
 	}
 }
 
-func (r *Runner) mainRefresh(endChan <-chan struct{}) {
+func (r *Runner) mainRefresh(ctx context.Context, cancel context.CancelFunc) {
 	ticker := time.NewTicker(r.refreshInterval)
 	defer ticker.Stop()
 
@@ -269,30 +278,24 @@ func (r *Runner) mainRefresh(endChan <-chan struct{}) {
 		select {
 		case <-ticker.C:
 
-		case <-endChan:
+		case <-ctx.Done():
 			return
 		}
 
 		if _, err := r.refreshJobExecution(); err != nil {
 			r.Log.Error("cannot refresh job execution: %v", err)
+
+			var jobExecutionFinishedErr *JobExecutionFinishedError
+			if errors.As(err, &jobExecutionFinishedErr) {
+				cancel()
+			}
+
 			return
 		}
 	}
 }
 
-func (r *Runner) initExecution() error {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	go func() {
-		select {
-		case <-r.StopChan:
-			cancel()
-
-		case <-ctx.Done():
-		}
-	}()
-
+func (r *Runner) initExecution(ctx context.Context) error {
 	if err := r.Behaviour.Init(ctx); err != nil {
 		switch {
 		case errors.Is(err, context.Canceled):
@@ -309,20 +312,8 @@ func (r *Runner) initExecution() error {
 	return nil
 }
 
-func (r *Runner) executeStep(se *StepExecution, step *Step) error {
+func (r *Runner) executeStep(ctx context.Context, se *StepExecution, step *Step) error {
 	jeId := r.JobExecution.Id
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	go func() {
-		select {
-		case <-r.StopChan:
-			cancel()
-
-		case <-ctx.Done():
-		}
-	}()
 
 	// Create pipes used to read the output of the executed program
 	stdoutRead, stdoutWrite := io.Pipe()

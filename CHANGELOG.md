@@ -52,6 +52,7 @@ _Work in progress._
 - Update the last use time of all identities injected in the job during
   execution.
 - Fix decoding of validation errors with no data in evcli.
+- Interrupt execution on job abortion.
 
 ### Misc
 - Use the default monospace font of the web browser instead of serving a half
