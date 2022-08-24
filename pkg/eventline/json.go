@@ -16,6 +16,7 @@ func JSONFields(value interface{}) (map[string]string, error) {
 	}
 
 	d := json.NewDecoder(bytes.NewReader(data))
+	d.DisallowUnknownFields()
 	d.UseNumber()
 
 	var obj map[string]interface{}

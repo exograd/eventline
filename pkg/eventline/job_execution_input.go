@@ -35,6 +35,7 @@ func (pi *JobExecutionInput) UnmarshalJSON(data []byte) error {
 	}
 
 	decoder := json.NewDecoder(bytes.NewReader(i.RawParameters))
+	decoder.DisallowUnknownFields()
 	decoder.UseNumber() // necessary to correctly decode parameters
 
 	if err := decoder.Decode(&i.Parameters); err != nil {

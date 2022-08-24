@@ -66,6 +66,7 @@ func (pp *Parameter) UnmarshalJSON(data []byte) error {
 
 	if p.RawDefault != nil {
 		d := json.NewDecoder(bytes.NewReader(p.RawDefault))
+		d.DisallowUnknownFields()
 		d.UseNumber()
 
 		if err := d.Decode(&p.Default); err != nil {

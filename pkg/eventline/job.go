@@ -221,7 +221,10 @@ func (pr *JobRunner) UnmarshalJSON(data []byte) error {
 		// so that users get full validation errors.
 
 		if r.RawParameters != nil {
-			if err := json.Unmarshal(r.RawParameters, params); err != nil {
+			d := json.NewDecoder(bytes.NewReader(r.RawParameters))
+			d.DisallowUnknownFields()
+
+			if err := d.Decode(params); err != nil {
 				return fmt.Errorf("invalid runner parameters: %w", err)
 			}
 		}
@@ -337,7 +340,9 @@ func (spec *JobSpec) ParseYAML(data []byte) error {
 		return fmt.Errorf("cannot encode json data: %w", err)
 	}
 
-	if err := json.Unmarshal(jsonData, spec); err != nil {
+	d := json.NewDecoder(bytes.NewReader(jsonData))
+	d.DisallowUnknownFields()
+	if err := d.Decode(spec); err != nil {
 		return fmt.Errorf("cannot decode json data: %w", err)
 	}
 
