@@ -1,0 +1,77 @@
+[#chapter-howto]
+== HOWTO
+
+This chapter contains various examples and ideas designed to help users
+accomplish specific tasks. Most of them come from questions asked by users; if
+you are not sure about how to do something, just ask!
+
+=== How to use a private Docker image registry
+
+Use a runner identity to authenticate against the Docker registry. For
+example, to use the https://ghcr.io[GitHub image registry], you can use a
+`github/token` identity:
+
+[source,yaml]
+----
+name: "my-job"
+runner:
+  name: "docker"
+  parameters:
+    image: "my-org/my-private-image:latest"
+  identity: "my-github-token-identity"
+----
+
+Refer to the <<chapter-runners,runner documentation>> for more information
+about identities supported for each runner.
+
+=== How to use other languages than the shell
+
+Code steps are executed as any other code file. If there is no
+https://en.wikipedia.org/wiki/Shebang[Shebang], Eventline add the one
+configured by default in the project, which happens to be `/bin/sh`.
+
+To use any other language, just include your own shebang.
+
+For example, to run Python code:
+
+[source,yaml]
+----
+name: "my-job"
+steps:
+  - code: |
+      #!/usr/bin/python
+      puts("Hello world!")
+----
+
+See the <<job-code-blocks,job documentation>> for more information.
+
+=== How to use a SSH key in a job
+
+SSH keys are stored in <<cgeneric-ssh-key,`generic/ssh_key`>> identities. The
+field used to authenticate is `private_key`.
+
+Since identity fields are injected in jobs as files, you can access the
+private key at `$EVENTLINE_DIR/identities/<identity-name>/private_key`.
+
+The simplest way is to link the files as the default SSH key. For example, if
+you are using a RSA SSH key:
+
+[source,sh]
+----
+ln -s $EVENTLINE_DIR/identities/<identity-name>/private_key ~/.ssh/id_rsa
+----
+
+You can of course use the private key file, for example for the `-i` option of
+`ssh` and `scp`.
+
+=== How to clone a private GitHub repository
+
+Private GitHub repositories are accessed with a SSH key. You can link the
+private key as the default SSH key, then simply call
+https://git-scm.com/docs/git-clone[`git clone`]:
+
+[source,sh]
+----
+ln -s $EVENTLINE_DIR/identities/<identity-name>/private_key ~/.ssh/id_rsa
+git clone git@github.com:my-organization/my-repository.git
+----

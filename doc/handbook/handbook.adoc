@@ -37,3 +37,5 @@ include::deployment-and-configuration.adoc[]
 include::evcli.adoc[]
 
 include::http-api.adoc[]
+
+include::howto.adoc[]

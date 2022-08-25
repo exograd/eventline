@@ -35,6 +35,7 @@ Jobs contain a list of steps. Each steps is executed as a small independent
 program. There are several ways to define each step, each one with its pros
 and cons.
 
+[#job-code-blocks]
 ==== Code blocks
 
 Code blocks let you write code inline.

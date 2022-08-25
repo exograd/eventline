@@ -38,6 +38,7 @@ widely used that using "PGP" would be confusing for most users.
 
 `password` (optional string) :: The password protecting the private key.
 
+[#cgeneric-ssh-key]
 ===== `ssh_key`
 
 A SSH key.
