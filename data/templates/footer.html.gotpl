@@ -7,7 +7,12 @@
     </div>
 
     <div class="block">
-      Open source software developed with care by <a href="https://www.exograd.com">Exograd</a>.
+      {{if eq .Context.Product "Eventline"}}
+      Open source software developed
+      {{else}}
+      Developed
+      {{end}}
+      with care by <a href="https://www.exograd.com">Exograd</a>.
     </div>
 
     <div class="block">
