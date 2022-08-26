@@ -82,10 +82,12 @@ body.book {
           top: 0;
         }
 
-        padding: $size-4 $size-6;
+        padding-top: $size-6;
+        padding-bottom: $size-6;
 
         overflow: auto;
       }
+
 
       #toctitle {
         margin-bottom: $size-5;
@@ -97,6 +99,13 @@ body.book {
       ul {
         list-style-type: none;
 
+        a {
+          // Make links cover the full width of the toc to make them easier to
+          // click on.
+          display: block;
+          width: 100%;
+        }
+
         &.sectlevel1 {
           & > li {
             margin-top: $size-6;
@@ -107,12 +116,17 @@ body.book {
           }
         }
 
+        &:not(.sectlevel1) a {
+          // Align on sectlevel1, skipping the icon which is 24x24
+          padding-left: 24px;
+        }
+
         &.sectlevel2 {
-          margin-left: $size-7;
+          margin-top: 0.25em;
         }
 
         &.sectlevel3 {
-          margin-left: $size-6;
+          padding-left: $size-7;
         }
       }
 

@@ -86,7 +86,7 @@ doc: doc-html
 doc-html: $(DOC_HTML)
 
 .SECONDEXPANSION:
-%.html: $$(wildcard doc/**/*.adoc) doc/theme.css
+%.html: $$(wildcard doc/**/*.adoc) doc/theme.css $$(wildcard doc/**/js/*.js)
 	asciidoctor --backend html \
 	            --destination-dir $(dir $@) \
 	            -a docinfo=shared \
@@ -119,6 +119,7 @@ install: build doc
 	mkdir -p $(docdir)/eventline/html
 	cp -r $(DOC_HTML) $(docdir)/eventline/html
 	cp -r $(dir $(DOC_HTML))images $(docdir)/eventline/html
+	cp -r $(dir $(DOC_HTML))js $(docdir)/eventline/html
 	mkdir -p $(docdir)/eventline/fonts
 	cp -r doc/fonts/*.woff2 $(docdir)/eventline/fonts
 
@@ -135,6 +136,7 @@ install-flat: build doc
 	mkdir -p $(DESTDIR)/doc/html
 	cp -r $(DOC_HTML) $(DESTDIR)/doc/html
 	cp -r $(dir $(DOC_HTML))images $(DESTDIR)/doc/html
+	cp -r $(dir $(DOC_HTML))js $(DESTDIR)/doc/html
 	mkdir -p $(DESTDIR)/doc/fonts
 	cp -r doc/fonts/*.woff2 $(DESTDIR)/doc/fonts
 
