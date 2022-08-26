@@ -20,7 +20,7 @@ function evSetupTOCTitle(title) {
 }
 
 function evOnTOCTitleClick(ev) {
-  const title = ev.target;
+  const title = ev.target.closest("a");
 
   const titles = document.querySelectorAll(".sectlevel1 > li > a");
   titles.forEach(otherTitle => {
