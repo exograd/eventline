@@ -12,7 +12,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 )
 
-func IdentityAuthenticationKey(identity *eventline.Identity) (key string, err error) {
+func identityAuthenticationKey(identity *eventline.Identity) (key string, err error) {
 	switch i := identity.Data.(type) {
 	case *cdockerhub.PasswordIdentity:
 		key = i.Username + ":" + i.Password

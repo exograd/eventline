@@ -55,7 +55,7 @@ func (r *Runner) pullImage(ctx context.Context) error {
 
 	var authKey string
 	if r.runner.RunnerIdentity != nil {
-		key, err := IdentityAuthenticationKey(r.runner.RunnerIdentity)
+		key, err := identityAuthenticationKey(r.runner.RunnerIdentity)
 		if err != nil {
 			return err
 		}
