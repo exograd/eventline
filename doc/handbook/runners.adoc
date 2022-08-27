@@ -228,4 +228,14 @@ set, the runner uses the namespace defined in the configuration.
 
 ==== Identity
 
-_TODO_
+The following identities can be used with the runner:
+
+`dockerhub/password` :: A DockerHub username and password.
+
+`dockerhub/token` :: A DockerHub username and token.
+
+`github/oauth2` :: A GitHub username and OAuth2 access token for the ghcr.io
+image registry.
+
+`github/token` :: A GitHub username and personal access token for the ghcr.io
+image registry.
