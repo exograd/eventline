@@ -1,6 +1,8 @@
 [#chapter-connectors]
 == Connectors
 
+include::connector-aws.adoc[]
+
 include::connector-dockerhub.adoc[]
 
 include::connector-eventline.adoc[]

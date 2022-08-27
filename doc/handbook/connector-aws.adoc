@@ -1,0 +1,26 @@
+=== `aws`
+
+The `aws` connector provides identities for Amazon Web Services. These
+identities can also be used for AWS compatible services, for example all
+services using the S3 protocol.
+
+NOTE: The `aws` connector is only available in Eventline Pro.
+
+==== Identities
+
+===== `access_key`
+
+The `aws/access_key` identity is used to connect to a service using the AWS
+authentication system.
+
+.Data fields
+
+`access_key_id` (string) :: The access key identifier.
+
+`secret_access_key` (string) :: The secret access key.
+
+.Environment variables
+
+`AWS_ACCESS_KEY_ID` :: The access key identifier.
+
+`AWS_SECRET_ACCESS_KEY` :: The secret access key.
