@@ -204,6 +204,22 @@ runner:
 
 NOTE: The `kubernetes` runner is only available in Eventline Pro.
 
+==== Execution
+
+Each job is executed in a new pod and container. Eventline sets the following
+pod labels:
+
+`eventline.net/project-id` :: The identifier of the project of the job.
+`eventline.net/job-name` :: The name of the job.
+`eventline.net/job-execution-id` :: The identifier of the job execution.
+
+Execution data, including identities, are injected using a secret.
+
+All Kubernetes resources are created with the `eventline` field manager. See
+the
+https://kubernetes.io/docs/reference/using-api/server-side-apply/[Kubernetes
+documentation] for more information.
+
 ==== Configuration
 
 The `kubernetes` runner supports the following settings:
@@ -225,6 +241,25 @@ Jobs using the `kubernetes` runner support the following parameters:
 
 `namespace` (optional string) :: The namespace to create the pod into. If not
 set, the runner uses the namespace defined in the configuration.
+
+`labels` (optional object) :: A set of name and values to be added to each
+created pod as labels. Values are strings.
+
+`cpu_request` (optional number) :: Set the number of virtual CPUs requested
+for execution.
+
+`cpu_limit` (optional number) :: Set a limit to the number of virtual CPUs
+that can be used during execution.
+
+`memory_request` (optional integer) :: Set the amount of memory in megabytes
+requested for execution.
+
+`memory_limit` (optional integer) :: Set a limit to the amount of memory in
+megabytes that can be used during execution.
+
+See the
+https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/[Kubernetes
+documentation] for more information regarding resource requests and limits.
 
 ==== Identity
 
