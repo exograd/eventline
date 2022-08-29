@@ -2,8 +2,8 @@
 
 === Requirements
 
-Eventline is written in Go and distributed as a statically linked executable
-for various platforms.
+Eventline is written in Go and is distributed as a statically linked
+executable for various platforms.
 
 The following platforms are officially supported for production:
 
@@ -33,11 +33,24 @@ contains everything required to run the program:
 * The Eventline license.
 * The `data` directory containing web assets, database migrations and template
   files.
-* This handbook as a HTML file with associated images.
+* This handbook as a HTML file with associated images and javascript code.
 
 While you can run Eventline directly from the tarball directory, you will want
 something more practical for production. As such, binary tarballs are
 generally only used by people building packages or images themselves.
+
+==== Stable and experimental builds
+
+Stable builds are derived from Git revisions tagged as
+`v.<major>.<minor>.<patch>`. Experimental builds are derived from any other
+Git revisions.
+
+Experimental packages are made available for various platforms on a regular
+basis. Their goal is to allow users to try new features before they are
+released in a stable build.
+
+CAUTION: Experimental builds are inherently less reliable than stable builds
+and must not be used in production.
 
 [#freebsd-package]
 ==== FreeBSD package
@@ -87,6 +100,7 @@ apt-get install eventline
 The repository provides both `eventline` and `eventline-experimental`.
 
 ===== Docker
+
 If you intend to use the `docker` runner, you will need to install Docker. We
 recommend following the
 https://docs.docker.com/engine/install/ubuntu/[official Docker documentation].
