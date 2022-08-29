@@ -117,6 +117,7 @@ install: build doc
 	cp -r data/templates $(sharedir)/eventline
 	mkdir -p $(docdir)/eventline
 	mkdir -p $(docdir)/eventline/html
+	cp CHANGELOG.md $(docdir)/eventline
 	cp -r $(DOC_HTML) $(docdir)/eventline/html
 	cp -r $(dir $(DOC_HTML))images $(docdir)/eventline/html
 	cp -r $(dir $(DOC_HTML))js $(docdir)/eventline/html
@@ -134,6 +135,7 @@ install-flat: build doc
 	cp -r data/templates $(DESTDIR)/data
 	mkdir -p $(DESTDIR)/doc
 	mkdir -p $(DESTDIR)/doc/html
+	cp CHANGELOG.md $(DESTDIR)/doc
 	cp -r $(DOC_HTML) $(DESTDIR)/doc/html
 	cp -r $(dir $(DOC_HTML))images $(DESTDIR)/doc/html
 	cp -r $(dir $(DOC_HTML))js $(DESTDIR)/doc/html
