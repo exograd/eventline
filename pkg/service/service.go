@@ -81,6 +81,10 @@ func NewService(data ServiceData) *Service {
 func (s *Service) DefaultServiceCfg() interface{} {
 	cfg := DefaultServiceCfg()
 
+	if ps := s.Data.ProService; ps != nil {
+		cfg.ProCfg = ps.DefaultServiceCfg()
+	}
+
 	s.Cfg = cfg
 
 	return &s.Cfg
@@ -97,6 +101,10 @@ func (s *Service) ValidateServiceCfg() error {
 	c := check.NewChecker()
 
 	s.Cfg.Check(c, s)
+
+	if scfg := s.Cfg.ProCfg; scfg != nil {
+		scfg.Check(c)
+	}
 
 	return c.Error()
 }
@@ -146,6 +154,12 @@ func (s *Service) Init(d *daemon.Daemon) error {
 
 	if err := s.initPg(); err != nil {
 		return err
+	}
+
+	if ps := s.Data.ProService; ps != nil {
+		if err := ps.Init(s); err != nil {
+			return err
+		}
 	}
 
 	apiHTTPServer, err := NewAPIHTTPServer(s)
@@ -379,6 +393,12 @@ func (s *Service) Start(d *daemon.Daemon) error {
 		}
 	}
 
+	if ps := s.Data.ProService; ps != nil {
+		if err := ps.Start(); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -398,9 +418,16 @@ func (s *Service) Stop(d *daemon.Daemon) {
 	close(s.workerStopChan)
 	s.workerWg.Wait()
 	close(s.workerNotificationChan)
+
+	if ps := s.Data.ProService; ps != nil {
+		ps.Stop()
+	}
 }
 
 func (s *Service) Terminate(d *daemon.Daemon) {
+	if ps := s.Data.ProService; ps != nil {
+		ps.Terminate()
+	}
 }
 
 func (s *Service) processWorkerNotifications() {

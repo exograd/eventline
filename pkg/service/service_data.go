@@ -11,11 +11,15 @@ import (
 	rdocker "github.com/exograd/eventline/pkg/runners/docker"
 	rlocal "github.com/exograd/eventline/pkg/runners/local"
 	rssh "github.com/exograd/eventline/pkg/runners/ssh"
+	"github.com/exograd/go-daemon/check"
 )
 
 type ServiceData struct {
-	Product    string
-	BuildId    string
+	Product string
+	BuildId string
+
+	ProService ProService
+
 	Connectors []eventline.Connector
 	Runners    []*eventline.RunnerDef
 }
@@ -33,4 +37,12 @@ var Runners = []*eventline.RunnerDef{
 	rdocker.RunnerDef(),
 	rlocal.RunnerDef(),
 	rssh.RunnerDef(),
+}
+
+type ProService interface {
+	DefaultServiceCfg() check.Object
+	Init(*Service) error
+	Start() error
+	Stop()
+	Terminate()
 }

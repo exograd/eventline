@@ -46,6 +46,8 @@ type ServiceCfg struct {
 	Runners        map[string]json.RawMessage `json:"runners"`
 
 	Notifications *NotificationsCfg `json:"notifications"`
+
+	ProCfg check.Object `json:"pro"`
 }
 
 func DefaultServiceCfg() ServiceCfg {
