@@ -126,6 +126,22 @@ While the `latest` tag usually points to the latest available release, it is
 strongly recommended not to use it and to always use a specific version tag to
 avoid unexpected updates.
 
+[#license-management]
+===== License management
+
+Eventline Pro requires a license allowing a client to use the product.
+
+Each client is attributed credentials provided as two values, name and secret.
+These values must be stored in the configuration file. See the
+<<configuration-specification-pro,configuration specification>> for more
+information.
+
+Eventline Pro automatically uses these credentials to authenticate the Exograd
+license server and download a license file.
+
+The license is renewed automatically at startup, and on a regular basis
+afterward.
+
 [#configuration]
 ===== Configuration
 
@@ -325,6 +341,9 @@ subject_prefix: "[eventline] "
 signature: "This email is a notification sent by the Eventline job scheduling software."
 ----
 
+`pro` (optional object) :: Configuration specific to Eventline Pro. Ignored
+for the open source version.
+
 ===== HTTP server specification
 
 The configuration of a HTTP server is an object containing the following
@@ -385,3 +404,19 @@ server using the `<host>:<port>` format.
 `username` (optional string) :: The username to use for authentication.
 
 `password` (optional string) :: The password to use for authentication.
+
+[#configuration-specification-pro]
+===== Eventline Pro specification
+
+The Eventline Pro configuration is an object containing the following fields:
+
+`license_path` (string) :: The path of the license file.
+
+`license_name` (string) :: The name of the license, used to authenticate
+against the license server.
+
+`license_secret` (string) :: The secret value used to authenticate against the
+license server.
+
+See documentation on <<license-management,license management>> for more
+information.
