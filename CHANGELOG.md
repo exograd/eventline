@@ -69,6 +69,7 @@ _Work in progress._
 - The job id is now mandatory in event objects.
 - Store the file containing the last build id check date in `$HOME/.evcli` for
   consistency.
+- Set =HOME= for the local runner.
 
 ## v0.9.1
 ### Bug fixes

@@ -54,6 +54,8 @@ func (r *Runner) DirPath() string {
 }
 
 func (r *Runner) Init(ctx context.Context) error {
+	r.runner.Environment["HOME"] = r.rootPath
+
 	if err := r.runner.FileSet.Write(r.rootPath); err != nil {
 		return err
 	}
