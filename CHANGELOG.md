@@ -1,7 +1,8 @@
 # Changelog
-## v1.0.0
+## v1.1.0
 _Work in progress._
 
+## v1.0.0
 ### Features
 - Add pagination support for the `list-projects` evcli command.
 - Add a `--wait` option to the `execute-job` evcli command which monitors
