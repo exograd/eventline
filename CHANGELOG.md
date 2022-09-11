@@ -2,6 +2,10 @@
 ## v1.1.0
 _Work in progress._
 
+## v1.0.1
+### Bug fixes
+- Fix missing argument in error message in evcli.
+
 ## v1.0.0
 ### Features
 - Add pagination support for the `list-projects` evcli command.

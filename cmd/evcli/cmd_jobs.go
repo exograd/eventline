@@ -180,7 +180,7 @@ func cmdDeployJobs(p *program.Program) {
 
 	filePaths, err := FindJobFiles(fileOrDirPaths, recursive)
 	if err != nil {
-		p.Fatal("%v")
+		p.Fatal("%v", err)
 	}
 
 	specs := make(eventline.JobSpecs, len(filePaths))
