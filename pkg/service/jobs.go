@@ -191,7 +191,21 @@ func (s *Service) CreateOrUpdateJob(conn pg.Conn, spec *eventline.JobSpec, scope
 					newSubParams)
 		}
 
-		if !subParamsEqual {
+		var oldIdentityName string
+		if subscription.IdentityId != nil {
+			var oldIdentity eventline.Identity
+			err := oldIdentity.Load(conn, *subscription.IdentityId, scope)
+			if err != nil {
+				return nil, false, fmt.Errorf("cannot load identity %q: %w",
+					subscription.IdentityId, err)
+			}
+
+			oldIdentityName = oldIdentity.Name
+		}
+
+		newIdentityName := spec.Trigger.Identity
+
+		if !subParamsEqual || oldIdentityName != newIdentityName {
 			if subscriptionExists {
 				err = s.TerminateSubscription(conn, &subscription, false,
 					scope)
