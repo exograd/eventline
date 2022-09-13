@@ -38,9 +38,10 @@ func NewRunner(r *eventline.Runner) eventline.RunnerBehaviour {
 	cfg := r.Cfg.(*RunnerCfg)
 
 	je := r.JobExecution
+	params := je.JobSpec.Runner.Parameters.(*RunnerParameters)
 
 	rootDirPath := cfg.RootDirectory
-	rootPath := path.Join(rootDirPath, je.Id.String())
+	rootPath := path.Join(rootDirPath, params.User, je.Id.String())
 
 	return &Runner{
 		runner: r,
@@ -55,6 +56,8 @@ func (r *Runner) DirPath() string {
 }
 
 func (r *Runner) Init(ctx context.Context) error {
+	cfg := r.runner.Cfg.(*RunnerCfg)
+
 	sshClient, err := r.connect(ctx)
 	if err != nil {
 		return err
@@ -64,6 +67,20 @@ func (r *Runner) Init(ctx context.Context) error {
 	r.sftpClient, err = sftp.NewClient(r.sshClient)
 	if err != nil {
 		return fmt.Errorf("cannot create sftp client: %w", err)
+	}
+
+	// In order to support jobs executed with different users on the same
+	// machine, we need a root directory accessible to everyone (by default
+	// /tmp/eventline/execution with mode 0777) and user directories owned by
+	// them (e.g. /tmp/eventline/execution/root). This way, job execution
+	// directories can be created by the user in each user directory (with the
+	// right permissions, i.e. 0700).
+	//
+	// Note that the root directory will be owned by the first user to execute
+	// a job on the machine, but it should not matter since it is 0777.
+	if err := r.createDirectory(ctx, cfg.RootDirectory, 0777); err != nil {
+		return fmt.Errorf("cannot create directory %q: %w",
+			cfg.RootDirectory, err)
 	}
 
 	if err := r.uploadFileSet(ctx); err != nil {
@@ -78,8 +95,8 @@ func (r *Runner) Terminate() {
 
 	if r.sftpClient != nil {
 		// Note that we delete all files *in* the root directory, but not the
-		// root directory itself; it is provided by the user, and could for
-		// example have specific permissions.
+		// root directory itself; it could be provided by the user, and could
+		// for example have specific permissions.
 		if err := r.deleteDirectoryContent(cfg.RootDirectory); err != nil {
 			r.log.Error("cannot delete directory %q: %v", r.rootPath, err)
 		}

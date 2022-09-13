@@ -102,13 +102,8 @@ func (r *Runner) uploadFileSet(ctx context.Context) error {
 	}
 
 	for dirPath := range dirPaths {
-		if err := r.sftpClient.MkdirAll(dirPath); err != nil {
+		if err := r.createDirectory(ctx, dirPath, 0700); err != nil {
 			return fmt.Errorf("cannot create directory %q: %w", dirPath, err)
-		}
-
-		if err := r.sftpClient.Chmod(dirPath, 0700); err != nil {
-			return fmt.Errorf("cannot change permissions of directory %q: %w",
-				dirPath, err)
 		}
 	}
 
@@ -138,6 +133,33 @@ func (r *Runner) uploadFileSet(ctx context.Context) error {
 		if err := file.Close(); err != nil {
 			return fmt.Errorf("cannot close %q: %w", filePath, err)
 		}
+	}
+
+	return nil
+}
+
+func (r *Runner) createDirectory(ctx context.Context, dirPath string, mode os.FileMode) error {
+	// We do not try to chmod if the permissions are already correct. This is
+	// annoying because it is an extra operation which is not useful most of
+	// the times. But if a directory already exists, we may not be allowed to
+	// chmod it; this is relevant for the root directory which may already
+	// exist with permissions 0777 but be owned by another user.
+
+	if err := r.sftpClient.MkdirAll(dirPath); err != nil {
+		return err
+	}
+
+	info, err := r.sftpClient.Stat(dirPath)
+	if err != nil {
+		return fmt.Errorf("cannot stat directory: %w", err)
+	}
+
+	if info.Mode().Perm() == mode {
+		return nil
+	}
+
+	if err := r.sftpClient.Chmod(dirPath, mode); err != nil {
+		return fmt.Errorf("cannot chmod directory: %w", err)
 	}
 
 	return nil

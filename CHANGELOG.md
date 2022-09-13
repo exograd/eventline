@@ -8,6 +8,7 @@ _Work in progress._
 - Recreate the subscription if the identity has changed during a job update.
 - Ensure terminal restoration on login error in evcli.
 - Fix ssh runner termination when the connection was never established.
+- Fix support for ssh jobs with multiple users on the same host.
 
 ## v1.0.0
 ### Features
