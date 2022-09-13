@@ -32,6 +32,7 @@ func Confirm(prompt string) bool {
 
 	response, err := line.Prompt("Are you sure? (yes or no) ")
 	if err != nil {
+		line.Close()
 		p.Fatal("cannot read response: %v", err)
 	}
 

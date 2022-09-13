@@ -1,11 +1,18 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/exograd/go-program"
 	"github.com/peterh/liner"
 )
+
+type loginInfo struct {
+	Endpoint string
+	Username string
+	Password string
+}
 
 func addLoginCommand() {
 	var c *program.Command
@@ -34,42 +41,27 @@ func cmdLogin(p *program.Program) {
 	}
 
 	line := liner.NewLiner()
-	defer line.Close()
 
 	line.SetCtrlCAborts(true)
 
-	// Endpoint
-	defaultEndpoint := "http://localhost:8085"
-	if cfg.API.Endpoint != "" {
-		defaultEndpoint = cfg.API.Endpoint
-	}
-
-	endpoint, err := line.PromptWithSuggestion("API endpoint: ",
-		defaultEndpoint, -1)
+	// Careful here: we introduce a separate function even though we do not
+	// really need it to be sure to always call line.Close() on error. Using
+	// defer here would not work because defer statements are not called on
+	// exit.
+	info, err := promptLoginInfo(line)
 	if err != nil {
-		p.Fatal("cannot read endpoint: %v", err)
-	}
-
-	// Username
-	username, err := line.PromptWithSuggestion("Username: ", "admin", -1)
-	if err != nil {
-		p.Fatal("cannot read username: %v", err)
-	}
-
-	// Password
-	password, err := line.PasswordPrompt("Password: ")
-	if err != nil {
-		p.Fatal("cannot read password: %v", err)
+		line.Close()
+		p.Fatal("%v", err)
 	}
 
 	// Login
-	if err := app.Client.SetEndpoint(endpoint); err != nil {
+	if err := app.Client.SetEndpoint(info.Endpoint); err != nil {
 		p.Fatal("invalid endpoint: %v", err)
 	}
 
-	p.Info("logging in to %s", endpoint)
+	p.Info("logging in to %s", info.Endpoint)
 
-	res, err := app.Client.LogIn(username, password)
+	res, err := app.Client.LogIn(info.Username, info.Password)
 	if err != nil {
 		p.Fatal("cannot log in: %v", err)
 	}
@@ -79,7 +71,7 @@ func cmdLogin(p *program.Program) {
 	p.Info("api key %q created", res.APIKey.Name)
 
 	// Update the configuration file
-	app.Config.API.Endpoint = endpoint
+	app.Config.API.Endpoint = info.Endpoint
 	app.Config.API.Key = res.Key
 
 	if err := app.Config.Write(); err != nil {
@@ -87,4 +79,37 @@ func cmdLogin(p *program.Program) {
 	}
 
 	p.Info("configuration file updated")
+}
+
+func promptLoginInfo(line *liner.State) (*loginInfo, error) {
+	cfg := app.Config
+
+	defaultEndpoint := "http://localhost:8085"
+	if cfg.API.Endpoint != "" {
+		defaultEndpoint = cfg.API.Endpoint
+	}
+
+	endpoint, err := line.PromptWithSuggestion("API endpoint: ",
+		defaultEndpoint, -1)
+	if err != nil {
+		return nil, fmt.Errorf("cannot read endpoint: %w", err)
+	}
+
+	username, err := line.PromptWithSuggestion("Username: ", "admin", -1)
+	if err != nil {
+		return nil, fmt.Errorf("cannot read username: %w", err)
+	}
+
+	password, err := line.PasswordPrompt("Password: ")
+	if err != nil {
+		return nil, fmt.Errorf("cannot read password: %w", err)
+	}
+
+	info := loginInfo{
+		Endpoint: endpoint,
+		Username: username,
+		Password: password,
+	}
+
+	return &info, nil
 }

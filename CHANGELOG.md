@@ -6,6 +6,7 @@ _Work in progress._
 ### Bug fixes
 - Fix missing argument in error message in evcli.
 - Recreate the subscription if the identity has changed during a job update.
+- Ensure terminal restoration on login error in evcli.
 
 ## v1.0.0
 ### Features
