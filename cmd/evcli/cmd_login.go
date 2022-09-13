@@ -54,6 +54,8 @@ func cmdLogin(p *program.Program) {
 		p.Fatal("%v", err)
 	}
 
+	line.Close()
+
 	// Login
 	if err := app.Client.SetEndpoint(info.Endpoint); err != nil {
 		p.Fatal("invalid endpoint: %v", err)
