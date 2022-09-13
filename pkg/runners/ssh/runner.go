@@ -76,14 +76,14 @@ func (r *Runner) Init(ctx context.Context) error {
 func (r *Runner) Terminate() {
 	cfg := r.runner.Cfg.(*RunnerCfg)
 
-	// Note that we delete all files *in* the root directory, but not the root
-	// directory itself; it is provided by the user, and could for example
-	// have specific permissions.
-	if err := r.deleteDirectoryContent(cfg.RootDirectory); err != nil {
-		r.log.Error("cannot delete directory %q: %v", r.rootPath, err)
-	}
-
 	if r.sftpClient != nil {
+		// Note that we delete all files *in* the root directory, but not the
+		// root directory itself; it is provided by the user, and could for
+		// example have specific permissions.
+		if err := r.deleteDirectoryContent(cfg.RootDirectory); err != nil {
+			r.log.Error("cannot delete directory %q: %v", r.rootPath, err)
+		}
+
 		r.sftpClient.Close()
 	}
 
