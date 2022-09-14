@@ -3,6 +3,8 @@
 _Work in progress._
 
 ## v1.0.1
+Thanks to Adyxax for his help!
+
 ### Bug fixes
 - Fix missing argument in error message in evcli.
 - Recreate the subscription if the identity has changed during a job update.
