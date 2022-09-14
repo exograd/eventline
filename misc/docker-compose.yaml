@@ -1,7 +1,7 @@
 version: "3"
 services:
   eventline:
-    image: "exograd/eventline:1.0.0"
+    image: "exograd/eventline:1.0.1"
     container_name: "eventline-demo-eventline"
     ports: ["8085:8085", "8087:8087"]
     environment:
