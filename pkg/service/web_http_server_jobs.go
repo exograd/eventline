@@ -95,7 +95,7 @@ func (s *WebHTTPServer) hJobsGET(h *HTTPHandler) {
 
 		page, err = eventline.LoadJobPage(conn, pageOptions, cursor, scope)
 		if err != nil {
-			return fmt.Errorf("cannot load job: %w", err)
+			return fmt.Errorf("cannot load jobs: %w", err)
 		}
 
 		favouriteJobs, err := eventline.LoadFavouriteJobs(conn,
