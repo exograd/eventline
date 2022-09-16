@@ -123,7 +123,6 @@ function evOnDeleteJobClicked(event) {
 
   const modal = document.querySelector("#ev-delete-job-modal");
 
-  console.log("MODAL", modal);
   modal.querySelector(".ev-job-name").textContent = name;
 
   modal.querySelectorAll("button[name='cancel']").forEach(button => {
