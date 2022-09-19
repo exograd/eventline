@@ -640,8 +640,12 @@ form.ev-subscription {
     50% { opacity: 0; }
   }
 
+  // Some tools forces a black foreground color, probably because they expect
+  // the terminal to have a light background. To avoid confusion, we use a
+  // dark grey color so that the text remains visible.
+
   :not(.trv) {
-    &.tfg-black   { color: $black-ter; }
+    &.tfg-black   { color: $grey-light; }
     &.tfg-red     { color: $red; }
     &.tfg-green   { color: $green; }
     &.tfg-yellow  { color: $yellow; }
@@ -661,7 +665,7 @@ form.ev-subscription {
   }
 
   .trv {
-    &.tfg-black   { background-color: $black-ter; }
+    &.tfg-black   { background-color: $grey-light; }
     &.tfg-red     { background-color: $red; }
     &.tfg-green   { background-color: $green; }
     &.tfg-yellow  { background-color: $yellow; }

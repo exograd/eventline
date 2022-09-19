@@ -2,6 +2,10 @@
 ## v1.1.0
 _Work in progress._
 
+## v1.0.2
+### Bug fixes
+- Fix terminal rendering so that text using black foreground remains visible.
+
 ## v1.0.1
 Thanks to Adyxax for his help!
 
