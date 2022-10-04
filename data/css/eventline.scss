@@ -280,70 +280,8 @@ div.ev-block {
   }
 }
 
-// Buttons
-.button {
-  min-width: 6em;
-
-  box-shadow: $shadow;
-
-  &:hover, &.is-hovered {
-    background-color: bulmaLighten($button-background-color, 10%);
-  }
-
-  @each $name, $pair in $button-colors {
-    $color: nth($pair, 1);
-    $color-invert: nth($pair, 2);
-
-    &.is-#{$name} {
-      &:hover, &.is-hovered {
-        background-color: bulmaLighten($color, 5%);
-      }
-    }
-  }
-}
-
 .ev-page-buttons .button {
   width: 6em;
-}
-
-// Forms
-form {
-  input[readonly] {
-    color: $grey-lighter;
-    cursor: not-allowed;
-  }
-
-  &:not(.ev-all-optional) {
-    .field:not(.ev-required):not(.ev-no-optional-label) .label {
-      &:after {
-        content: " (optional)";
-      }
-    }
-  }
-
-  p.help {
-    margin-bottom: 0;
-  }
-
-  p.help.is-danger {
-    font-weight: $weight-medium;
-  }
-}
-
-.label {
-  font-size: $size-6;
-}
-
-label.checkbox input {
-  margin-right: 0.4em;
-}
-
-.field-label {
-  text-align: left;
-}
-
-.input {
-  border-width: 1px;
 }
 
 // Subscription form
