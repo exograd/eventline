@@ -46,6 +46,11 @@ func (err UnknownJobNameError) Error() string {
 	return fmt.Sprintf("unknown job %q", err.Name)
 }
 
+type JobRenamingData struct {
+	Name        string  `json:"name"`
+	Description *string `json:"description,omitempty"`
+}
+
 type StepFailureAction string
 
 const (
@@ -142,6 +147,13 @@ func (j *Job) SortKey(sort string) (key string) {
 	}
 
 	return
+}
+
+func (data *JobRenamingData) Check(c *check.Checker) {
+	CheckName(c, "name", data.Name)
+	if data.Description != nil {
+		CheckDescription(c, "description", *data.Description)
+	}
 }
 
 func (spec JobSpec) Check(c *check.Checker) {

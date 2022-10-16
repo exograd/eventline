@@ -56,6 +56,16 @@ func addJobCommands() {
 
 	c.AddArgument("name", "the name of the job")
 
+	// rename-job
+	c = p.AddCommand("rename-job", "rename a job",
+		cmdRenameJob)
+
+	c.AddArgument("name", "the current name of the job")
+	c.AddArgument("new-name", "the new name of the job")
+
+	c.AddOption("d", "description", "text", "",
+		"the new description of the job")
+
 	// describe-job
 	c = p.AddCommand("describe-job", "print information about a job",
 		cmdDescribeJob)
@@ -262,6 +272,34 @@ func cmdDeleteJob(p *program.Program) {
 	}
 
 	p.Info("job %q deleted", job.Id)
+}
+
+func cmdRenameJob(p *program.Program) {
+	app.IdentifyCurrentProject()
+
+	name := p.ArgumentValue("name")
+	newName := p.ArgumentValue("new-name")
+
+	var description *string
+	if p.IsOptionSet("description") {
+		description = utils.Ref(p.OptionValue("description"))
+	}
+
+	data := eventline.JobRenamingData{
+		Name:        newName,
+		Description: description,
+	}
+
+	job, err := app.Client.FetchJobByName(name)
+	if err != nil {
+		p.Fatal("cannot fetch job: %v", err)
+	}
+
+	if err := app.Client.RenameJob(job.Id.String(), &data); err != nil {
+		p.Fatal("cannot rename job: %v", err)
+	}
+
+	p.Info("job %q renamed", job.Id)
 }
 
 func cmdDescribeJob(p *program.Program) {

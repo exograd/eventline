@@ -94,7 +94,7 @@ func (s *HTTPServer) DeleteJob(h *HTTPHandler, jobId eventline.Id) error {
 	return nil
 }
 
-func (s *HTTPServer) RenameJob(h *HTTPHandler, jobId eventline.Id, data *JobRenamingData) error {
+func (s *HTTPServer) RenameJob(h *HTTPHandler, jobId eventline.Id, data *eventline.JobRenamingData) error {
 	scope := h.Context.ProjectScope()
 
 	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {

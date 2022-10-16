@@ -269,7 +269,7 @@ func (s *APIHTTPServer) hJobsIdRenamePOST(h *HTTPHandler) {
 		return
 	}
 
-	var data JobRenamingData
+	var data eventline.JobRenamingData
 	if err := h.JSONRequestData(&data); err != nil {
 		return
 	}

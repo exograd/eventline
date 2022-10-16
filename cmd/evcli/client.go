@@ -297,6 +297,12 @@ func (c *Client) DeployJobs(specs []*eventline.JobSpec, dryRun bool) ([]*eventli
 	}
 }
 
+func (c *Client) RenameJob(id string, data *eventline.JobRenamingData) error {
+	uri := NewURL("jobs", "id", id, "rename")
+
+	return c.SendRequest("POST", uri, data, nil)
+}
+
 func (c *Client) DeleteJob(id string) error {
 	uri := NewURL("jobs", "id", id)
 

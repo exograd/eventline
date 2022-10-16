@@ -148,6 +148,15 @@ an API key. The key is then stored in the Evcli configuration file.
 
 This command is the fastest way to start using Evcli.
 
+==== `rename-job`
+
+Rename a job.
+
+If the `--description` command option is used, also update its description.
+
+NOTE: Renaming a job will affect its specification: if the job is deployed
+from a job specification file, you will have to update it manually.
+
 ==== `replay-event`
 
 Replay an event as if it has just been created for the first time. Any job

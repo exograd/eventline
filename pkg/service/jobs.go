@@ -12,11 +12,6 @@ import (
 	"github.com/exograd/go-daemon/pg"
 )
 
-type JobRenamingData struct {
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
-}
-
 type JobSpecChecker struct {
 	JobSpec *eventline.JobSpec
 
@@ -26,13 +21,6 @@ type JobSpecChecker struct {
 	Checker *check.Checker
 	Conn    pg.Conn
 	Scope   eventline.Scope
-}
-
-func (data *JobRenamingData) Check(c *check.Checker) {
-	eventline.CheckName(c, "name", data.Name)
-	if data.Description != nil {
-		eventline.CheckDescription(c, "description", *data.Description)
-	}
 }
 
 func (s *Service) ValidateJobSpec(conn pg.Conn, spec *eventline.JobSpec, scope eventline.Scope) error {
@@ -260,7 +248,7 @@ func (s *Service) DeleteJob(conn pg.Conn, job *eventline.Job, scope eventline.Sc
 	return nil
 }
 
-func (s *Service) RenameJob(conn pg.Conn, jobId eventline.Id, data *JobRenamingData, scope eventline.Scope) (*eventline.Job, error) {
+func (s *Service) RenameJob(conn pg.Conn, jobId eventline.Id, data *eventline.JobRenamingData, scope eventline.Scope) (*eventline.Job, error) {
 	var job eventline.Job
 
 	if err := job.LoadForUpdate(conn, jobId, scope); err != nil {
