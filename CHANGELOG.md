@@ -2,6 +2,10 @@
 ## v1.1.0
 _Work in progress._
 
+# v1.0.3
+### Bug fixes
+- Fix the leak of the client stream socket in the Docker runner.
+
 ## v1.0.2
 ### Bug fixes
 - Fix terminal rendering so that text using black foreground remains visible.
