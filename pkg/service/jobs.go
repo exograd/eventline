@@ -248,6 +248,22 @@ func (s *Service) DeleteJob(conn pg.Conn, job *eventline.Job, scope eventline.Sc
 	return nil
 }
 
+func (s *Service) RenameJob(conn pg.Conn, jobId eventline.Id, name string, scope eventline.Scope) (*eventline.Job, error) {
+	var job eventline.Job
+
+	if err := job.LoadForUpdate(conn, jobId, scope); err != nil {
+		return nil, fmt.Errorf("cannot load job: %w", err)
+	}
+
+	job.Spec.Name = name
+
+	if err := job.UpdateName(conn, scope); err != nil {
+		return nil, fmt.Errorf("cannot update job: %w", err)
+	}
+
+	return &job, nil
+}
+
 func (s *Service) InstantiateJob(conn pg.Conn, job *eventline.Job, event *eventline.Event, params map[string]interface{}, scope eventline.Scope) (*eventline.JobExecution, error) {
 	now := time.Now().UTC()
 

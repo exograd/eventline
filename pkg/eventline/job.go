@@ -526,6 +526,17 @@ UPDATE jobs SET
 		j.Id, j.UpdateTime, j.Disabled, j.Spec)
 }
 
+func (j *Job) UpdateName(conn pg.Conn, scope Scope) error {
+	query := fmt.Sprintf(`
+UPDATE jobs SET
+    spec['name'] = $2
+  WHERE %s AND id = $1;
+`, scope.SQLCondition())
+
+	return pg.Exec(conn, query,
+		j.Id, j.Spec.Name)
+}
+
 func (j *Job) Delete(conn pg.Conn, scope Scope) error {
 	query := fmt.Sprintf(`
 DELETE FROM jobs
