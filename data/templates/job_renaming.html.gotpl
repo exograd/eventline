@@ -1,0 +1,35 @@
+{{with .Data}}
+<form class="ev-auto-form">
+  <div class="block ev-block">
+    {{with .Job}}
+    <h1 class="title">Information</h1>
+
+    <div class="field ev-required">
+      <label for="/name" class="label">Name</label>
+      <div class="control">
+        <input name="/name" type="text" class="input" value="{{.Spec.Name}}">
+      </div>
+    </div>
+
+    <div class="field ev-required">
+      <label for="/description" class="label">Description</label>
+      <div class="control">
+        <textarea name="/description" class="textarea">{{.Spec.Description}}</textarea>
+      </div>
+    </div>
+    {{end}}
+  </div>
+
+  <div class="field is-grouped mt-5">
+    <div class="control">
+      <button name="submit" type="submit" class="button is-primary">
+        Submit
+      </button>
+    </div>
+
+    <div class="control">
+      <a class="button" href="/jobs">Cancel</a>
+    </div>
+  </div>
+</form>
+{{end}}

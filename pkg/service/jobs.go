@@ -256,10 +256,7 @@ func (s *Service) RenameJob(conn pg.Conn, jobId eventline.Id, data *eventline.Jo
 	}
 
 	job.Spec.Name = data.Name
-
-	if data.Description != nil {
-		job.Spec.Description = *data.Description
-	}
+	job.Spec.Description = data.Description
 
 	if err := job.UpdateRename(conn, scope); err != nil {
 		return nil, fmt.Errorf("cannot update job: %w", err)

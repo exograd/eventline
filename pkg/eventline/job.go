@@ -47,8 +47,8 @@ func (err UnknownJobNameError) Error() string {
 }
 
 type JobRenamingData struct {
-	Name        string  `json:"name"`
-	Description *string `json:"description,omitempty"`
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
 }
 
 type StepFailureAction string
@@ -151,8 +151,8 @@ func (j *Job) SortKey(sort string) (key string) {
 
 func (data *JobRenamingData) Check(c *check.Checker) {
 	CheckName(c, "name", data.Name)
-	if data.Description != nil {
-		CheckDescription(c, "description", *data.Description)
+	if data.Description != "" {
+		CheckDescription(c, "description", data.Description)
 	}
 }
 

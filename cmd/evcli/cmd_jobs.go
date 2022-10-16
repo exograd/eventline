@@ -285,14 +285,18 @@ func cmdRenameJob(p *program.Program) {
 		description = utils.Ref(p.OptionValue("description"))
 	}
 
-	data := eventline.JobRenamingData{
-		Name:        newName,
-		Description: description,
-	}
-
 	job, err := app.Client.FetchJobByName(name)
 	if err != nil {
 		p.Fatal("cannot fetch job: %v", err)
+	}
+
+	data := eventline.JobRenamingData{
+		Name:        newName,
+		Description: job.Spec.Description,
+	}
+
+	if description != nil {
+		data.Description = *description
 	}
 
 	if err := app.Client.RenameJob(job.Id.String(), &data); err != nil {

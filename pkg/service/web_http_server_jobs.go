@@ -43,6 +43,14 @@ func (s *WebHTTPServer) setupJobRoutes() {
 		s.hJobsIdRemoveFavouritePOST,
 		HTTPRouteOptions{Project: true})
 
+	s.route("/jobs/id/{id}/rename", "GET",
+		s.hJobsIdRenameGET,
+		HTTPRouteOptions{Project: true})
+
+	s.route("/jobs/id/{id}/rename", "POST",
+		s.hJobsIdRenamePOST,
+		HTTPRouteOptions{Project: true})
+
 	s.route("/jobs/id/{id}/execute", "GET",
 		s.hJobsIdExecuteGET,
 		HTTPRouteOptions{Project: true})
@@ -330,6 +338,55 @@ func (s *WebHTTPServer) hJobsIdRemoveFavouritePOST(h *HTTPHandler) {
 	h.ReplyEmpty(204)
 }
 
+func (s *WebHTTPServer) hJobsIdRenameGET(h *HTTPHandler) {
+	jobId, err := h.IdRouteVariable("id")
+	if err != nil {
+		return
+	}
+
+	job, err := s.LoadJob(h, jobId)
+	if err != nil {
+		return
+	}
+
+	bodyData := struct {
+		Job *eventline.Job
+	}{
+		Job: job,
+	}
+
+	breadcrumb := jobBreadcrumb(job)
+	breadcrumb.AddEntry(&web.BreadcrumbEntry{Label: "Rename"})
+
+	h.ReplyView(200, &web.View{
+		Title:      "Job renaming",
+		Menu:       NewMainMenu("jobs"),
+		Breadcrumb: breadcrumb,
+		Tabs:       jobTabs(job, ""),
+		Body:       s.NewTemplate("job_renaming.html", bodyData),
+	})
+}
+
+func (s *WebHTTPServer) hJobsIdRenamePOST(h *HTTPHandler) {
+	jobId, err := h.IdRouteVariable("id")
+	if err != nil {
+		return
+	}
+
+	var data eventline.JobRenamingData
+	if err := h.JSONRequestData(&data); err != nil {
+		return
+	}
+
+	if err := s.RenameJob(h, jobId, &data); err != nil {
+		return
+	}
+
+	location := "/jobs/id/" + jobId.String() + "/definition"
+
+	h.ReplyJSONLocation(201, location, nil)
+}
+
 func (s *WebHTTPServer) hJobsIdExecuteGET(h *HTTPHandler) {
 	jobId, err := h.IdRouteVariable("id")
 	if err != nil {
@@ -403,8 +460,10 @@ func (s *WebHTTPServer) hJobsIdDefinitionGET(h *HTTPHandler) {
 	}
 
 	bodyData := struct {
+		Job         *eventline.Job
 		JobSpecData string
 	}{
+		Job:         job,
 		JobSpecData: string(jobSpecData),
 	}
 

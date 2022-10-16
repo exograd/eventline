@@ -1,4 +1,10 @@
 {{with .Data}}
+{{with .Job}}
+<div class="buttons is-right">
+  <a class="button" href="/jobs/id/{{.Id}}/rename">Rename</a>
+</div>
+{{end}}
+
 <div id="job-definition" class="block ev-block">
   <pre><code class="language-yaml">{{.JobSpecData}}</code></pre>
 </div>

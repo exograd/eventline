@@ -120,9 +120,14 @@
             </div>
             <div class="dropdown-menu">
               <div class="dropdown-content">
+                <a class="dropdown-item" href="/jobs/id/{{.Id}}/rename">
+                  Rename
+                </a>
+
                 <a class="dropdown-item" href="/jobs/id/{{.Id}}/execute">
                   Execute
                 </a>
+
                 {{if .Disabled}}
                 <a class="dropdown-item"
                    data-id="{{.Id}}" data-action="enable">
