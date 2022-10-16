@@ -479,6 +479,17 @@ updated from the specifications.
 If the `dry-run` query parameter is set, Eventline validates the job
 specification but does not deploy it.
 
+===== `POST /jobs/id/{id}/rename`
+
+Rename a job. The request is a JSON object containing the following fields:
+
+`name` (string) :: The new name of the job.
+
+`description` (optional string) :: The new description of the job.
+
+Note that renaming a job will affect its specification: if the job is deployed
+from a job specification file, you will have to update it manually.
+
 ===== `POST /jobs/id/{id}/enable`
 
 Enable a job by identifier. Nothing is done if the job is already enabled.

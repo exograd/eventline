@@ -29,6 +29,9 @@ func (s *APIHTTPServer) setupJobRoutes() {
 	s.route("/jobs/name/{name}", "PUT", s.hJobsNamePUT,
 		HTTPRouteOptions{Project: true})
 
+	s.route("/jobs/id/{id}/rename", "POST", s.hJobsIdRenamePOST,
+		HTTPRouteOptions{Project: true})
+
 	s.route("/jobs/id/{id}/enable", "POST", s.hJobsIdEnablePOST,
 		HTTPRouteOptions{Project: true})
 
@@ -258,6 +261,24 @@ func (s *APIHTTPServer) hJobsNamePUT(h *HTTPHandler) {
 	}
 
 	h.ReplyJSON(200, job)
+}
+
+func (s *APIHTTPServer) hJobsIdRenamePOST(h *HTTPHandler) {
+	jobId, err := h.IdRouteVariable("id")
+	if err != nil {
+		return
+	}
+
+	var data JobRenamingData
+	if err := h.JSONRequestData(&data); err != nil {
+		return
+	}
+
+	if err := s.RenameJob(h, jobId, &data); err != nil {
+		return
+	}
+
+	h.ReplyEmpty(204)
 }
 
 func (s *APIHTTPServer) hJobsIdEnablePOST(h *HTTPHandler) {

@@ -94,6 +94,32 @@ func (s *HTTPServer) DeleteJob(h *HTTPHandler, jobId eventline.Id) error {
 	return nil
 }
 
+func (s *HTTPServer) RenameJob(h *HTTPHandler, jobId eventline.Id, data *JobRenamingData) error {
+	scope := h.Context.ProjectScope()
+
+	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+		_, err := s.Service.RenameJob(conn, jobId, data, scope)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
+		var unknownJobErr *eventline.UnknownJobError
+
+		if errors.As(err, &unknownJobErr) {
+			h.ReplyError(404, "unknown_job", "%v", err)
+		} else {
+			h.ReplyInternalError(500, "%v", err)
+		}
+
+		return err
+	}
+
+	return nil
+}
+
 func (s *HTTPServer) EnableJob(h *HTTPHandler, jobId eventline.Id) error {
 	scope := h.Context.ProjectScope()
 
