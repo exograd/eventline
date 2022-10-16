@@ -83,6 +83,10 @@ func (r *Runner) Terminate() {
 			r.log.Error("cannot delete container %q: %v", r.containerId, err)
 		}
 	}
+
+	if err := r.client.Close(); err != nil {
+		r.log.Error("cannot close client: %v", err)
+	}
 }
 
 func (r *Runner) ExecuteStep(ctx context.Context, se *eventline.StepExecution, step *eventline.Step, stdout, stderr io.WriteCloser) error {

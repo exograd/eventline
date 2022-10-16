@@ -10,6 +10,10 @@ _Work in progress._
 - Add a `/jobs/id/:id/rename` API route.
 - Add a `rename-job` evcli command.
 
+# v1.0.3
+### Bug fixes
+- Fix the leak of the client stream socket in the Docker runner.
+
 ## v1.0.2
 ### Bug fixes
 - Fix terminal rendering so that text using black foreground remains visible.
