@@ -529,8 +529,9 @@ UPDATE jobs SET
 func (j *Job) UpdateRename(conn pg.Conn, scope Scope) error {
 	query := fmt.Sprintf(`
 UPDATE jobs SET
-    spec['name'] = $2,
-    spec['description'] = $3
+    spec = spec ||
+      jsonb_build_object('name', $2::text,
+                         'description', $3::text)
   WHERE %s AND id = $1;
 `, scope.SQLCondition())
 
