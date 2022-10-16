@@ -2,6 +2,14 @@
 ## v1.1.0
 _Work in progress._
 
+### Features
+- Add the possibility to rename jobs. Since jobs are primarily identified by
+  their name, deploying a job with a different name creates a new job instead
+  of renaming the existing one. This new feature makes it possible to rename a
+  job, for example to archive it.
+- Add a `/jobs/id/:id/rename` API route.
+- Add a `rename-job` evcli command.
+
 ## v1.0.2
 ### Bug fixes
 - Fix terminal rendering so that text using black foreground remains visible.
