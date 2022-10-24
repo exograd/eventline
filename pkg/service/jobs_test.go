@@ -64,16 +64,16 @@ func TestCheckJobSpec(t *testing.T) {
 		return true
 	}
 
-	// assertValid := func(data string, nbErrs int) bool {
-	// 	spec = new(eventline.JobSpec)
-	// 	require.NoError(spec.ParseYAML([]byte(data)))
+	assertValid := func(data string) bool {
+		spec = new(eventline.JobSpec)
+		require.NoError(spec.ParseYAML([]byte(data)))
 
-	// 	err := testService.Daemon.Pg.WithConn(func(conn pg.Conn) error {
-	// 		return testService.ValidateJobSpec(conn, spec, scope)
-	// 	})
+		err := testService.Daemon.Pg.WithConn(func(conn pg.Conn) error {
+			return testService.ValidateJobSpec(conn, spec, scope)
+		})
 
-	// 	return assert.NoError(err)
-	// }
+		return assert.NoError(err)
+	}
 
 	// Partial documents
 	data = `
@@ -167,4 +167,28 @@ steps:
 		assertError(0, "/steps/0", "multiple_step_contents")
 		assertError(1, "/steps/2", "missing_step_content")
 	}
+
+	// Simple oneshot trigger
+	data = `
+---
+name: "foo"
+trigger:
+  event: "time/tick"
+  parameters:
+    oneshot: "2030-01-01T12:30:00Z"
+`
+	assertValid(data)
+
+	// Simple weekly trigger
+	data = `
+---
+name: "foo"
+trigger:
+  event: "time/tick"
+  parameters:
+    weekly:
+      day: "friday"
+      hour: 10
+`
+	assertValid(data)
 }

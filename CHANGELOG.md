@@ -10,6 +10,10 @@ _Work in progress._
 - Add a `/jobs/id/:id/rename` API route.
 - Add a `rename-job` evcli command.
 
+# v1.0.6
+### Bug fixes
+- Fix validation for the subscription parameters of the `time` connector.
+
 # v1.0.5
 ### Bug fixes
 - Fix repository URI for evcli update checks.
