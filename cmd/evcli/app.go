@@ -190,7 +190,7 @@ func (a *App) lastBuildId() (*program.BuildId, error) {
 	ctx := context.Background()
 
 	release, _, err := client.Repositories.GetLatestRelease(ctx,
-		"exograd", "evcli")
+		"exograd", "eventline")
 	if err != nil {
 		return nil, fmt.Errorf("cannot fetch latest release: %w", err)
 	}
