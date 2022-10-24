@@ -1,6 +1,7 @@
 package time
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
@@ -9,14 +10,13 @@ import (
 )
 
 type Parameters struct {
-	Oneshot  *OneshotParameters `json:"oneshot,omitempty"`
-	Periodic *int               `json:"periodic,omitempty"` // seconds
-	Hourly   *HourlyParameters  `json:"hourly,omitempty"`
-	Daily    *DailyParameters   `json:"daily,omitempty"`
-	Weekly   *WeeklyParameters  `json:"weekly,omitempty"`
+	OneshotString string            `json:"oneshot,omitempty"`
+	Oneshot       *time.Time        `json:"-"`
+	Periodic      *int              `json:"periodic,omitempty"` // seconds
+	Hourly        *HourlyParameters `json:"hourly,omitempty"`
+	Daily         *DailyParameters  `json:"daily,omitempty"`
+	Weekly        *WeeklyParameters `json:"weekly,omitempty"`
 }
-
-type OneshotParameters time.Time
 
 type HourlyParameters struct {
 	Minute int `json:"minute,omitempty"`
@@ -36,7 +36,26 @@ type WeeklyParameters struct {
 	Second int     `json:"second,omitempty"`
 }
 
+func (p *Parameters) MarshalJSON() ([]byte, error) {
+	type Parameters2 Parameters
+	p2 := Parameters2(*p)
+
+	if p2.Oneshot != nil {
+		p2.OneshotString = p2.Oneshot.Format(time.RFC3339)
+	}
+
+	return json.Marshal(p2)
+}
+
 func (p *Parameters) Check(c *check.Checker) {
+	if p.OneshotString != "" {
+		t, err := time.Parse(time.RFC3339, p.OneshotString)
+		if c.Check("oneshot", err == nil, "invalid_datetime",
+			"invalid datetime string") {
+			p.Oneshot = &t
+		}
+	}
+
 	n := 0
 	if p.Oneshot != nil {
 		n += 1
@@ -56,10 +75,10 @@ func (p *Parameters) Check(c *check.Checker) {
 	c.Check(djson.Pointer{}, n == 1, "invalid_value",
 		"parameters must contain a single member")
 
-	c.CheckOptionalObject("oneshot", p.Oneshot)
 	if p.Periodic != nil {
 		c.CheckIntMinMax("periodic", int(*p.Periodic), 30, 86400)
 	}
+
 	c.CheckOptionalObject("hourly", p.Hourly)
 	c.CheckOptionalObject("daily", p.Daily)
 	c.CheckOptionalObject("weekly", p.Weekly)
@@ -71,6 +90,13 @@ func (p *HourlyParameters) Check(c *check.Checker) {
 }
 
 func (p *DailyParameters) Check(c *check.Checker) {
+	c.CheckIntMinMax("hour", p.Hour, 0, 23)
+	c.CheckIntMinMax("minute", p.Minute, 0, 59)
+	c.CheckIntMinMax("second", p.Second, 0, 59)
+}
+
+func (p *WeeklyParameters) Check(c *check.Checker) {
+	c.CheckStringValue("day", p.Day, WeekDayValues)
 	c.CheckIntMinMax("hour", p.Hour, 0, 23)
 	c.CheckIntMinMax("minute", p.Minute, 0, 59)
 	c.CheckIntMinMax("second", p.Second, 0, 59)

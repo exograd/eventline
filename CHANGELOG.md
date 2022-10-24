@@ -2,6 +2,10 @@
 ## v1.1.0
 _Work in progress._
 
+# v1.0.6
+### Bug fixes
+- Fix validation for the subscription parameters of the `time` connector.
+
 # v1.0.5
 ### Bug fixes
 - Fix repository URI for evcli update checks.
