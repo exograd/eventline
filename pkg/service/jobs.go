@@ -166,30 +166,34 @@ func (s *Service) CreateOrUpdateJob(conn pg.Conn, spec *eventline.JobSpec, scope
 	if err != nil {
 		return nil, false, err
 	}
+
 	job.Id = id
 
-	var subscriptionCreatedOrUpdated bool
-
-	if spec.Trigger != nil {
+	// Subscription handling
+	subscription := new(eventline.Subscription)
+	err = subscription.LoadByJobForUpdate(conn, job.Id, scope)
+	if err != nil {
 		var unknownJobSubscriptionErr *eventline.UnknownJobSubscriptionError
 
-		var subscription eventline.Subscription
-		err := subscription.LoadByJobForUpdate(conn, job.Id, scope)
-		subscriptionExists := (err == nil)
-		if err != nil && !errors.As(err, &unknownJobSubscriptionErr) {
+		if !errors.As(err, &unknownJobSubscriptionErr) {
 			return nil, false, fmt.Errorf("cannot load subscription: %w", err)
 		}
 
-		var subParamsEqual bool
+		subscription = nil
+	}
 
-		if subscriptionExists {
-			oldSubParams := subscription.Parameters
-			newSubParams := spec.Trigger.Parameters
+	// If there is a trigger, check if it has changed
+	triggerChanged := false
 
-			subParamsEqual =
-				eventline.SubscriptionParametersEqual(oldSubParams,
-					newSubParams)
-		}
+	if subscription == nil && spec.Trigger != nil {
+		triggerChanged = true
+	} else if subscription != nil && spec.Trigger != nil {
+		oldSubParams := subscription.Parameters
+		newSubParams := spec.Trigger.Parameters
+
+		subParamsEqual :=
+			eventline.SubscriptionParametersEqual(oldSubParams,
+				newSubParams)
 
 		var oldIdentityName string
 		if subscription.IdentityId != nil {
@@ -205,23 +209,26 @@ func (s *Service) CreateOrUpdateJob(conn pg.Conn, spec *eventline.JobSpec, scope
 
 		newIdentityName := spec.Trigger.Identity
 
-		if !subParamsEqual || oldIdentityName != newIdentityName {
-			if subscriptionExists {
-				err = s.TerminateSubscription(conn, &subscription, false,
-					scope)
-				if err != nil {
-					return nil, false,
-						fmt.Errorf("cannot terminate subscription: %w", err)
-				}
-			}
+		triggerChanged = !subParamsEqual || oldIdentityName != newIdentityName
+	}
 
-			if _, err := s.CreateSubscription(conn, &job, scope); err != nil {
-				return nil, false,
-					fmt.Errorf("cannot create subscription: %w", err)
-			}
+	var subscriptionCreatedOrUpdated bool
 
-			subscriptionCreatedOrUpdated = true
+	if subscription != nil && (spec.Trigger == nil || triggerChanged) {
+		err := s.TerminateSubscription(conn, subscription, false, scope)
+		if err != nil {
+			return nil, false,
+				fmt.Errorf("cannot terminate subscription: %w", err)
 		}
+	}
+
+	if spec.Trigger != nil && triggerChanged {
+		if _, err := s.CreateSubscription(conn, &job, scope); err != nil {
+			return nil, false,
+				fmt.Errorf("cannot create subscription: %w", err)
+		}
+
+		subscriptionCreatedOrUpdated = true
 	}
 
 	return &job, subscriptionCreatedOrUpdated, nil

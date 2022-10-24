@@ -2,6 +2,11 @@
 ## v1.1.0
 _Work in progress._
 
+# v1.0.4
+### Bug fixes
+- Fix subscription handling during the update of a job whose trigger is being
+  removed.
+
 # v1.0.3
 ### Bug fixes
 - Fix the leak of the client stream socket in the Docker runner.
