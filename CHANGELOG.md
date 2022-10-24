@@ -10,6 +10,13 @@ _Work in progress._
 - Add a `/jobs/id/:id/rename` API route.
 - Add a `rename-job` evcli command.
 
+# v1.0.4
+### Bug fixes
+- Fix subscription handling during the update of a job whose trigger is being
+  removed.
+- Fix event processing when the job has been modified and does not have a
+  trigger anymore.
+
 # v1.0.3
 ### Bug fixes
 - Fix the leak of the client stream socket in the Docker runner.

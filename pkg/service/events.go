@@ -49,14 +49,27 @@ func (s *Service) ProcessEvent(conn pg.Conn, event *eventline.Event, scope event
 	}
 
 	// Instantiate the job if the job is enabled and filters match
-	if !job.Disabled && job.Spec.Trigger.Filters.Match(event.DataValue) {
-		_, err := s.InstantiateJob(conn, &job, event, nil, scope)
-		if err != nil {
-			return false, fmt.Errorf("cannot instantiate job %q: %w",
-				event.JobId, err)
+	//
+	// Note that the job may not have a trigger. This is not intuitive: if
+	// there is an event, there must be a subscription and therefore a
+	// trigger. But a job can be updated while there are unprocessed events in
+	// the database. If the update removes the trigger, we end up with an
+	// event referencing a job which does not have a trigger anymore.
+	if !job.Disabled {
+		filtersMatch := true
+		if trigger := job.Spec.Trigger; trigger != nil {
+			filtersMatch = trigger.Filters.Match(event.DataValue)
 		}
 
-		jeCreated = true
+		if filtersMatch {
+			_, err := s.InstantiateJob(conn, &job, event, nil, scope)
+			if err != nil {
+				return false, fmt.Errorf("cannot instantiate job %q: %w",
+					event.JobId, err)
+			}
+
+			jeCreated = true
+		}
 	}
 
 	// Mark the event as processed
