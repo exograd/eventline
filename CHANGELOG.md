@@ -10,6 +10,10 @@ _Work in progress._
 - Add a `/jobs/id/:id/rename` API route.
 - Add a `rename-job` evcli command.
 
+# v1.0.5
+### Bug fixes
+- Fix repository URI for evcli update checks.
+
 # v1.0.4
 ### Bug fixes
 - Fix subscription handling during the update of a job whose trigger is being
