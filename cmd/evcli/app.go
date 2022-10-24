@@ -159,12 +159,16 @@ func (a *App) lookForLastBuild() (*program.BuildId, error) {
 
 	currentBuildId := a.currentBuildId()
 
+	p.Debug(1, "current build: %v", currentBuildId)
+
 	lastBuildId, err := a.lastBuildId()
 	if err != nil {
 		return nil, fmt.Errorf("cannot retrieve last build id: %w", err)
 	} else if lastBuildId == nil {
 		return nil, nil
 	}
+
+	p.Debug(1, "last build: %v", lastBuildId)
 
 	if lastBuildId.LowerThanOrEqualTo(currentBuildId) {
 		return nil, nil
