@@ -6,6 +6,8 @@ _Work in progress._
 ### Bug fixes
 - Fix subscription handling during the update of a job whose trigger is being
   removed.
+- Fix event processing when the job has been modified and does not have a
+  trigger anymore.
 
 # v1.0.3
 ### Bug fixes
