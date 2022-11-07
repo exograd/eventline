@@ -7,6 +7,9 @@ _Work in progress._
 - Truncate the output of all step executions on the web interface. The current
   limit is hardcoded to 1MB. Very large outputs cause performance issues both
   on the server and in the web browser.
+- Add buffering to runner output capture to avoid overloading the database for
+  jobs producing massive amounts of data. See the associated commit for more
+  information.
 
 # v1.0.6
 ### Bug fixes
