@@ -402,8 +402,11 @@ func (r *Runner) readOutput(se *StepExecution, output io.ReadCloser, name string
 	defer wg.Done()
 
 	bufferedOutput := bufio.NewReader(output)
-
+	var outputSize int
 	var line []byte
+
+	lastUpdate := time.Now()
+	updatePeriod := time.Duration(1 * time.Second)
 
 	for {
 		data, isPrefix, err := bufferedOutput.ReadLine()
@@ -420,24 +423,33 @@ func (r *Runner) readOutput(se *StepExecution, output io.ReadCloser, name string
 			}
 		}
 
+		if len(line) > 0 && line[len(line)-1] != '\n' {
+			line = append(line, '\n')
+		}
+
 		// There is no point in updating se.Output because we are not going to
 		// read it in the runner, so we may as well avoid allocating and
 		// copying data. This only works because se.Update does not modify the
 		// output column, so it will not be erased when updating the step
 		// execution later.
 
-		if len(line) > 0 {
-			err = r.UpdateStepExecutionOutput(se, append(line, '\n'))
+		isEOF := errors.Is(err, io.EOF) || errors.Is(err, io.ErrClosedPipe)
+
+		if len(line) > 0 && (time.Since(lastUpdate) >= updatePeriod || isEOF) {
+			err = r.UpdateStepExecutionOutput(se, line)
 			if err != nil {
 				errChan <- fmt.Errorf("cannot update step execution %q: %v",
 					se.Id, err)
 				return
 			}
 
+			outputSize += len(line)
 			line = nil
+
+			lastUpdate = time.Now()
 		}
 
-		if errors.Is(err, io.EOF) || errors.Is(err, io.ErrClosedPipe) {
+		if isEOF {
 			break
 		}
 	}

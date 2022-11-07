@@ -101,7 +101,9 @@ func (s *WebHTTPServer) hJobExecutionsIdContentGET(h *HTTPHandler) {
 			return fmt.Errorf("cannot load job: %w", err)
 		}
 
-		if err = stepExecutions.LoadByJobExecutionId(conn, jeId); err != nil {
+		err = stepExecutions.LoadByJobExecutionIdWithTruncatedOutput(conn,
+			jeId, 1_000_000, "\n[truncated]\n")
+		if err != nil {
 			return fmt.Errorf("cannot load step executions: %w", err)
 		}
 
