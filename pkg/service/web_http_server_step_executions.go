@@ -26,7 +26,8 @@ func (s *WebHTTPServer) hStepExecutionsIdLogFileGET(h *HTTPHandler) {
 	var stepExecution eventline.StepExecution
 
 	err = s.Pg.WithConn(func(conn pg.Conn) error {
-		if err := stepExecution.Load(conn, seId, scope); err != nil {
+		err := stepExecution.Load(conn, seId, scope)
+		if err != nil {
 			return fmt.Errorf("cannot load step execution: %w", err)
 		}
 

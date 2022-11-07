@@ -90,6 +90,18 @@ SELECT id, project_id, job_execution_id, position, status,
 	return pg.QueryObjects(conn, ses, query, jeId)
 }
 
+func (ses *StepExecutions) LoadByJobExecutionIdWithTruncatedOutput(conn pg.Conn, jeId Id, maxOutputSize int, truncationString string) error {
+	query := `
+SELECT id, project_id, job_execution_id, position, status,
+       start_time, end_time, failure_message,
+       truncate_string(output, $2, $3)
+  FROM step_executions
+  WHERE job_execution_id = $1
+  ORDER BY position;
+`
+	return pg.QueryObjects(conn, ses, query, jeId, maxOutputSize, truncationString)
+}
+
 func (ses *StepExecutions) LoadByJobExecutionIdForUpdate(conn pg.Conn, jeId Id) error {
 	query := `
 SELECT id, project_id, job_execution_id, position, status,
