@@ -10,7 +10,7 @@ _Work in progress._
 - Add a `/jobs/id/:id/rename` API route.
 - Add a `rename-job` evcli command.
 
-# v1.0.7
+## v1.0.7
 ### Misc
 - Truncate the output of all step executions on the web interface. The current
   limit is hardcoded to 1MB. Very large outputs cause performance issues both
@@ -19,22 +19,22 @@ _Work in progress._
   jobs producing massive amounts of data. See the associated commit for more
   information.
 
-# v1.0.6
+## v1.0.6
 ### Bug fixes
 - Fix validation for the subscription parameters of the `time` connector.
 
-# v1.0.5
+## v1.0.5
 ### Bug fixes
 - Fix repository URI for evcli update checks.
 
-# v1.0.4
+## v1.0.4
 ### Bug fixes
 - Fix subscription handling during the update of a job whose trigger is being
   removed.
 - Fix event processing when the job has been modified and does not have a
   trigger anymore.
 
-# v1.0.3
+## v1.0.3
 ### Bug fixes
 - Fix the leak of the client stream socket in the Docker runner.
 
