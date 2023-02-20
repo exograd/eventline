@@ -10,6 +10,11 @@ _Work in progress._
 - Add a `/jobs/id/:id/rename` API route.
 - Add a `rename-job` evcli command.
 
+## v1.0.8
+### Bug fixes
+- Fix login for users who have no current project when the "main" project has
+  been deleted.
+
 ## v1.0.7
 ### Misc
 - Truncate the output of all step executions on the web interface. The current

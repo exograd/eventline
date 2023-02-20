@@ -46,19 +46,24 @@ func (s *Service) LogIn(data *LoginData, httpCtx *HTTPContext) (*eventline.Sessi
 			return ErrWrongPassword
 		}
 
-		// If there is no current project id, select the main project
+		// If there is no current project id, select the most recent project
 		projectId := account.LastProjectId
 
 		if projectId == nil {
-			var project eventline.Project
-			if err := project.LoadByName(conn, "main"); err == nil {
-				projectId = &project.Id
-			} else {
-				var unknownProjectErr *eventline.UnknownProjectError
-				if !errors.As(err, &unknownProjectErr) {
-					return fmt.Errorf("cannot load project: %w", err)
+			project, err := eventline.LoadMostRecentProject(conn)
+			if err != nil {
+				return fmt.Errorf("cannot load project: %w", err)
+			} else if project == nil {
+				// If there is no project at all, re-create the default one
+				newProject := eventline.NewProject{Name: "main"}
+
+				project, err = s.createProject(conn, &newProject, &account.Id)
+				if err != nil {
+					return fmt.Errorf("cannot create project: %w", err)
 				}
 			}
+
+			projectId = &project.Id
 		}
 
 		// Create a new session
