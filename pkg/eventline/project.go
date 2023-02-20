@@ -112,6 +112,22 @@ SELECT id, name, creation_time, update_time
 	return err
 }
 
+func LoadMostRecentProject(conn pg.Conn) (*Project, error) {
+	query := `
+SELECT id, name, creation_time, update_time
+  FROM projects
+  ORDER BY creation_time DESC
+  LIMIT 1;
+`
+	var p Project
+	err := pg.QueryObject(conn, &p, query)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, nil
+	}
+
+	return &p, nil
+}
+
 func (p *Project) LoadForUpdate(conn pg.Conn, id Id) error {
 	query := `
 SELECT id, name, creation_time, update_time
