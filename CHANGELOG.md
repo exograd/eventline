@@ -2,6 +2,11 @@
 ## v1.1.0
 _Work in progress._
 
+## v1.0.8
+### Bug fixes
+- Fix login for users who have no current project when the "main" project has
+  been deleted.
+
 ## v1.0.7
 ### Misc
 - Truncate the output of all step executions on the web interface. The current
