@@ -172,7 +172,7 @@ func (r *Runner) createContainer(ctx context.Context) error {
 	r.containerId = res.ID
 
 	statusChan, errChan := r.client.ContainerWait(ctx, r.containerId,
-		"created")
+		"not-running")
 
 	select {
 	case <-statusChan:
