@@ -6,6 +6,7 @@ _Work in progress._
 ### Bug fixes
 - Fix login for users who have no current project when the "main" project has
   been deleted.
+- Fix invalid docker `ContainerWait` parameter for recent Docker versions.
 
 ## v1.0.7
 ### Misc
