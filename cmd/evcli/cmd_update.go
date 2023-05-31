@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/exograd/go-program"
+	"github.com/galdor/go-program"
 	"github.com/google/go-github/v40/github"
 )
 

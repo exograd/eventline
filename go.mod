@@ -1,12 +1,12 @@
 module github.com/exograd/eventline
 
-go 1.19
+go 1.20
 
 require (
 	github.com/docker/docker v20.10.17+incompatible
 	github.com/exograd/go-daemon v0.0.0-20220812093216-93f771ed0866
 	github.com/exograd/go-oauth2c v0.0.0-20220708172730-f3790ca07115
-	github.com/exograd/go-program v0.0.0-20220116124618-691d97553601
+	github.com/galdor/go-program v0.0.0-20230403162644-22adfbe9fbab
 	github.com/google/go-github/v40 v40.0.0
 	github.com/google/go-github/v45 v45.1.0
 	github.com/google/uuid v1.3.0
@@ -28,6 +28,7 @@ require (
 	github.com/docker/distribution v2.8.1+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.4.0 // indirect
+	github.com/exograd/go-program v0.0.0-20220116124618-691d97553601 // indirect
 	github.com/go-chi/chi/v5 v5.0.7 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/gogs/chardet v0.0.0-20191104214054-4b6791f73a28 // indirect

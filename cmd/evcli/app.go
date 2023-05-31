@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-program"
+	"github.com/galdor/go-program"
 	"github.com/google/go-github/v40/github"
 )
 

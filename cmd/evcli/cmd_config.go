@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/exograd/go-program"
+	"github.com/galdor/go-program"
 )
 
 func addConfigCommands() {

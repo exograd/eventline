@@ -12,7 +12,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-program"
+	"github.com/galdor/go-program"
 )
 
 func addJobCommands() {

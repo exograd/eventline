@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/exograd/go-program"
+	"github.com/galdor/go-program"
 )
 
 func addEventCommands() {
