@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-oauth2c"
+	"github.com/galdor/go-ejson"
 )
 
 type OAuth2Identity struct {
@@ -29,11 +29,11 @@ func OAuth2IdentityDef() *eventline.IdentityDef {
 	return def
 }
 
-func (i *OAuth2Identity) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("client_id", i.ClientId)
-	c.CheckStringNotEmpty("client_secret", i.ClientSecret)
+func (i *OAuth2Identity) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("client_id", i.ClientId)
+	v.CheckStringNotEmpty("client_secret", i.ClientSecret)
 
-	c.CheckArrayNotEmpty("scopes", i.Scopes)
+	v.CheckArrayNotEmpty("scopes", i.Scopes)
 }
 
 func (i *OAuth2Identity) Def() *eventline.IdentityDataDef {

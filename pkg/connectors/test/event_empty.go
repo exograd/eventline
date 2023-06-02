@@ -2,7 +2,7 @@ package test
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type EmptyEvent struct {
@@ -15,8 +15,8 @@ func EmptyEventDef() *eventline.EventDef {
 	return eventline.NewEventDef("empty", &EmptyEvent{}, &EmptyParameters{})
 }
 
-func (e *EmptyEvent) Check(c *check.Checker) {
+func (e *EmptyEvent) ValidateJSON(v *ejson.Validator) {
 }
 
-func (p *EmptyParameters) Check(c *check.Checker) {
+func (p *EmptyParameters) ValidateJSON(v *ejson.Validator) {
 }

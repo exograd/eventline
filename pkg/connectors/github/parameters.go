@@ -3,7 +3,7 @@ package github
 import (
 	"strings"
 
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type Parameters struct {
@@ -11,8 +11,8 @@ type Parameters struct {
 	Repository   string `json:"repository,omitempty"`
 }
 
-func (p *Parameters) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("organization", p.Organization)
+func (p *Parameters) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("organization", p.Organization)
 }
 
 func (p *Parameters) Target() string {

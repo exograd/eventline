@@ -2,7 +2,7 @@ package dockerhub
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type TokenIdentity struct {
@@ -15,9 +15,9 @@ func TokenIdentityDef() *eventline.IdentityDef {
 	return def
 }
 
-func (i *TokenIdentity) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("username", i.Username)
-	c.CheckStringNotEmpty("token", i.Token)
+func (i *TokenIdentity) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("username", i.Username)
+	v.CheckStringNotEmpty("token", i.Token)
 }
 
 func (i *TokenIdentity) Def() *eventline.IdentityDataDef {

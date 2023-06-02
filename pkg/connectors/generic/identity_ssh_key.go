@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type SSHKeyIdentity struct {
@@ -18,8 +18,8 @@ func SSHKeyIdentityDef() *eventline.IdentityDef {
 	return def
 }
 
-func (i *SSHKeyIdentity) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("private_key", i.PrivateKey)
+func (i *SSHKeyIdentity) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("private_key", i.PrivateKey)
 
 	// OpenSSH will fail with strange errors if key files do not end with a
 	// newline character; we add it ourselves if it is not here.

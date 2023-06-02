@@ -6,6 +6,7 @@ require (
 	github.com/docker/docker v20.10.17+incompatible
 	github.com/exograd/go-daemon v0.0.0-20220812093216-93f771ed0866
 	github.com/exograd/go-oauth2c v0.0.0-20220708172730-f3790ca07115
+	github.com/galdor/go-ejson v0.0.0-20230602162319-10f55b1bc313
 	github.com/galdor/go-program v0.0.0-20230403162644-22adfbe9fbab
 	github.com/google/go-github/v40 v40.0.0
 	github.com/google/go-github/v45 v45.1.0
@@ -15,9 +16,9 @@ require (
 	github.com/leaanthony/go-ansi-parser v1.5.0
 	github.com/peterh/liner v1.2.2
 	github.com/pkg/sftp v1.13.5
-	github.com/stretchr/testify v1.7.1
+	github.com/stretchr/testify v1.8.3
 	golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f
-	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (

@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -53,9 +53,9 @@ type Event struct {
 
 type Events []*Event
 
-func (ne *NewEvent) Check(c *check.Checker) {
-	if CheckConnectorName(c, "connector", ne.Connector) {
-		CheckEventName(c, "name", ne.Connector, ne.Name)
+func (ne *NewEvent) ValidateJSON(v *ejson.Validator) {
+	if CheckConnectorName(v, "connector", ne.Connector) {
+		CheckEventName(v, "name", ne.Connector, ne.Name)
 	}
 }
 

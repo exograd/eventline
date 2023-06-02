@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type UnknownIdentityDefError struct {
@@ -31,7 +31,7 @@ type IdentityDef struct {
 }
 
 type IdentityData interface {
-	check.Object
+	ejson.Validatable
 
 	Def() *IdentityDataDef
 	Environment() map[string]string

@@ -13,10 +13,10 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/dlog"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 )
 
 var RunnerDefs = map[string]*RunnerDef{}
@@ -38,7 +38,7 @@ func (err *StepFailureError) Unwrap() error {
 }
 
 type RunnerCfg interface {
-	check.Object
+	ejson.Validatable
 }
 
 type RunnerDef struct {

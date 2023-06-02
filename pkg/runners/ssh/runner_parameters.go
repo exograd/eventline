@@ -2,7 +2,7 @@ package ssh
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 var hostKeyAlgorithms = []string{
@@ -29,16 +29,16 @@ func NewRunnerParameters() eventline.RunnerParameters {
 	}
 }
 
-func (r *RunnerParameters) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("host", r.Host)
-	c.CheckIntMinMax("port", r.Port, 1, 65535)
-	c.CheckStringNotEmpty("user", r.User)
+func (r *RunnerParameters) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("host", r.Host)
+	v.CheckIntMinMax("port", r.Port, 1, 65535)
+	v.CheckStringNotEmpty("user", r.User)
 
 	if r.HostKeyAlgorithm == "" {
-		c.Check("host_key", r.HostKey == nil, "invalid_value",
+		v.Check("host_key", r.HostKey == nil, "invalid_value",
 			"cannot set a host key without a host key algorithm")
 	} else {
-		c.CheckStringValue("host_key_algorithm", r.HostKeyAlgorithm,
+		v.CheckStringValue("host_key_algorithm", r.HostKeyAlgorithm,
 			hostKeyAlgorithms)
 	}
 }

@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 )
 
 func (s *HTTPServer) LoadJob(h *HTTPHandler, jobId eventline.Id) (*eventline.Job, error) {
@@ -187,7 +187,7 @@ func (s *HTTPServer) ExecuteJob(h *HTTPHandler, jobId eventline.Id, input *event
 	})
 	if err != nil {
 		var unknownJobErr *eventline.UnknownJobError
-		var validationErrors check.ValidationErrors
+		var validationErrors ejson.ValidationErrors
 
 		if errors.As(err, &unknownJobErr) {
 			h.ReplyError(404, "unknown_job", "%v", err)

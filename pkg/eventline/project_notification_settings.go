@@ -5,8 +5,8 @@ import (
 	"net/mail"
 	"strings"
 
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -20,17 +20,17 @@ type ProjectNotificationSettings struct {
 	EmailAddresses         []string `json:"email_addresses"`
 }
 
-func (ps *ProjectNotificationSettings) Check(c *check.Checker) {
+func (ps *ProjectNotificationSettings) Check(v *ejson.Validator) {
 	// Email addresses are validated in CheckEmailAddresses because we need
 	// access to the list of allowed domains.
 }
 
-func (ps *ProjectNotificationSettings) CheckEmailAddresses(c *check.Checker, allowedDomains []string) {
-	c.WithChild("email_addresses", func() {
+func (ps *ProjectNotificationSettings) CheckEmailAddresses(v *ejson.Validator, allowedDomains []string) {
+	v.WithChild("email_addresses", func() {
 		for i, as := range ps.EmailAddresses {
 			a, err := mail.ParseAddress(as)
 			if err != nil {
-				c.AddError(i, "invalid_email_address",
+				v.AddError(i, "invalid_email_address",
 					"invalid email address: %v", err)
 				continue
 			}
@@ -39,13 +39,13 @@ func (ps *ProjectNotificationSettings) CheckEmailAddresses(c *check.Checker, all
 
 			idx := strings.LastIndex(address, "@")
 			if idx == -1 {
-				c.AddError(i, "invalid_email_address",
+				v.AddError(i, "invalid_email_address",
 					"invalid email address: missing '@'")
 				continue
 			}
 
 			if idx == len(address)-1 {
-				c.AddError(i, "invalid_email_address",
+				v.AddError(i, "invalid_email_address",
 					"invalid email address: empty domain")
 				continue
 			}
@@ -65,7 +65,7 @@ func (ps *ProjectNotificationSettings) CheckEmailAddresses(c *check.Checker, all
 			}
 
 			if !allowed {
-				c.AddError(i, "email_address_domain_not_allowed",
+				v.AddError(i, "email_address_domain_not_allowed",
 					"email address domain %q is not allowed", domain)
 				continue
 			}

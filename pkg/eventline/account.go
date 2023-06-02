@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/dcrypto"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 	"github.com/jackc/pgx/v4"
 	"golang.org/x/crypto/pbkdf2"
 )
@@ -117,41 +117,41 @@ func DefaultAccountSettings() *AccountSettings {
 	}
 }
 
-func (as *AccountSettings) Check(c *check.Checker) {
-	c.CheckStringValue("date_format", as.DateFormat, DateFormatValues)
-	c.CheckIntMinMax("page_size", as.PageSize, MinPageSize, MaxPageSize)
+func (as *AccountSettings) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringValue("date_format", as.DateFormat, DateFormatValues)
+	v.CheckIntMinMax("page_size", as.PageSize, MinPageSize, MaxPageSize)
 }
 
-func (na *NewAccount) Check(c *check.Checker) {
-	c.CheckStringLengthMinMax("username", na.Username,
+func (na *NewAccount) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringLengthMinMax("username", na.Username,
 		MinUsernameLength, MaxUsernameLength)
 
-	c.CheckStringLengthMinMax("password", na.Password,
+	v.CheckStringLengthMinMax("password", na.Password,
 		MinPasswordLength, MaxPasswordLength)
 
-	c.Check("password_confirmation", na.PasswordConfirmation == na.Password,
+	v.Check("password_confirmation", na.PasswordConfirmation == na.Password,
 		"password_mismatch", "password confirmation and password do not match")
 
-	c.CheckStringValue("role", na.Role, AccountRoleValues)
+	v.CheckStringValue("role", na.Role, AccountRoleValues)
 }
 
-func (au *AccountUpdate) Check(c *check.Checker) {
-	c.CheckStringLengthMinMax("username", au.Username,
+func (au *AccountUpdate) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringLengthMinMax("username", au.Username,
 		MinUsernameLength, MaxUsernameLength)
 
-	c.CheckStringValue("role", au.Role, AccountRoleValues)
+	v.CheckStringValue("role", au.Role, AccountRoleValues)
 }
 
-func (au *AccountPasswordUpdate) Check(c *check.Checker) {
-	c.CheckStringLengthMinMax("password", au.Password,
+func (au *AccountPasswordUpdate) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringLengthMinMax("password", au.Password,
 		MinPasswordLength, MaxPasswordLength)
 
-	c.Check("password_confirmation", au.PasswordConfirmation == au.Password,
+	v.Check("password_confirmation", au.PasswordConfirmation == au.Password,
 		"password_mismatch", "password confirmation and password do not match")
 }
 
-func (au *AccountSelfUpdate) Check(c *check.Checker) {
-	c.CheckOptionalObject("settings", au.Settings)
+func (au *AccountSelfUpdate) ValidateJSON(v *ejson.Validator) {
+	v.CheckOptionalObject("settings", au.Settings)
 }
 
 func (a *Account) CheckPassword(password string) bool {

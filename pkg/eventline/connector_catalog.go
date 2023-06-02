@@ -2,7 +2,7 @@ package eventline
 
 import (
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 var Connectors = map[string]Connector{}
@@ -39,9 +39,9 @@ func GetConnectorDef(name string) *ConnectorDef {
 	return c.Definition()
 }
 
-func CheckConnectorName(c *check.Checker, token string, cname string) bool {
-	if c.CheckStringNotEmpty(token, cname) {
-		return c.Check(token, ConnectorExists(cname),
+func CheckConnectorName(v *ejson.Validator, token string, cname string) bool {
+	if v.CheckStringNotEmpty(token, cname) {
+		return v.Check(token, ConnectorExists(cname),
 			"unknown_connector", "unknown connector %q", cname)
 	}
 
@@ -59,11 +59,11 @@ func IdentityExists(cname, itype string) bool {
 	return cdef.IdentityExists(itype)
 }
 
-func CheckIdentityName(c *check.Checker, token string, cname, itype string) {
-	c.CheckStringNotEmpty(token, itype)
+func CheckIdentityName(v *ejson.Validator, token string, cname, itype string) {
+	v.CheckStringNotEmpty(token, itype)
 
 	if itype != "" {
-		c.Check(token, IdentityExists(cname, itype),
+		v.Check(token, IdentityExists(cname, itype),
 			"unknown_identity", "unknown identity %q in connector %q",
 			itype, cname)
 	}
@@ -89,11 +89,11 @@ func GetEventDef(ref EventRef) *EventDef {
 	return cdef.Event(ref.Event)
 }
 
-func CheckEventName(c *check.Checker, token string, cname, name string) bool {
-	if c.CheckStringNotEmpty(token, name) == false {
+func CheckEventName(v *ejson.Validator, token string, cname, name string) bool {
+	if v.CheckStringNotEmpty(token, name) == false {
 		return false
 	}
 
-	return c.Check(token, EventExists(cname, name),
+	return v.Check(token, EventExists(cname, name),
 		"unknown_event", "unknown event %q in connector %q", name, cname)
 }

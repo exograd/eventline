@@ -3,10 +3,10 @@ package eventline
 import (
 	"net/url"
 
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/exograd/go-daemon/dlog"
+	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 )
 
 type ConnectorInitData struct {
@@ -16,7 +16,7 @@ type ConnectorInitData struct {
 }
 
 type ConnectorCfg interface {
-	check.Object
+	ejson.Validatable
 }
 
 type Connector interface {

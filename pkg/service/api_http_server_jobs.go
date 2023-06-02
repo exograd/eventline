@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 )
 
 func (s *APIHTTPServer) setupJobRoutes() {
@@ -90,11 +90,11 @@ func (s *APIHTTPServer) hJobsPUT(h *HTTPHandler) {
 			return fmt.Errorf("cannot take advisory lock: %w", err)
 		}
 
-		var validationErrors check.ValidationErrors
+		var validationErrors ejson.ValidationErrors
 
 		for i, spec := range specs {
 			if err := s.Service.ValidateJobSpec(conn, spec, scope); err != nil {
-				var verrs check.ValidationErrors
+				var verrs ejson.ValidationErrors
 
 				if errors.As(err, &verrs) {
 					for _, verr := range verrs {
@@ -136,7 +136,7 @@ func (s *APIHTTPServer) hJobsPUT(h *HTTPHandler) {
 		return nil
 	})
 	if err != nil {
-		var validationErrors check.ValidationErrors
+		var validationErrors ejson.ValidationErrors
 
 		if errors.As(err, &validationErrors) {
 			h.ReplyRequestBodyValidationErrors(validationErrors)
@@ -238,7 +238,7 @@ func (s *APIHTTPServer) hJobsNamePUT(h *HTTPHandler) {
 		return nil
 	})
 	if err != nil {
-		var validationErrors check.ValidationErrors
+		var validationErrors ejson.ValidationErrors
 
 		if errors.As(err, &validationErrors) {
 			h.ReplyRequestBodyValidationErrors(validationErrors)

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type EventRef struct {
@@ -54,10 +54,10 @@ func (ref *EventRef) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func CheckEventRef(c *check.Checker, token string, ref EventRef) bool {
-	if CheckConnectorName(c, token, ref.Connector) == false {
+func CheckEventRef(v *ejson.Validator, token string, ref EventRef) bool {
+	if CheckConnectorName(v, token, ref.Connector) == false {
 		return false
 	}
 
-	return CheckEventName(c, token, ref.Connector, ref.Event)
+	return CheckEventName(v, token, ref.Connector, ref.Event)
 }

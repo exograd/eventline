@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 )
 
 type ProjectConfiguration struct {
@@ -16,10 +16,10 @@ type ProjectConfiguration struct {
 	ProjectNotificationSettings *eventline.ProjectNotificationSettings `json:"project_notification_settings"`
 }
 
-func (cfg *ProjectConfiguration) Check(c *check.Checker) {
-	c.CheckObject("project", cfg.Project)
-	c.CheckObject("project_settings", cfg.ProjectSettings)
-	c.CheckObject("project_notification_settings", cfg.ProjectNotificationSettings)
+func (cfg *ProjectConfiguration) ValidateJSON(v *ejson.Validator) {
+	v.CheckObject("project", cfg.Project)
+	v.CheckObject("project_settings", cfg.ProjectSettings)
+	v.CheckObject("project_notification_settings", cfg.ProjectNotificationSettings)
 }
 
 type DuplicateProjectNameError struct {

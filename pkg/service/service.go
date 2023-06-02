@@ -11,10 +11,10 @@ import (
 	"text/template"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/dlog"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 )
 
 type Service struct {
@@ -98,15 +98,15 @@ func (s *Service) ValidateServiceCfg() error {
 	}
 
 	// Validation
-	c := check.NewChecker()
+	validator := ejson.NewValidator()
 
-	s.Cfg.Check(c, s)
+	s.Cfg.Check(validator, s)
 
 	if scfg := s.Cfg.ProCfg; scfg != nil {
-		scfg.Check(c)
+		scfg.ValidateJSON(validator)
 	}
 
-	return c.Error()
+	return validator.Error()
 }
 
 func (s *Service) DaemonCfg() (daemon.DaemonCfg, error) {
@@ -224,13 +224,7 @@ func (s *Service) initConnector(c eventline.Connector) error {
 	cfg := c.DefaultCfg()
 
 	if cfgData, found := s.Cfg.Connectors[name]; found {
-		if err := json.Unmarshal(cfgData, cfg); err != nil {
-			return fmt.Errorf("cannot decode configuration: %w", err)
-		}
-
-		checker := check.NewChecker()
-		cfg.Check(checker)
-		if err := checker.Error(); err != nil {
+		if err := ejson.Unmarshal(cfgData, cfg); err != nil {
 			return fmt.Errorf("invalid configuration: %w", err)
 		}
 	}
@@ -263,9 +257,9 @@ func (s *Service) initRunner(def *eventline.RunnerDef) error {
 			return fmt.Errorf("cannot decode configuration: %w", err)
 		}
 
-		checker := check.NewChecker()
-		def.Cfg.Check(checker)
-		if err := checker.Error(); err != nil {
+		validator := ejson.NewValidator()
+		def.Cfg.ValidateJSON(validator)
+		if err := validator.Error(); err != nil {
 			return fmt.Errorf("invalid configuration: %w", err)
 		}
 	}

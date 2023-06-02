@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -50,8 +50,8 @@ type Project struct {
 
 type Projects []*Project
 
-func (np *NewProject) Check(c *check.Checker) {
-	CheckName(c, "name", np.Name)
+func (np *NewProject) ValidateJSON(v *ejson.Validator) {
+	CheckName(v, "name", np.Name)
 }
 
 func (p *Project) SortKey(sort string) (key string) {

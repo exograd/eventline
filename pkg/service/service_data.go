@@ -11,7 +11,7 @@ import (
 	rdocker "github.com/exograd/eventline/pkg/runners/docker"
 	rlocal "github.com/exograd/eventline/pkg/runners/local"
 	rssh "github.com/exograd/eventline/pkg/runners/ssh"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type ServiceData struct {
@@ -40,7 +40,7 @@ var Runners = []*eventline.RunnerDef{
 }
 
 type ProService interface {
-	DefaultServiceCfg() check.Object
+	DefaultServiceCfg() ejson.Validatable
 	Init(*Service) error
 	Start() error
 	Stop()

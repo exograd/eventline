@@ -2,7 +2,7 @@ package generic
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type GPGKeyIdentity struct {
@@ -16,11 +16,11 @@ func GPGKeyIdentityDef() *eventline.IdentityDef {
 	return def
 }
 
-func (i *GPGKeyIdentity) Check(c *check.Checker) {
+func (i *GPGKeyIdentity) ValidateJSON(v *ejson.Validator) {
 	if i.PrivateKey == "" && i.PublicKey == "" {
 		msg := "gpg key must contain either a private key or a public key"
-		c.AddError("private_key", "missing_value", msg)
-		c.AddError("public_key", "missing_value", msg)
+		v.AddError("private_key", "missing_value", msg)
+		v.AddError("public_key", "missing_value", msg)
 	}
 }
 

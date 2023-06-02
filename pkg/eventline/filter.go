@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"regexp"
 
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/djson"
+	"github.com/galdor/go-ejson"
 )
 
 type Filter struct {
-	Path           djson.Pointer  `json:"path"`
+	Path           ejson.Pointer  `json:"path"`
 	IsEqualTo      interface{}    `json:"is_equal_to,omitempty"`
 	IsNotEqualTo   interface{}    `json:"is_not_equal_to,omitempty"`
 	Matches        string         `json:"matches,omitempty"`
@@ -35,18 +35,18 @@ func (pf *Filter) MarshalJSON() ([]byte, error) {
 	return json.Marshal(f)
 }
 
-func (f *Filter) Check(c *check.Checker) {
+func (f *Filter) ValidateJSON(v *ejson.Validator) {
 	var err error
 
 	if f.Matches != "" {
 		f.MatchesRE, err = regexp.Compile(f.Matches)
-		c.Check("matches", err == nil,
+		v.Check("matches", err == nil,
 			"invalid_regexp", "invalid regexp: %v", err)
 	}
 
 	if f.DoesNotMatch != "" {
 		f.DoesNotMatchRE, err = regexp.Compile(f.DoesNotMatch)
-		c.Check("does_not_match", err == nil,
+		v.Check("does_not_match", err == nil,
 			"invalid_regexp", "invalid regexp: %v", err)
 	}
 }

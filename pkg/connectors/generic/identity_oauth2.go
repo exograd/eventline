@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-oauth2c"
+	"github.com/galdor/go-ejson"
 )
 
 type OAuth2Identity struct {
@@ -35,25 +35,25 @@ func OAuth2IdentityDef() *eventline.IdentityDef {
 	return def
 }
 
-func (i *OAuth2Identity) Check(c *check.Checker) {
-	c.CheckStringURI("issuer", i.Issuer)
+func (i *OAuth2Identity) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringURI("issuer", i.Issuer)
 
 	if i.DiscoveryEndpoint != "" {
-		c.CheckStringURI("discovery_endpoint", i.DiscoveryEndpoint)
+		v.CheckStringURI("discovery_endpoint", i.DiscoveryEndpoint)
 	}
 
 	if i.AuthorizationEndpoint != "" {
-		c.CheckStringURI("authorization_endpoint", i.AuthorizationEndpoint)
+		v.CheckStringURI("authorization_endpoint", i.AuthorizationEndpoint)
 	}
 
 	if i.TokenEndpoint != "" {
-		c.CheckStringURI("token_endpoint", i.TokenEndpoint)
+		v.CheckStringURI("token_endpoint", i.TokenEndpoint)
 	}
 
-	c.CheckStringNotEmpty("client_id", i.ClientId)
-	c.CheckStringNotEmpty("client_secret", i.ClientSecret)
+	v.CheckStringNotEmpty("client_id", i.ClientId)
+	v.CheckStringNotEmpty("client_secret", i.ClientSecret)
 
-	c.CheckArrayNotEmpty("scopes", i.Scopes)
+	v.CheckArrayNotEmpty("scopes", i.Scopes)
 }
 
 func (i *OAuth2Identity) Def() *eventline.IdentityDataDef {

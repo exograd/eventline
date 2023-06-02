@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 )
 
 const (
@@ -25,9 +25,9 @@ type LoginData struct {
 	Password string `json:"password"`
 }
 
-func (data *LoginData) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("username", data.Username)
-	c.CheckStringNotEmpty("password", data.Password)
+func (data *LoginData) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("username", data.Username)
+	v.CheckStringNotEmpty("password", data.Password)
 }
 
 func (s *Service) LogIn(data *LoginData, httpCtx *HTTPContext) (*eventline.Session, error) {

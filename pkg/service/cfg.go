@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/daemon"
 	"github.com/exograd/go-daemon/dcrypto"
 	"github.com/exograd/go-daemon/dhttp"
 	"github.com/exograd/go-daemon/dlog"
 	"github.com/exograd/go-daemon/influx"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 )
 
 type ServiceCfg struct {
@@ -47,7 +47,7 @@ type ServiceCfg struct {
 
 	Notifications *NotificationsCfg `json:"notifications"`
 
-	ProCfg check.Object `json:"pro"`
+	ProCfg ejson.Validatable `json:"pro"`
 }
 
 func DefaultServiceCfg() ServiceCfg {
@@ -85,7 +85,7 @@ func DefaultServiceCfg() ServiceCfg {
 	}
 }
 
-func (cfg *ServiceCfg) Check(c *check.Checker, s *Service) {
+func (cfg *ServiceCfg) Check(v *ejson.Validator, s *Service) {
 	// Note that some fields are optional in the documentation but mandatory
 	// here. These values are set in the default configuration: they must be
 	// provided for Eventline to work, but we define reasonable default values
@@ -100,50 +100,50 @@ func (cfg *ServiceCfg) Check(c *check.Checker, s *Service) {
 	// the initialization phase. This is clearly something we could improve in
 	// the future.
 
-	c.CheckObject("logger", cfg.Logger)
-	c.CheckOptionalObject("daemon_api", cfg.DaemonAPI)
+	v.CheckObject("logger", cfg.Logger)
+	v.CheckOptionalObject("daemon_api", cfg.DaemonAPI)
 
-	c.CheckStringNotEmpty("data_directory", cfg.DataDirectory)
+	v.CheckStringNotEmpty("data_directory", cfg.DataDirectory)
 
-	c.CheckObject("api_http_server", cfg.APIHTTPServer)
-	c.CheckObject("web_http_server", cfg.WebHTTPServer)
+	v.CheckObject("api_http_server", cfg.APIHTTPServer)
+	v.CheckObject("web_http_server", cfg.WebHTTPServer)
 
-	c.CheckOptionalObject("influx", cfg.Influx)
+	v.CheckOptionalObject("influx", cfg.Influx)
 
-	c.CheckObject("pg", cfg.Pg)
+	v.CheckObject("pg", cfg.Pg)
 
-	c.Check("encryption_key", !cfg.EncryptionKey.IsZero(),
+	v.Check("encryption_key", !cfg.EncryptionKey.IsZero(),
 		"invalid_value", "missing encryption key")
 
-	c.CheckStringURI("web_http_server_uri", cfg.WebHTTPServerURI)
+	v.CheckStringURI("web_http_server_uri", cfg.WebHTTPServerURI)
 
 	if cfg.MaxParallelJobExecutions != 0 {
-		c.CheckIntMin("max_parallel_job_executions",
+		v.CheckIntMin("max_parallel_job_executions",
 			cfg.MaxParallelJobExecutions, 1)
 	}
 
 	if cfg.JobExecutionRetention != 0 {
-		c.CheckIntMin("job_execution_retention", cfg.JobExecutionRetention, 1)
+		v.CheckIntMin("job_execution_retention", cfg.JobExecutionRetention, 1)
 	}
 
 	if cfg.JobExecutionRefreshInterval != 0 {
-		c.CheckIntMin("job_execution_refresh_interval",
+		v.CheckIntMin("job_execution_refresh_interval",
 			cfg.JobExecutionRefreshInterval, 1)
 	}
 
 	if cfg.JobExecutionTimeout != 0 {
-		c.CheckIntMin("job_execution_timeout", cfg.JobExecutionTimeout, 1)
+		v.CheckIntMin("job_execution_timeout", cfg.JobExecutionTimeout, 1)
 	}
 
 	if cfg.SessionRetention != 0 {
-		c.CheckIntMin("session_retention", cfg.SessionRetention, 1)
+		v.CheckIntMin("session_retention", cfg.SessionRetention, 1)
 	}
 
-	c.WithChild("allowed_runners", func() {
+	v.WithChild("allowed_runners", func() {
 		for i, r := range cfg.AllowedRunners {
-			c.CheckStringValue(i, r, s.runnerNames)
+			v.CheckStringValue(i, r, s.runnerNames)
 		}
 	})
 
-	c.CheckObject("notifications", cfg.Notifications)
+	v.CheckObject("notifications", cfg.Notifications)
 }

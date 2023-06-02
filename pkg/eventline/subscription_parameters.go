@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type SubscriptionParameters interface {
-	check.Object
+	ejson.Validatable
 }
 
 func SubscriptionParametersEqual(sp1, sp2 SubscriptionParameters) bool {

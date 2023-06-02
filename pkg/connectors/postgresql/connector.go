@@ -2,8 +2,8 @@ package postgresql
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/dlog"
+	"github.com/galdor/go-ejson"
 )
 
 type ConnectorCfg struct {
@@ -25,7 +25,7 @@ func NewConnector() *Connector {
 	}
 }
 
-func (cfg *ConnectorCfg) Check(c *check.Checker) {
+func (cfg *ConnectorCfg) ValidateJSON(v *ejson.Validator) {
 }
 
 func (c *Connector) Name() string {

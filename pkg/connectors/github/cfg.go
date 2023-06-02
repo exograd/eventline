@@ -2,7 +2,7 @@ package github
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type ConnectorCfg struct {
@@ -14,8 +14,8 @@ func (c *Connector) DefaultCfg() eventline.ConnectorCfg {
 	return &ConnectorCfg{}
 }
 
-func (cfg *ConnectorCfg) Check(c *check.Checker) {
+func (cfg *ConnectorCfg) ValidateJSON(v *ejson.Validator) {
 	if cfg.Enabled {
-		c.CheckStringNotEmpty("webhook_secret", cfg.WebhookSecret)
+		v.CheckStringNotEmpty("webhook_secret", cfg.WebhookSecret)
 	}
 }

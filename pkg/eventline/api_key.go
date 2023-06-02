@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -49,8 +49,8 @@ type APIKey struct {
 
 type APIKeys []*APIKey
 
-func (nk *NewAPIKey) Check(c *check.Checker) {
-	CheckName(c, "name", nk.Name)
+func (nk *NewAPIKey) ValidateJSON(v *ejson.Validator) {
+	CheckName(v, "name", nk.Name)
 }
 
 func (k *APIKey) SortKey(sort string) (key string) {

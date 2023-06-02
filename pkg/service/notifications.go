@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 	"github.com/jhillyerd/enmime"
 )
 
@@ -28,20 +28,20 @@ type SMTPServerCfg struct {
 	Password string `json:"password,omitempty"`
 }
 
-func (cfg *NotificationsCfg) Check(c *check.Checker) {
-	c.CheckObject("smtp_server", cfg.SMTPServer)
+func (cfg *NotificationsCfg) ValidateJSON(v *ejson.Validator) {
+	v.CheckObject("smtp_server", cfg.SMTPServer)
 
-	c.CheckStringNotEmpty("from_address", cfg.FromAddress)
+	v.CheckStringNotEmpty("from_address", cfg.FromAddress)
 
-	c.WithChild("allowed_domains", func() {
+	v.WithChild("allowed_domains", func() {
 		for i, domain := range cfg.AllowedDomains {
-			c.CheckStringNotEmpty(i, domain)
+			v.CheckStringNotEmpty(i, domain)
 		}
 	})
 }
 
-func (cfg *SMTPServerCfg) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("address", cfg.Address)
+func (cfg *SMTPServerCfg) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("address", cfg.Address)
 }
 
 func DefaultNotificationsCfg() *NotificationsCfg {

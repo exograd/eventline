@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 var (
@@ -78,12 +78,12 @@ func (pp *Parameter) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *Parameter) Check(c *check.Checker) {
-	CheckName(c, "name", p.Name)
-	c.CheckStringValue("type", p.Type, ParameterTypeValues)
+func (p *Parameter) ValidateJSON(v *ejson.Validator) {
+	CheckName(v, "name", p.Name)
+	v.CheckStringValue("type", p.Type, ParameterTypeValues)
 
 	if p.Type != ParameterTypeString {
-		c.Check("values", len(p.Values) == 0, "unexpected_value",
+		v.Check("values", len(p.Values) == 0, "unexpected_value",
 			"non-string parameters cannot have values")
 	}
 
@@ -91,7 +91,7 @@ func (p *Parameter) Check(c *check.Checker) {
 		switch p.Type {
 		case ParameterTypeNumber:
 			_, ok := p.Default.(json.Number)
-			c.Check("default", ok, "invalid_type",
+			v.Check("default", ok, "invalid_type",
 				"default value must be a number")
 
 		case ParameterTypeInteger:
@@ -100,16 +100,16 @@ func (p *Parameter) Check(c *check.Checker) {
 			if ok {
 				_, err = number.Int64()
 			}
-			c.Check("default", ok && err == nil, "invalid_type",
+			v.Check("default", ok && err == nil, "invalid_type",
 				"default value must be an integer")
 
 		case ParameterTypeString:
 			defaultString, isString := p.Default.(string)
-			c.Check("default", isString, "invalid_type",
+			v.Check("default", isString, "invalid_type",
 				"default value must be a string")
 
 			if p.Values != nil {
-				c.Check("default",
+				v.Check("default",
 					utils.StringsContain(p.Values, defaultString),
 					"invalid_value",
 					"default value is not one of the valid values")
@@ -117,31 +117,31 @@ func (p *Parameter) Check(c *check.Checker) {
 
 		case ParameterTypeBoolean:
 			_, isBool := p.Default.(bool)
-			c.Check("default", isBool, "invalid_type",
+			v.Check("default", isBool, "invalid_type",
 				"default value must be a boolean")
 		}
 	}
 }
 
-func (ps Parameters) CheckValues(c *check.Checker, token string, values map[string]interface{}) {
-	c.WithChild(token, func() {
+func (ps Parameters) CheckValues(v *ejson.Validator, token string, values map[string]interface{}) {
+	v.WithChild(token, func() {
 		for name, value := range values {
 			param := ps.Parameter(name)
 			if param == nil {
 				// Ideally we would like to point at the key in the object,
 				// but JSON pointers can only target values.
-				c.AddError(name, "unknown_parameter", "unknown parameter")
+				v.AddError(name, "unknown_parameter", "unknown parameter")
 				continue
 			}
 
-			values[name] = param.CheckValue(c, name, value)
+			values[name] = param.CheckValue(v, name, value)
 		}
 	})
 
 	for _, p := range ps {
 		if _, found := values[p.Name]; !found {
 			if p.Default == nil {
-				c.AddError(token, "missing_parameter", "missing parameter %q",
+				v.AddError(token, "missing_parameter", "missing parameter %q",
 					p.Name)
 			} else {
 				values[p.Name] = p.Default
@@ -150,16 +150,16 @@ func (ps Parameters) CheckValues(c *check.Checker, token string, values map[stri
 	}
 }
 
-func (p *Parameter) CheckValue(c *check.Checker, token string, value interface{}) interface{} {
+func (p *Parameter) CheckValue(v *ejson.Validator, token string, value interface{}) interface{} {
 	switch p.Type {
 	case ParameterTypeNumber:
-		return p.checkValueNumber(c, token, value)
+		return p.checkValueNumber(v, token, value)
 	case ParameterTypeInteger:
-		return p.checkValueInteger(c, token, value)
+		return p.checkValueInteger(v, token, value)
 	case ParameterTypeString:
-		return p.checkValueString(c, token, value)
+		return p.checkValueString(v, token, value)
 	case ParameterTypeBoolean:
-		return p.checkValueBoolean(c, token, value)
+		return p.checkValueBoolean(v, token, value)
 	default:
 		utils.Panicf("unhandled parameter type %v", p.Type)
 	}
@@ -167,10 +167,10 @@ func (p *Parameter) CheckValue(c *check.Checker, token string, value interface{}
 	return nil
 }
 
-func (p *Parameter) checkValueNumber(c *check.Checker, token string, value interface{}) interface{} {
+func (p *Parameter) checkValueNumber(v *ejson.Validator, token string, value interface{}) interface{} {
 	number, ok := value.(json.Number)
 	if !ok {
-		c.AddError(token, "invalid_number", "value is not a number")
+		v.AddError(token, "invalid_number", "value is not a number")
 		return nil
 	}
 
@@ -181,41 +181,41 @@ func (p *Parameter) checkValueNumber(c *check.Checker, token string, value inter
 	}
 
 	// Not supposed to happen
-	c.AddError(token, "invalid_number", "value is not a number")
+	v.AddError(token, "invalid_number", "value is not a number")
 
 	return nil
 }
 
-func (p *Parameter) checkValueInteger(c *check.Checker, token string, value interface{}) interface{} {
+func (p *Parameter) checkValueInteger(v *ejson.Validator, token string, value interface{}) interface{} {
 	number, ok := value.(json.Number)
 	if !ok {
-		c.AddError(token, "invalid_integer", "value is not an integer")
+		v.AddError(token, "invalid_integer", "value is not an integer")
 		return nil
 	}
 
 	i64, err := number.Int64()
 	if err != nil {
-		c.AddError(token, "invalid_integer", "value is not an integer")
+		v.AddError(token, "invalid_integer", "value is not an integer")
 		return nil
 	}
 
 	return i64
 }
 
-func (p *Parameter) checkValueString(c *check.Checker, token string, value interface{}) interface{} {
+func (p *Parameter) checkValueString(v *ejson.Validator, token string, value interface{}) interface{} {
 	s, ok := value.(string)
-	c.Check(token, ok, "invalid_string", "value is not a string")
+	v.Check(token, ok, "invalid_string", "value is not a string")
 
 	if p.Values != nil {
-		c.CheckStringValue(token, s, p.Values)
+		v.CheckStringValue(token, s, p.Values)
 	}
 
 	return s
 }
 
-func (p *Parameter) checkValueBoolean(c *check.Checker, token string, value interface{}) interface{} {
+func (p *Parameter) checkValueBoolean(v *ejson.Validator, token string, value interface{}) interface{} {
 	b, ok := value.(bool)
-	c.Check(token, ok, "invalid_boolean", "value is not a boolean")
+	v.Check(token, ok, "invalid_boolean", "value is not a boolean")
 
 	return b
 }

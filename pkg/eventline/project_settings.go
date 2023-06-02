@@ -3,8 +3,8 @@ package eventline
 import (
 	"errors"
 
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -13,10 +13,10 @@ type ProjectSettings struct {
 	CodeHeader string `json:"code_header"`
 }
 
-func (ps *ProjectSettings) Check(c *check.Checker) {
+func (ps *ProjectSettings) ValidateJSON(v *ejson.Validator) {
 	var shebang Shebang
 	err := shebang.Parse(ps.CodeHeader)
-	c.Check("code_header", err == nil, "invalid_shebang",
+	v.Check("code_header", err == nil, "invalid_shebang",
 		"invalid shebang: %v", err)
 }
 

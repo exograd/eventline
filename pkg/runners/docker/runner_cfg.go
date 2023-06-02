@@ -3,7 +3,7 @@ package docker
 import (
 	"net/url"
 
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type RunnerCfg struct {
@@ -20,21 +20,21 @@ type RunnerCfgMountPoint struct {
 	ReadOnly bool   `json:"read_only,omitempty"`
 }
 
-func (cfg *RunnerCfgMountPoint) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("source", cfg.Source)
-	c.CheckStringNotEmpty("target", cfg.Target)
+func (cfg *RunnerCfgMountPoint) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("source", cfg.Source)
+	v.CheckStringNotEmpty("target", cfg.Target)
 }
 
-func (cfg *RunnerCfg) Check(c *check.Checker) {
+func (cfg *RunnerCfg) ValidateJSON(v *ejson.Validator) {
 	if cfg.URI != "" {
 		uri, err := url.Parse(cfg.URI)
 		if err == nil {
 			if uri.Scheme != "unix" && uri.Scheme != "tcp" {
-				c.AddError("uri", "invalid_uri_scheme",
+				v.AddError("uri", "invalid_uri_scheme",
 					"uri scheme must be either unix or tcp")
 			}
 		} else {
-			c.AddError("uri", "invalid_uri_format",
+			v.AddError("uri", "invalid_uri_format",
 				"string must be a valid uri")
 		}
 	}

@@ -2,7 +2,7 @@ package eventline
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type APIKeyIdentity struct {
@@ -14,8 +14,8 @@ func APIKeyIdentityDef() *eventline.IdentityDef {
 	return def
 }
 
-func (i *APIKeyIdentity) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("key", i.Key)
+func (i *APIKeyIdentity) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("key", i.Key)
 }
 
 func (i *APIKeyIdentity) Def() *eventline.IdentityDataDef {

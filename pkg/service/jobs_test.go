@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -17,7 +17,7 @@ func TestCheckJobSpec(t *testing.T) {
 
 	var data string
 	var spec *eventline.JobSpec
-	var errs check.ValidationErrors
+	var errs ejson.ValidationErrors
 
 	project := createTestProject(t, "")
 	scope := eventline.NewProjectScope(project.Id)
@@ -56,7 +56,7 @@ func TestCheckJobSpec(t *testing.T) {
 		pointerString := err.Pointer.String()
 
 		if pointerString != pointer || err.Code != code {
-			assert.Fail(fmt.Sprintf("invalid error: %v", err),
+			assert.Fail(fmt.Sprintf("invalid error: %#v", err),
 				"expected %s: %s", pointer, code)
 			return false
 		}
@@ -81,7 +81,7 @@ func TestCheckJobSpec(t *testing.T) {
 `
 	if assertInvalid(data, 1) {
 		// It would be nicer to indicate that the name is missing
-		assertError(0, "/name", "string_too_small")
+		assertError(0, "/name", "stringTooShort")
 	}
 
 	// Simple validation (Job.Check)
@@ -96,7 +96,7 @@ steps: []
 `
 	if assertInvalid(data, 2) {
 		assertError(0, "/trigger/event", "unknown_connector")
-		assertError(1, "/runner/name", "invalid_value")
+		assertError(1, "/runner/name", "invalidValue")
 	}
 
 	// Trigger with mandatory parameters

@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -64,14 +64,14 @@ type Identity struct {
 
 type Identities []*Identity
 
-func (ni *NewIdentity) Check(c *check.Checker) {
+func (ni *NewIdentity) ValidateJSON(v *ejson.Validator) {
 	// Note that connector and type have already been validated by
 	// UnmarshalJSON.
 
-	CheckName(c, "name", ni.Name)
+	CheckName(v, "name", ni.Name)
 
-	c.WithChild("data", func() {
-		ni.Data.Check(c)
+	v.WithChild("data", func() {
+		ni.Data.ValidateJSON(v)
 	})
 }
 

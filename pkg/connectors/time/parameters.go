@@ -5,8 +5,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
-	"github.com/exograd/go-daemon/djson"
+	"github.com/galdor/go-ejson"
 )
 
 type Parameters struct {
@@ -47,10 +46,10 @@ func (p *Parameters) MarshalJSON() ([]byte, error) {
 	return json.Marshal(p2)
 }
 
-func (p *Parameters) Check(c *check.Checker) {
+func (p *Parameters) ValidateJSON(v *ejson.Validator) {
 	if p.OneshotString != "" {
 		t, err := time.Parse(time.RFC3339, p.OneshotString)
-		if c.Check("oneshot", err == nil, "invalid_datetime",
+		if v.Check("oneshot", err == nil, "invalid_datetime",
 			"invalid datetime string") {
 			p.Oneshot = &t
 		}
@@ -72,34 +71,34 @@ func (p *Parameters) Check(c *check.Checker) {
 	if p.Weekly != nil {
 		n += 1
 	}
-	c.Check(djson.Pointer{}, n == 1, "invalid_value",
+	v.Check(ejson.Pointer{}, n == 1, "invalid_value",
 		"parameters must contain a single member")
 
 	if p.Periodic != nil {
-		c.CheckIntMinMax("periodic", int(*p.Periodic), 30, 86400)
+		v.CheckIntMinMax("periodic", int(*p.Periodic), 30, 86400)
 	}
 
-	c.CheckOptionalObject("hourly", p.Hourly)
-	c.CheckOptionalObject("daily", p.Daily)
-	c.CheckOptionalObject("weekly", p.Weekly)
+	v.CheckOptionalObject("hourly", p.Hourly)
+	v.CheckOptionalObject("daily", p.Daily)
+	v.CheckOptionalObject("weekly", p.Weekly)
 }
 
-func (p *HourlyParameters) Check(c *check.Checker) {
-	c.CheckIntMinMax("minute", p.Minute, 0, 59)
-	c.CheckIntMinMax("second", p.Second, 0, 59)
+func (p *HourlyParameters) ValidateJSON(v *ejson.Validator) {
+	v.CheckIntMinMax("minute", p.Minute, 0, 59)
+	v.CheckIntMinMax("second", p.Second, 0, 59)
 }
 
-func (p *DailyParameters) Check(c *check.Checker) {
-	c.CheckIntMinMax("hour", p.Hour, 0, 23)
-	c.CheckIntMinMax("minute", p.Minute, 0, 59)
-	c.CheckIntMinMax("second", p.Second, 0, 59)
+func (p *DailyParameters) ValidateJSON(v *ejson.Validator) {
+	v.CheckIntMinMax("hour", p.Hour, 0, 23)
+	v.CheckIntMinMax("minute", p.Minute, 0, 59)
+	v.CheckIntMinMax("second", p.Second, 0, 59)
 }
 
-func (p *WeeklyParameters) Check(c *check.Checker) {
-	c.CheckStringValue("day", p.Day, WeekDayValues)
-	c.CheckIntMinMax("hour", p.Hour, 0, 23)
-	c.CheckIntMinMax("minute", p.Minute, 0, 59)
-	c.CheckIntMinMax("second", p.Second, 0, 59)
+func (p *WeeklyParameters) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringValue("day", p.Day, WeekDayValues)
+	v.CheckIntMinMax("hour", p.Hour, 0, 23)
+	v.CheckIntMinMax("minute", p.Minute, 0, 59)
+	v.CheckIntMinMax("second", p.Second, 0, 59)
 }
 
 func (p *Parameters) FirstTick() (tick time.Time) {

@@ -6,8 +6,8 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 )
 
 func (s *WebHTTPServer) setupProjectRoutes() {
@@ -213,12 +213,12 @@ func (s *WebHTTPServer) hProjectsIdConfigurationPOST(h *HTTPHandler) {
 
 	var cfg ProjectConfiguration
 
-	extraChecks := func(c *check.Checker) {
+	extraChecks := func(v *ejson.Validator) {
 		ncfg := s.Service.Cfg.Notifications
 
 		ns := cfg.ProjectNotificationSettings
-		c.WithChild("project_notification_settings", func() {
-			ns.CheckEmailAddresses(c, ncfg.AllowedDomains)
+		v.WithChild("project_notification_settings", func() {
+			ns.CheckEmailAddresses(v, ncfg.AllowedDomains)
 		})
 	}
 

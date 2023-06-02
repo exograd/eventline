@@ -5,8 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/exograd/go-daemon/check"
-	"github.com/exograd/go-daemon/djson"
+	"github.com/galdor/go-ejson"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,7 +14,7 @@ func TestFilterSerialization(t *testing.T) {
 
 	re := regexp.MustCompile("^a")
 
-	ptr := djson.NewPointer("foo")
+	ptr := ejson.NewPointer("foo")
 
 	f1 := &Filter{
 		Path:      ptr,
@@ -31,9 +30,9 @@ func TestFilterSerialization(t *testing.T) {
 	err = json.Unmarshal(data, &f2)
 	require.NoError(err)
 
-	c := check.NewChecker()
-	f2.Check(c)
-	require.NoError(c.Error())
+	v := ejson.NewValidator()
+	f2.ValidateJSON(v)
+	require.NoError(v.Error())
 
 	require.Equal(*f1, f2)
 }

@@ -2,7 +2,7 @@ package local
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type RunnerParameters struct {
@@ -12,5 +12,5 @@ func NewRunnerParameters() eventline.RunnerParameters {
 	return &RunnerParameters{}
 }
 
-func (r *RunnerParameters) Check(c *check.Checker) {
+func (r *RunnerParameters) ValidateJSON(v *ejson.Validator) {
 }

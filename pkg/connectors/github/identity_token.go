@@ -4,7 +4,7 @@ import (
 	"regexp"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 var (
@@ -21,11 +21,11 @@ func TokenIdentityDef() *eventline.IdentityDef {
 	return def
 }
 
-func (i *TokenIdentity) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("username", i.Username)
+func (i *TokenIdentity) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("username", i.Username)
 
-	if c.CheckStringNotEmpty("token", i.Token) {
-		c.CheckStringMatch("token", i.Token, tokenRE)
+	if v.CheckStringNotEmpty("token", i.Token) {
+		v.CheckStringMatch("token", i.Token, tokenRE)
 	}
 }
 

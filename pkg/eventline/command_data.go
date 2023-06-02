@@ -1,12 +1,12 @@
 package eventline
 
-import "github.com/exograd/go-daemon/check"
+import "github.com/galdor/go-ejson"
 
 type CommandData struct {
 	Parameters []*Parameter `json:"parameters,omitempty"`
 	Pipelines  []string     `json:"pipelines"` //names
 }
 
-func (d *CommandData) Check(c *check.Checker) {
-	c.CheckObjectArray("parameters", d.Parameters)
+func (d *CommandData) ValidateJSON(v *ejson.Validator) {
+	v.CheckObjectArray("parameters", d.Parameters)
 }

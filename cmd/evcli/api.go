@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/check"
+	"github.com/galdor/go-ejson"
 )
 
 type APIError struct {
@@ -17,7 +17,7 @@ type APIError struct {
 }
 
 type InvalidRequestBodyError struct {
-	ValidationErrors check.ValidationErrors `json:"validation_errors"`
+	ValidationErrors ejson.ValidationErrors `json:"validation_errors"`
 }
 
 func (err APIError) Error() string {
@@ -49,7 +49,7 @@ func (err *APIError) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func IsInvalidRequestBodyError(err error) (bool, check.ValidationErrors) {
+func IsInvalidRequestBodyError(err error) (bool, ejson.ValidationErrors) {
 	var apiError *APIError
 
 	if !errors.As(err, &apiError) {

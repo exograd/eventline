@@ -10,9 +10,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
-	"github.com/exograd/go-daemon/djson"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 	"github.com/jackc/pgx/v4"
 	"gopkg.in/yaml.v3"
 )
@@ -101,7 +100,7 @@ type JobRunner struct {
 }
 
 type RunnerParameters interface {
-	check.Object
+	ejson.Validatable
 }
 
 type Trigger struct {
@@ -149,35 +148,35 @@ func (j *Job) SortKey(sort string) (key string) {
 	return
 }
 
-func (data *JobRenamingData) Check(c *check.Checker) {
-	CheckName(c, "name", data.Name)
+func (data *JobRenamingData) ValidateJSON(v *ejson.Validator) {
+	CheckName(v, "name", data.Name)
 	if data.Description != "" {
-		CheckDescription(c, "description", data.Description)
+		CheckDescription(v, "description", data.Description)
 	}
 }
 
-func (spec JobSpec) Check(c *check.Checker) {
-	CheckName(c, "name", spec.Name)
+func (spec JobSpec) ValidateJSON(v *ejson.Validator) {
+	CheckName(v, "name", spec.Name)
 	if spec.Description != "" {
-		CheckDescription(c, "description", spec.Description)
+		CheckDescription(v, "description", spec.Description)
 	}
 
-	c.CheckOptionalObject("trigger", spec.Trigger)
-	c.CheckObjectArray("parameters", spec.Parameters)
+	v.CheckOptionalObject("trigger", spec.Trigger)
+	v.CheckObjectArray("parameters", spec.Parameters)
 
-	c.CheckOptionalObject("runner", spec.Runner)
+	v.CheckOptionalObject("runner", spec.Runner)
 
 	if spec.Retention != 0 {
-		c.CheckIntMin("retention", spec.Retention, 1)
+		v.CheckIntMin("retention", spec.Retention, 1)
 	}
 
-	c.WithChild("identities", func() {
+	v.WithChild("identities", func() {
 		for i, iname := range spec.Identities {
-			CheckName(c, i, iname)
+			CheckName(v, i, iname)
 		}
 	})
 
-	c.CheckObjectArray("steps", spec.Steps)
+	v.CheckObjectArray("steps", spec.Steps)
 	for i, s := range spec.Steps {
 		if s.Label == "" {
 			s.Label = "Step " + strconv.Itoa(i+1)
@@ -185,14 +184,14 @@ func (spec JobSpec) Check(c *check.Checker) {
 	}
 }
 
-func (r *JobRunner) Check(c *check.Checker) {
+func (r *JobRunner) ValidateJSON(v *ejson.Validator) {
 	runnerNames := make([]string, 0, len(RunnerDefs))
 	for name := range RunnerDefs {
 		runnerNames = append(runnerNames, name)
 	}
 
-	if c.CheckStringValue("name", r.Name, runnerNames) {
-		c.CheckObject("parameters", r.Parameters)
+	if v.CheckStringValue("name", r.Name, runnerNames) {
+		v.CheckObject("parameters", r.Parameters)
 	}
 }
 
@@ -248,12 +247,12 @@ func (pr *JobRunner) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (t *Trigger) Check(c *check.Checker) {
-	CheckEventRef(c, "event", t.Event)
+func (t *Trigger) ValidateJSON(v *ejson.Validator) {
+	CheckEventRef(v, "event", t.Event)
 
-	c.CheckOptionalObject("parameters", t.Parameters)
+	v.CheckOptionalObject("parameters", t.Parameters)
 
-	c.CheckObjectArray("filters", t.Filters)
+	v.CheckObjectArray("filters", t.Filters)
 }
 
 func (pt *Trigger) MarshalJSON() ([]byte, error) {
@@ -298,9 +297,9 @@ func (pt *Trigger) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (s *Step) Check(c *check.Checker) {
+func (s *Step) ValidateJSON(v *ejson.Validator) {
 	if s.Label != "" {
-		CheckLabel(c, "label", s.Label)
+		CheckLabel(v, "label", s.Label)
 	}
 
 	n := 0
@@ -315,23 +314,23 @@ func (s *Step) Check(c *check.Checker) {
 	}
 
 	if n == 0 {
-		c.AddError(djson.Pointer{}, "missing_step_content",
+		v.AddError(ejson.Pointer{}, "missing_step_content",
 			"missing code, command or script member")
 	} else if n > 1 {
-		c.AddError(djson.Pointer{}, "multiple_step_contents",
+		v.AddError(ejson.Pointer{}, "multiple_step_contents",
 			"multiple code, command or script members")
 	}
 
-	c.CheckOptionalObject("command", s.Command)
-	c.CheckOptionalObject("script", s.Script)
+	v.CheckOptionalObject("command", s.Command)
+	v.CheckOptionalObject("script", s.Script)
 }
 
-func (s *StepCommand) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("name", s.Name)
+func (s *StepCommand) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("name", s.Name)
 }
 
-func (s *StepScript) Check(c *check.Checker) {
-	c.CheckStringNotEmpty("path", s.Path)
+func (s *StepScript) ValidateJSON(v *ejson.Validator) {
+	v.CheckStringNotEmpty("path", s.Path)
 }
 
 func (spec *JobSpec) ParseYAML(data []byte) error {

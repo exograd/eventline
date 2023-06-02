@@ -8,24 +8,24 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	rlocal "github.com/exograd/eventline/pkg/runners/local"
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/check"
 	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-ejson"
 )
 
-type JobSpecChecker struct {
+type JobSpecValidator struct {
 	JobSpec *eventline.JobSpec
 
 	Identities map[string]*eventline.Identity
 
-	Service *Service
-	Checker *check.Checker
-	Conn    pg.Conn
-	Scope   eventline.Scope
+	Service   *Service
+	Validator *ejson.Validator
+	Conn      pg.Conn
+	Scope     eventline.Scope
 }
 
 func (s *Service) ValidateJobSpec(conn pg.Conn, spec *eventline.JobSpec, scope eventline.Scope) error {
-	checker := check.NewChecker()
-	spec.Check(checker)
+	validator := ejson.NewValidator()
+	spec.ValidateJSON(validator)
 
 	var identities eventline.Identities
 	err := identities.LoadByNamesForUpdate(conn, spec.IdentityNames(), scope)
@@ -38,65 +38,65 @@ func (s *Service) ValidateJobSpec(conn pg.Conn, spec *eventline.JobSpec, scope e
 		identityTable[i.Name] = i
 	}
 
-	c := JobSpecChecker{
+	v := JobSpecValidator{
 		JobSpec: spec,
 
 		Identities: identityTable,
 
-		Service: s,
-		Checker: checker,
-		Conn:    conn,
-		Scope:   scope,
+		Service:   s,
+		Validator: validator,
+		Conn:      conn,
+		Scope:     scope,
 	}
 
-	c.checkJobSpec()
+	v.checkJobSpec()
 
-	return c.Checker.Error()
+	return v.Validator.Error()
 }
 
-func (c *JobSpecChecker) checkJobSpec() error {
+func (v *JobSpecValidator) checkJobSpec() error {
 	// Parameters
 	hasMandatoryParams := false
-	for _, p := range c.JobSpec.Parameters {
+	for _, p := range v.JobSpec.Parameters {
 		if p.Default == nil {
 			hasMandatoryParams = true
 			break
 		}
 	}
 
-	if hasMandatoryParams && c.JobSpec.Trigger != nil {
-		c.Checker.AddError("trigger",
+	if hasMandatoryParams && v.JobSpec.Trigger != nil {
+		v.Validator.AddError("trigger",
 			"invalid_trigger_with_mandatory_parameters",
 			"jobs with mandatory parameters cannot have a trigger")
 	}
 
 	// Trigger
-	if trigger := c.JobSpec.Trigger; trigger != nil {
-		c.Checker.WithChild("trigger", func() {
-			c.checkTrigger(trigger)
+	if trigger := v.JobSpec.Trigger; trigger != nil {
+		v.Validator.WithChild("trigger", func() {
+			v.checkTrigger(trigger)
 		})
 	}
 
 	// Runner
-	if runner := c.JobSpec.Runner; runner != nil {
-		c.Checker.WithChild("runner", func() {
+	if runner := v.JobSpec.Runner; runner != nil {
+		v.Validator.WithChild("runner", func() {
 			if iname := runner.Identity; iname != "" {
-				c.checkIdentityName("identity", iname)
+				v.checkIdentityName("identity", iname)
 			}
 		})
 	}
 
 	// Identities
-	c.Checker.WithChild("identities", func() {
-		for idx, iname := range c.JobSpec.Identities {
-			c.checkIdentityName(idx, iname)
+	v.Validator.WithChild("identities", func() {
+		for idx, iname := range v.JobSpec.Identities {
+			v.checkIdentityName(idx, iname)
 		}
 	})
 
 	return nil
 }
 
-func (c *JobSpecChecker) checkTrigger(trigger *eventline.Trigger) {
+func (v *JobSpecValidator) checkTrigger(trigger *eventline.Trigger) {
 	cname := trigger.Event.Connector
 
 	// If the connector does not exist, a validation error was added but we
@@ -104,33 +104,33 @@ func (c *JobSpecChecker) checkTrigger(trigger *eventline.Trigger) {
 	if connector, found := eventline.FindConnector(cname); found {
 		optConnector, ok := connector.(eventline.OptionalConnector)
 		if ok && !optConnector.Enabled() {
-			c.Checker.AddError("event", "disabled_connector",
+			v.Validator.AddError("event", "disabled_connector",
 				"connector %q is disabled and cannot be used in triggers",
 				cname)
 		}
 	}
 
 	if iname := trigger.Identity; iname != "" {
-		c.checkIdentityName("identity", iname)
+		v.checkIdentityName("identity", iname)
 	}
 }
 
-func (c *JobSpecChecker) checkIdentityName(token interface{}, name string) {
-	identity, found := c.Identities[name]
+func (v *JobSpecValidator) checkIdentityName(token interface{}, name string) {
+	identity, found := v.Identities[name]
 	if !found {
-		c.Checker.AddError(token, "unknown_identity", "unknown identity %q",
+		v.Validator.AddError(token, "unknown_identity", "unknown identity %q",
 			name)
 		return
 	}
 
 	switch identity.Status {
 	case eventline.IdentityStatusPending:
-		c.Checker.AddError(token, "pending_identity",
+		v.Validator.AddError(token, "pending_identity",
 			"identity %q is not ready and needs additional configuration",
 			name)
 
 	case eventline.IdentityStatusError:
-		c.Checker.AddError(token, "malfunctioning_identity",
+		v.Validator.AddError(token, "malfunctioning_identity",
 			"identity %q is currently malfunctioning", name)
 	}
 }
@@ -375,9 +375,9 @@ func (s *Service) ExecuteJob(conn pg.Conn, jobId eventline.Id, input *eventline.
 		return nil, fmt.Errorf("cannot load job: %w", err)
 	}
 
-	c := check.NewChecker()
-	job.Spec.Parameters.CheckValues(c, "parameters", input.Parameters)
-	if err := c.Error(); err != nil {
+	v := ejson.NewValidator()
+	job.Spec.Parameters.CheckValues(v, "parameters", input.Parameters)
+	if err := v.Error(); err != nil {
 		return nil, fmt.Errorf("invalid parameters: %w", err)
 	}
 
