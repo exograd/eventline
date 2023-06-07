@@ -15,10 +15,10 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/exograd/go-daemon/dhttp"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
+	"github.com/galdor/go-service/pkg/shttp"
 )
 
 var (
@@ -46,18 +46,18 @@ const (
 )
 
 type HTTPServer struct {
-	Log *dlog.Logger
+	Log *log.Logger
 
-	Pg *pg.Client // shortcut to avoid s.Service.Daemon.Pg
+	Pg *pg.Client // shortcut to avoid s.Service.Pg
 
 	Service *Service
-	Server  *dhttp.Server
+	Server  *shttp.Server
 }
 
 type HTTPRouteFunc func(*HTTPHandler)
 
 type HTTPHandler struct {
-	*dhttp.Handler
+	*shttp.Handler
 
 	Service      *Service
 	Interface    HTTPInterface
@@ -84,14 +84,7 @@ func (h *HTTPHandler) ParseCursor(sorts eventline.Sorts) (*eventline.Cursor, err
 	var cursor eventline.Cursor
 	err := cursor.ParseQuery(query, sorts, h.Context.AccountSettings)
 	if err != nil {
-		var invalidQueryParameterErr *dhttp.InvalidQueryParameterError
-
-		if errors.As(err, &invalidQueryParameterErr) {
-			h.ReplyError(400, "invalid_query_parameter", "%v", err)
-		} else {
-			h.ReplyInternalError(500, "%v", err)
-		}
-
+		h.ReplyError(400, "invalid_query_parameter", "%v", err)
 		return nil, err
 	}
 
@@ -199,13 +192,13 @@ func (ctx *HTTPContext) AccountProjectScope() eventline.Scope {
 	return eventline.NewAccountProjectScope(*ctx.AccountId, *ctx.ProjectId)
 }
 
-func (s *Service) WrapRoute(fn HTTPRouteFunc, options HTTPRouteOptions, iface HTTPInterface) dhttp.RouteFunc {
-	return func(dh *dhttp.Handler) {
+func (s *Service) WrapRoute(fn HTTPRouteFunc, options HTTPRouteOptions, iface HTTPInterface) shttp.RouteFunc {
+	return func(sh *shttp.Handler) {
 		// Initialize the HTTP context and handler
 		hctx := HTTPContext{}
 
 		h := &HTTPHandler{
-			Handler: dh,
+			Handler: sh,
 
 			Service:      s,
 			Interface:    iface,
@@ -215,7 +208,7 @@ func (s *Service) WrapRoute(fn HTTPRouteFunc, options HTTPRouteOptions, iface HT
 
 		ctx := h.Request.Context()
 		ctx = context.WithValue(ctx, contextKeyHandler, h)
-		dh.Request = h.Request.WithContext(ctx)
+		sh.Request = h.Request.WithContext(ctx)
 
 		// Look for a session cookie and load a session if there is one
 		switch iface {
@@ -273,7 +266,7 @@ func (h *HTTPHandler) loadAPIKey(key string) error {
 	var apiKey eventline.APIKey
 	var account eventline.Account
 
-	err := h.Service.Daemon.Pg.WithConn(func(conn pg.Conn) error {
+	err := h.Service.Pg.WithConn(func(conn pg.Conn) error {
 		if err := apiKey.LoadUpdateByKeyHash(conn, keyHash); err != nil {
 			return fmt.Errorf("cannot load api key: %w", err)
 		}
@@ -351,7 +344,7 @@ func (h *HTTPHandler) maybeAuthSession() error {
 
 func (h *HTTPHandler) LoadSession(sessionId eventline.Id) error {
 	var session eventline.Session
-	err := h.Service.Daemon.Pg.WithConn(func(conn pg.Conn) error {
+	err := h.Service.Pg.WithConn(func(conn pg.Conn) error {
 		return session.LoadUpdate(conn, sessionId)
 	})
 	if err != nil {
@@ -428,7 +421,7 @@ func (h *HTTPHandler) maybeLoadProjectData() error {
 
 	var project eventline.Project
 
-	err := h.Service.Daemon.Pg.WithConn(func(conn pg.Conn) (err error) {
+	err := h.Service.Pg.WithConn(func(conn pg.Conn) (err error) {
 		err = project.Load(conn, projectId)
 		if err != nil {
 			err = fmt.Errorf("cannot load project %q: %w", projectId, err)
@@ -458,8 +451,8 @@ func (h *HTTPHandler) maybeLoadProjectData() error {
 	return nil
 }
 
-func (h *HTTPHandler) IdRouteVariable(name string) (id eventline.Id, err error) {
-	value := h.RouteVariable(name)
+func (h *HTTPHandler) IdPathVariable(name string) (id eventline.Id, err error) {
+	value := h.PathVariable(name)
 
 	if err = id.Parse(value); err != nil {
 		err = fmt.Errorf("invalid route variable: invalid id: %w", err)

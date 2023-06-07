@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type JobExecutionWatcher struct {
-	Log     *dlog.Logger
+	Log     *log.Logger
 	Service *Service
 }
 
@@ -33,7 +33,7 @@ func (w *JobExecutionWatcher) Stop() {
 func (w *JobExecutionWatcher) ProcessJob() (bool, error) {
 	var deleted bool
 
-	err := w.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := w.Service.Pg.WithTx(func(conn pg.Conn) error {
 		timeout := w.Service.Cfg.JobExecutionTimeout
 
 		je, err := eventline.LoadDeadJobExecution(conn, timeout)

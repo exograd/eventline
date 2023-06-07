@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/exograd/eventline/pkg/service"
-	"github.com/exograd/go-daemon/daemon"
+	goservice "github.com/galdor/go-service/pkg/service"
 )
 
 var buildId string
@@ -17,5 +17,5 @@ func main() {
 
 	s := service.NewService(sdata)
 
-	daemon.Run("eventline", "job scheduling platform", s)
+	goservice.Run("eventline", "job scheduling platform", s)
 }

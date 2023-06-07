@@ -6,7 +6,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupAdminRoutes() {
@@ -26,23 +26,23 @@ func (s *WebHTTPServer) setupAdminRoutes() {
 		s.hAdminAccountsCreatePOST,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/admin/accounts/id/{id}/edit", "GET",
+	s.route("/admin/accounts/id/:id/edit", "GET",
 		s.hAdminAccountsIdEditGET,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/admin/accounts/id/{id}/edit", "POST",
+	s.route("/admin/accounts/id/:id/edit", "POST",
 		s.hAdminAccountsIdEditPOST,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/admin/accounts/id/{id}/change_password", "GET",
+	s.route("/admin/accounts/id/:id/change_password", "GET",
 		s.hAdminAccountsIdChangePasswordGET,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/admin/accounts/id/{id}/change_password", "POST",
+	s.route("/admin/accounts/id/:id/change_password", "POST",
 		s.hAdminAccountsIdChangePasswordPOST,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/admin/accounts/id/{id}/delete", "POST",
+	s.route("/admin/accounts/id/:id/delete", "POST",
 		s.hAdminAccountsIdDeletePOST,
 		HTTPRouteOptions{Admin: true})
 }
@@ -116,7 +116,7 @@ func (s *WebHTTPServer) hAdminAccountsCreatePOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hAdminAccountsIdEditGET(h *HTTPHandler) {
-	accountId, err := h.IdRouteVariable("id")
+	accountId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -163,7 +163,7 @@ func (s *WebHTTPServer) hAdminAccountsIdEditGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hAdminAccountsIdEditPOST(h *HTTPHandler) {
-	accountId, err := h.IdRouteVariable("id")
+	accountId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -192,7 +192,7 @@ func (s *WebHTTPServer) hAdminAccountsIdEditPOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hAdminAccountsIdChangePasswordGET(h *HTTPHandler) {
-	accountId, err := h.IdRouteVariable("id")
+	accountId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -240,7 +240,7 @@ func (s *WebHTTPServer) hAdminAccountsIdChangePasswordGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hAdminAccountsIdChangePasswordPOST(h *HTTPHandler) {
-	accountId, err := h.IdRouteVariable("id")
+	accountId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -267,7 +267,7 @@ func (s *WebHTTPServer) hAdminAccountsIdChangePasswordPOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hAdminAccountsIdDeletePOST(h *HTTPHandler) {
-	accountId, err := h.IdRouteVariable("id")
+	accountId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}

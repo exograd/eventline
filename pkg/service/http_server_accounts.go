@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *HTTPServer) LoadAccountPage(h *HTTPHandler) (*eventline.Page, error) {

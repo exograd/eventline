@@ -8,14 +8,14 @@ import (
 	"path"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/dlog"
+	"github.com/galdor/go-log"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 )
 
 type Runner struct {
 	runner *eventline.Runner
-	log    *dlog.Logger
+	log    *log.Logger
 
 	rootPath string
 

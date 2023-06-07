@@ -258,7 +258,7 @@ information and errors. The default value is:
 [source,yaml]
 ----
 backend_type: "terminal"
-backend:
+terminal_backend:
   color: true
   domain_width: 32
 ----

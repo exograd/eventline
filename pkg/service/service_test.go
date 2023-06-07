@@ -8,15 +8,18 @@ import (
 	"testing"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/dhttp"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
+	goservice "github.com/galdor/go-service/pkg/service"
+	"github.com/galdor/go-service/pkg/shttp"
 )
 
 var (
-	testService   *Service
-	testAPIClient *dhttp.APIClient
+	testService *Service
+
+	// It would be nice to switch to shttp.APIClient, but the API is quite
+	// different. Maybe one day.
+	testAPIClient *APIClient
 )
 
 func TestMain(m *testing.M) {
@@ -103,7 +106,7 @@ func initTestService() {
 	readyChan := make(chan struct{})
 
 	go func() {
-		daemon.RunTest("eventline", testService, "cfg/test.yaml", readyChan)
+		goservice.RunTest("eventline", testService, "cfg/test.yaml", readyChan)
 	}()
 
 	select {
@@ -117,22 +120,22 @@ func TestUnknownRoute(t *testing.T) {
 
 	req = NewTestWebRequest(t, "GET", "/foobar")
 	_, err = req.Send()
-	assertRequestError(t, err, 404, "route_not_found")
+	assertRequestError(t, err, 404, "not_found")
 }
 
 func initTestHTTPClient() {
-	logger := dlog.DefaultLogger("http-client")
+	logger := log.DefaultLogger("http_client")
 	logger.Data["client"] = "test"
 
-	cfg := dhttp.ClientCfg{
+	httpClientCfg := shttp.ClientCfg{
 		Log:         logger,
 		LogRequests: true,
 	}
 
-	c, err := dhttp.NewClient(cfg)
+	httpClient, err := shttp.NewClient(httpClientCfg)
 	if err != nil {
 		utils.Abort("cannot create http client: %v", err)
 	}
 
-	testAPIClient = dhttp.NewAPIClient(c)
+	testAPIClient = NewAPIClient(httpClient)
 }

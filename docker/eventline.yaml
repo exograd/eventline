@@ -6,37 +6,37 @@ api_http_server:
 web_http_server:
   address: "0.0.0.0:8087"
 
-web_http_server_uri: {{ env "EVENTLINE_WEB_HTTP_SERVER_URI" }}
+web_http_server_uri: {{env "EVENTLINE_WEB_HTTP_SERVER_URI" | quote}}
 
-{{ if (env "EVENTLINE_INFLUX_URI") }}
+{{if (env "EVENTLINE_INFLUX_URI")}}
 influx:
-  uri: {{ env "EVENTLINE_INFLUX_URI" }}
-  bucket: {{ env "EVENTLINE_INFLUX_BUCKET" }}
-  org: {{ env "EVENTLINE_INFLUX_ORG" }}
-{{ end }}
+  uri: {{env "EVENTLINE_INFLUX_URI" | quote}}
+  bucket: {{env "EVENTLINE_INFLUX_BUCKET" | quote}}
+  org: {{env "EVENTLINE_INFLUX_ORG" | quote}}
+{{end}}
 
 pg:
-  uri: {{ env "EVENTLINE_PG_URI" }}
+  uri: {{env "EVENTLINE_PG_URI" | quote}}
 
-encryption_key: {{ env "EVENTLINE_ENCRYPTION_KEY" }}
+encryption_key: {{env "EVENTLINE_ENCRYPTION_KEY" | quote}}
 
 connectors:
   github:
-    {{ with (env "EVENTLINE_CONNECTORS_GITHUB_WEBHOOK_SECRET") }}
+    {{with (env "EVENTLINE_CONNECTORS_GITHUB_WEBHOOK_SECRET") | quote}}
     enabled: true
-    webhook_secret: {{ . }}
-    {{ end }}
+    webhook_secret: {{.}}
+    {{end}}
 
-max_parallel_job_executions: {{ env "EVENTLINE_MAX_PARALLEL_JOB_EXECUTIONS" }}
-job_execution_retention: {{ env "EVENTLINE_JOB_EXECUTION_RETENTION" }}
+max_parallel_job_executions: {{env "EVENTLINE_MAX_PARALLEL_JOB_EXECUTIONS"}}
+job_execution_retention: {{env "EVENTLINE_JOB_EXECUTION_RETENTION"}}
 
-session_retention: {{ env "EVENTLINE_SESSION_RETENTION" }}
+session_retention: {{env "EVENTLINE_SESSION_RETENTION"}}
 
 notifications:
   smtp_server:
-    address: {{ env "EVENTLINE_NOTIFICATIONS_SMTP_SERVER_ADDRESS" }}
-    username: {{ env "EVENTLINE_NOTIFICATIONS_SMTP_SERVER_USERNAME" }}
-    password: {{ env "EVENTLINE_NOTIFICATIONS_SMTP_SERVER_PASSWORD" }}
-  from_address: {{ env "EVENTLINE_NOTIFICATIONS_FROM_ADDRESS" }}
-  subject_prefix: {{ env "EVENTLINE_NOTIFICATIONS_SUBJECT_PREFIX" }}
-  signature: {{ env "EVENTLINE_NOTIFICATIONS_SIGNATURE" }}
+    address: {{env "EVENTLINE_NOTIFICATIONS_SMTP_SERVER_ADDRESS" | quote}}
+    username: {{env "EVENTLINE_NOTIFICATIONS_SMTP_SERVER_USERNAME" | quote}}
+    password: {{env "EVENTLINE_NOTIFICATIONS_SMTP_SERVER_PASSWORD" | quote}}
+  from_address: {{env "EVENTLINE_NOTIFICATIONS_FROM_ADDRESS" | quote}}
+  subject_prefix: {{env "EVENTLINE_NOTIFICATIONS_SUBJECT_PREFIX" | quote}}
+  signature: {{env "EVENTLINE_NOTIFICATIONS_SIGNATURE" | quote}}

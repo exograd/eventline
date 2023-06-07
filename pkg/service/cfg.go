@@ -3,31 +3,31 @@ package service
 import (
 	"encoding/json"
 
+	"github.com/exograd/eventline/pkg/cryptoutils"
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/dcrypto"
-	"github.com/exograd/go-daemon/dhttp"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/influx"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/influx"
+	"github.com/galdor/go-service/pkg/pg"
+	goservice "github.com/galdor/go-service/pkg/service"
+	"github.com/galdor/go-service/pkg/shttp"
 )
 
 type ServiceCfg struct {
-	Logger *dlog.LoggerCfg `json:"logger"`
+	Logger *log.LoggerCfg `json:"logger"`
 
-	DaemonAPI *daemon.APICfg `json:"daemon_api"`
+	ServiceAPI *goservice.ServiceAPICfg `json:"service_api"`
 
 	DataDirectory string `json:"data_directory"`
 
-	APIHTTPServer *dhttp.ServerCfg `json:"api_http_server"`
-	WebHTTPServer *dhttp.ServerCfg `json:"web_http_server"`
+	APIHTTPServer *shttp.ServerCfg `json:"api_http_server"`
+	WebHTTPServer *shttp.ServerCfg `json:"web_http_server"`
 
 	Influx *influx.ClientCfg `json:"influx"`
 
 	Pg *pg.ClientCfg `json:"pg"`
 
-	EncryptionKey dcrypto.AES256Key `json:"encryption_key"`
+	EncryptionKey cryptoutils.AES256Key `json:"encryption_key"`
 
 	WebHTTPServerURI string `json:"web_http_server_uri"`
 
@@ -51,9 +51,9 @@ type ServiceCfg struct {
 }
 
 func DefaultServiceCfg() ServiceCfg {
-	logger := &dlog.LoggerCfg{
+	logger := &log.LoggerCfg{
 		BackendType: "terminal",
-		Backend: &dlog.TerminalBackendCfg{
+		TerminalBackend: &log.TerminalBackendCfg{
 			Color:       true,
 			DomainWidth: 32,
 		},
@@ -64,10 +64,10 @@ func DefaultServiceCfg() ServiceCfg {
 
 		DataDirectory: "data",
 
-		APIHTTPServer: &dhttp.ServerCfg{
+		APIHTTPServer: &shttp.ServerCfg{
 			Address: "localhost:8085",
 		},
-		WebHTTPServer: &dhttp.ServerCfg{
+		WebHTTPServer: &shttp.ServerCfg{
 			Address: "localhost:8087",
 		},
 
@@ -101,7 +101,7 @@ func (cfg *ServiceCfg) Check(v *ejson.Validator, s *Service) {
 	// the future.
 
 	v.CheckObject("logger", cfg.Logger)
-	v.CheckOptionalObject("daemon_api", cfg.DaemonAPI)
+	v.CheckOptionalObject("service_api", cfg.ServiceAPI)
 
 	v.CheckStringNotEmpty("data_directory", cfg.DataDirectory)
 

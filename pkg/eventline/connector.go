@@ -3,15 +3,14 @@ package eventline
 import (
 	"net/url"
 
-	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type ConnectorInitData struct {
-	Daemon           *daemon.Daemon
-	Log              *dlog.Logger
+	Pg               *pg.Client
+	Log              *log.Logger
 	WebHTTPServerURI *url.URL
 }
 

@@ -2,6 +2,24 @@
 ## v1.1.0
 _Work in progress._
 
+### Breaking changes
+- In the logger configuration, the `backend` member is replaced by either
+  `terminal_backend` or `json_backend` depending on backend type configured.
+  For example:
+  ```yaml
+  logger:
+    backend_type: "terminal"
+    backend:
+      color: true
+  ```
+  Is now:
+  ```yaml
+  logger:
+    backend_type: "terminal"
+    terminal_backend:
+      color: true
+  ```
+
 ### Features
 - Add the possibility to rename jobs. Since jobs are primarily identified by
   their name, deploying a job with a different name creates a new job instead

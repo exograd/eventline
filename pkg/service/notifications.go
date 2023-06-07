@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 	"github.com/galdor/go-ejson"
 	"github.com/jhillyerd/enmime"
 )

@@ -6,8 +6,8 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupProjectRoutes() {
@@ -27,19 +27,19 @@ func (s *WebHTTPServer) setupProjectRoutes() {
 		s.hProjectsDialogGET,
 		HTTPRouteOptions{})
 
-	s.route("/projects/id/{id}/select", "POST",
+	s.route("/projects/id/:id/select", "POST",
 		s.hProjectsIdSelectPOST,
 		HTTPRouteOptions{})
 
-	s.route("/projects/id/{id}/configuration", "GET",
+	s.route("/projects/id/:id/configuration", "GET",
 		s.hProjectsIdConfigurationGET,
 		HTTPRouteOptions{})
 
-	s.route("/projects/id/{id}/configuration", "POST",
+	s.route("/projects/id/:id/configuration", "POST",
 		s.hProjectsIdConfigurationPOST,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/projects/id/{id}/delete", "POST",
+	s.route("/projects/id/:id/delete", "POST",
 		s.hProjectsIdDeletePOST,
 		HTTPRouteOptions{Admin: true})
 }
@@ -124,7 +124,7 @@ func (s *WebHTTPServer) hProjectsDialogGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hProjectsIdSelectPOST(h *HTTPHandler) {
-	projectId, err := h.IdRouteVariable("id")
+	projectId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -146,7 +146,7 @@ func (s *WebHTTPServer) hProjectsIdSelectPOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hProjectsIdConfigurationGET(h *HTTPHandler) {
-	projectId, err := h.IdRouteVariable("id")
+	projectId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -206,7 +206,7 @@ func (s *WebHTTPServer) hProjectsIdConfigurationGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hProjectsIdConfigurationPOST(h *HTTPHandler) {
-	projectId, err := h.IdRouteVariable("id")
+	projectId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -246,7 +246,7 @@ func (s *WebHTTPServer) hProjectsIdConfigurationPOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hProjectsIdDeletePOST(h *HTTPHandler) {
-	projectId, err := h.IdRouteVariable("id")
+	projectId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}

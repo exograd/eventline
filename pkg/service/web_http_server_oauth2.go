@@ -6,7 +6,7 @@ import (
 	"path"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 	"github.com/exograd/go-oauth2c"
 )
 
@@ -36,7 +36,7 @@ func (s *WebHTTPServer) processOAuth2Request(h *HTTPHandler) {
 		return
 	}
 
-	err = s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err = s.Service.Pg.WithTx(func(conn pg.Conn) error {
 		// Load the session referenced in the state and update the context
 		var session eventline.Session
 		if err := session.LoadUpdate(conn, sessionId); err != nil {

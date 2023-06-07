@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type DuplicateUsernameError struct {
@@ -20,7 +20,7 @@ func (err DuplicateUsernameError) Error() string {
 func (s *Service) CreateAccount(newAccount *eventline.NewAccount) (*eventline.Account, error) {
 	var account *eventline.Account
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) (err error) {
+	err := s.Pg.WithTx(func(conn pg.Conn) (err error) {
 		account, err = s.createAccount(conn, newAccount)
 		return
 	})
@@ -95,7 +95,7 @@ func (s *Service) MaybeCreateDefaultAccount(conn pg.Conn) (*eventline.Account, e
 }
 
 func (s *Service) SelectAccountProject(projectId eventline.Id, hctx *HTTPContext) error {
-	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var project eventline.Project
 		if err := project.Load(conn, projectId); err != nil {
 			return fmt.Errorf("cannot load project: %w", err)
@@ -122,7 +122,7 @@ func (s *Service) SelectAccountProject(projectId eventline.Id, hctx *HTTPContext
 }
 
 func (s *Service) SelfUpdateAccount(accountId eventline.Id, update *eventline.AccountSelfUpdate, hctx *HTTPContext) error {
-	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var account eventline.Account
 		if err := account.LoadForUpdate(conn, accountId); err != nil {
 			return fmt.Errorf("cannot load account: %w", err)
@@ -145,7 +145,7 @@ func (s *Service) SelfUpdateAccount(accountId eventline.Id, update *eventline.Ac
 }
 
 func (s *Service) SelfUpdateAccountPassword(accountId eventline.Id, update *eventline.AccountPasswordUpdate) error {
-	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var account eventline.Account
 		if err := account.LoadForUpdate(conn, accountId); err != nil {
 			return fmt.Errorf("cannot load account: %w", err)
@@ -168,7 +168,7 @@ func (s *Service) SelfUpdateAccountPassword(accountId eventline.Id, update *even
 func (s *Service) UpdateAccount(accountId eventline.Id, update *eventline.AccountUpdate) (*eventline.Account, error) {
 	var account eventline.Account
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Pg.WithTx(func(conn pg.Conn) error {
 		if err := account.LoadForUpdate(conn, accountId); err != nil {
 			return fmt.Errorf("cannot load account: %w", err)
 		}
@@ -201,7 +201,7 @@ func (s *Service) UpdateAccount(accountId eventline.Id, update *eventline.Accoun
 func (s *Service) UpdateAccountPassword(accountId eventline.Id, update *eventline.AccountPasswordUpdate) (*eventline.Account, error) {
 	var account eventline.Account
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Pg.WithTx(func(conn pg.Conn) error {
 		if err := account.LoadForUpdate(conn, accountId); err != nil {
 			return fmt.Errorf("cannot load account: %w", err)
 		}
@@ -226,7 +226,7 @@ func (s *Service) UpdateAccountPassword(accountId eventline.Id, update *eventlin
 }
 
 func (s *Service) DeleteAccount(accountId eventline.Id) error {
-	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return s.Pg.WithTx(func(conn pg.Conn) error {
 		if err := eventline.DeleteAccount(conn, accountId); err != nil {
 			return err
 		}

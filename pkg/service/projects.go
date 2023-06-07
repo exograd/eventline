@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 	"github.com/galdor/go-ejson"
 )
 
@@ -33,7 +33,7 @@ func (err DuplicateProjectNameError) Error() string {
 func (s *Service) CreateProject(newProject *eventline.NewProject, accountId *eventline.Id) (*eventline.Project, error) {
 	var project *eventline.Project
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) (err error) {
+	err := s.Pg.WithTx(func(conn pg.Conn) (err error) {
 		project, err = s.createProject(conn, newProject, accountId)
 		return
 	})
@@ -109,7 +109,7 @@ func (s *Service) MaybeCreateDefaultProject(conn pg.Conn, account *eventline.Acc
 func (s *Service) DeleteProject(projectId eventline.Id, hctx *HTTPContext) error {
 	scope := eventline.NewProjectScope(projectId)
 
-	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var project eventline.Project
 
 		if err := project.LoadForUpdate(conn, projectId); err != nil {
@@ -212,7 +212,7 @@ func (s *Service) UpdateProjectConfiguration(projectId eventline.Id, cfg *Projec
 	cfg.ProjectSettings.Id = projectId
 	cfg.ProjectNotificationSettings.Id = projectId
 
-	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var project eventline.Project
 
 		if err := project.LoadForUpdate(conn, projectId); err != nil {

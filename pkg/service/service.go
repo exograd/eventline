@@ -11,18 +11,21 @@ import (
 	"text/template"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
+	goservice "github.com/galdor/go-service/pkg/service"
+	"github.com/galdor/go-service/pkg/shttp"
 )
 
 type Service struct {
 	Data ServiceData
 	Cfg  ServiceCfg
 
-	Daemon *daemon.Daemon
-	Log    *dlog.Logger
+	Service *goservice.Service
+	Log     *log.Logger
+
+	Pg *pg.Client
 
 	APIHTTPServer *APIHTTPServer
 	WebHTTPServer *WebHTTPServer
@@ -78,7 +81,7 @@ func NewService(data ServiceData) *Service {
 	return s
 }
 
-func (s *Service) DefaultServiceCfg() interface{} {
+func (s *Service) DefaultCfg() interface{} {
 	cfg := DefaultServiceCfg()
 
 	if ps := s.Data.ProService; ps != nil {
@@ -90,7 +93,7 @@ func (s *Service) DefaultServiceCfg() interface{} {
 	return &s.Cfg
 }
 
-func (s *Service) ValidateServiceCfg() error {
+func (s *Service) ValidateCfg() error {
 	// Postprocessing
 	if s.Cfg.Pg.SchemaDirectory == "" {
 		s.Cfg.Pg.SchemaDirectory =
@@ -109,28 +112,45 @@ func (s *Service) ValidateServiceCfg() error {
 	return validator.Error()
 }
 
-func (s *Service) DaemonCfg() (daemon.DaemonCfg, error) {
-	cfg := daemon.NewDaemonCfg()
+func (s *Service) ServiceCfg() *goservice.ServiceCfg {
+	// Service configuration is supposed to be a goservice.ServiceCfg
+	// structure nested in the ServiceCfg structure of Eventline. But
+	// Eventline was developed before go-service and we kept the configuration
+	// backward compatible. Hence the messy go-service service configuration
+	// initialization.
 
-	cfg.Logger = s.Cfg.Logger
+	s.Cfg.APIHTTPServer.ErrorHandler = shttp.JSONErrorHandler
+	s.Cfg.WebHTTPServer.ErrorHandler = s.webErrorHandler
 
-	cfg.API = s.Cfg.DaemonAPI
+	cfg := goservice.ServiceCfg{
+		Logger: s.Cfg.Logger,
 
-	s.Cfg.APIHTTPServer.ErrorHandler = s.apiHTTPErrorHandler
-	cfg.HTTPServers["api"] = *s.Cfg.APIHTTPServer
+		DataDirectory: s.Cfg.DataDirectory,
 
-	s.Cfg.WebHTTPServer.ErrorHandler = s.webHTTPErrorHandler
-	cfg.HTTPServers["web"] = *s.Cfg.WebHTTPServer
+		Influx: s.Cfg.Influx,
 
-	cfg.Influx = s.Cfg.Influx
-	cfg.Pg = s.Cfg.Pg
+		PgClients: map[string]*pg.ClientCfg{
+			"main": s.Cfg.Pg,
+		},
 
-	return cfg, nil
+		HTTPServers: map[string]*shttp.ServerCfg{
+			"api": s.Cfg.APIHTTPServer,
+			"web": s.Cfg.WebHTTPServer,
+		},
+
+		ServiceAPI: s.Cfg.ServiceAPI,
+
+		TemplateFuncMap: eventline.TemplateFuncMap,
+	}
+
+	return &cfg
 }
 
-func (s *Service) Init(d *daemon.Daemon) error {
-	s.Daemon = d
-	s.Log = d.Log
+func (s *Service) Init(ss *goservice.Service) error {
+	s.Service = ss
+	s.Log = ss.Log
+
+	s.Pg = ss.PgClient("main")
 
 	if err := s.initEncryptionKey(); err != nil {
 		return err
@@ -216,8 +236,8 @@ func (s *Service) initConnector(c eventline.Connector) error {
 	name := def.Name
 
 	initData := eventline.ConnectorInitData{
-		Daemon:           s.Daemon,
 		Log:              s.Log.Child("connectors."+name, nil),
+		Pg:               s.Pg,
 		WebHTTPServerURI: s.WebHTTPServerURI,
 	}
 
@@ -272,11 +292,11 @@ func (s *Service) initRunner(def *eventline.RunnerDef) error {
 }
 
 func (s *Service) initPg() error {
-	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return s.Pg.WithTx(func(conn pg.Conn) error {
 		id1 := PgAdvisoryLockId1
 		id2 := PgAdvisoryLockId2ServiceInit
 
-		if err := pg.TakeAdvisoryLock(conn, id1, id2); err != nil {
+		if err := pg.TakeAdvisoryTxLock(conn, id1, id2); err != nil {
 			return fmt.Errorf("cannot take advisory lock: %w", err)
 		}
 
@@ -336,7 +356,7 @@ func (s *Service) initWorkers() {
 		}
 
 		cfg.Log = s.Log.Child(name, nil)
-		cfg.Daemon = s.Daemon
+		cfg.Pg = s.Pg
 
 		cfg.Behaviour = behaviour
 
@@ -378,7 +398,7 @@ func (s *Service) FindConnectorWorker(cname string) *eventline.Worker {
 	return s.FindWorker(cname + "-connector")
 }
 
-func (s *Service) Start(d *daemon.Daemon) error {
+func (s *Service) Start(ss *goservice.Service) error {
 	go s.processWorkerNotifications()
 
 	for _, w := range s.workers {
@@ -396,7 +416,7 @@ func (s *Service) Start(d *daemon.Daemon) error {
 	return nil
 }
 
-func (s *Service) Stop(d *daemon.Daemon) {
+func (s *Service) Stop(ss *goservice.Service) {
 	// Note that we do *not* close the job execution termination chan until
 	// all runners have terminated. If we did, they would crash when writing
 	// the job execution id at the end.
@@ -418,7 +438,7 @@ func (s *Service) Stop(d *daemon.Daemon) {
 	}
 }
 
-func (s *Service) Terminate(d *daemon.Daemon) {
+func (s *Service) Terminate(ss *goservice.Service) {
 	if ps := s.Data.ProService; ps != nil {
 		ps.Terminate()
 	}

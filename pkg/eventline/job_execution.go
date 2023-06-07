@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/pg"
-	"github.com/jackc/pgx/v4"
+	"github.com/galdor/go-service/pkg/pg"
+	"github.com/jackc/pgx/v5"
 )
 
 var JobExecutionSorts Sorts = Sorts{

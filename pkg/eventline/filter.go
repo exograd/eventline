@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"regexp"
 
-	"github.com/exograd/go-daemon/djson"
 	"github.com/galdor/go-ejson"
 )
 
@@ -57,11 +56,11 @@ func (f *Filter) Match(obj interface{}) bool {
 		return false
 	}
 
-	if v2 := f.IsEqualTo; v2 != nil && !djson.Equal(v2, v) {
+	if v2 := f.IsEqualTo; v2 != nil && !ejson.Equal(v2, v) {
 		return false
 	}
 
-	if v2 := f.IsNotEqualTo; v2 != nil && djson.Equal(v2, v) {
+	if v2 := f.IsNotEqualTo; v2 != nil && ejson.Equal(v2, v) {
 		return false
 	}
 

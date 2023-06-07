@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *Service) ReplayEvent(eventId eventline.Id, scope eventline.Scope) (*eventline.Event, error) {
@@ -13,7 +13,7 @@ func (s *Service) ReplayEvent(eventId eventline.Id, scope eventline.Scope) (*eve
 
 	now := time.Now().UTC()
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Pg.WithTx(func(conn pg.Conn) error {
 		var originalEvent eventline.Event
 		if err := originalEvent.Load(conn, eventId, scope); err != nil {
 			return fmt.Errorf("cannot load event: %w", err)

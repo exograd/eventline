@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *HTTPServer) LoadIdentity(h *HTTPHandler, identityId eventline.Id) (*eventline.Identity, error) {

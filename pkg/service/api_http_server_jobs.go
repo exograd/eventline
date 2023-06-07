@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *APIHTTPServer) setupJobRoutes() {
@@ -17,28 +17,28 @@ func (s *APIHTTPServer) setupJobRoutes() {
 	s.route("/jobs", "PUT", s.hJobsPUT,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}", "GET", s.hJobsIdGET,
+	s.route("/jobs/id/:id", "GET", s.hJobsIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}", "DELETE", s.hJobsIdDELETE,
+	s.route("/jobs/id/:id", "DELETE", s.hJobsIdDELETE,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/name/{name}", "GET", s.hJobsNameGET,
+	s.route("/jobs/name/:name", "GET", s.hJobsNameGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/name/{name}", "PUT", s.hJobsNamePUT,
+	s.route("/jobs/name/:name", "PUT", s.hJobsNamePUT,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/rename", "POST", s.hJobsIdRenamePOST,
+	s.route("/jobs/id/:id/rename", "POST", s.hJobsIdRenamePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/enable", "POST", s.hJobsIdEnablePOST,
+	s.route("/jobs/id/:id/enable", "POST", s.hJobsIdEnablePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/disable", "POST", s.hJobsIdDisablePOST,
+	s.route("/jobs/id/:id/disable", "POST", s.hJobsIdDisablePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/execute", "POST", s.hJobsIdExecutePOST,
+	s.route("/jobs/id/:id/execute", "POST", s.hJobsIdExecutePOST,
 		HTTPRouteOptions{Project: true})
 }
 
@@ -82,11 +82,11 @@ func (s *APIHTTPServer) hJobsPUT(h *HTTPHandler) {
 	jobs := make(eventline.Jobs, len(specs))
 	var subscriptionsCreatedOrUpdated bool
 
-	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Service.Pg.WithTx(func(conn pg.Conn) error {
 		id1 := PgAdvisoryLockId1
 		id2 := PgAdvisoryLockId2JobDeployment
 
-		if err := pg.TakeAdvisoryLock(conn, id1, id2); err != nil {
+		if err := pg.TakeAdvisoryTxLock(conn, id1, id2); err != nil {
 			return fmt.Errorf("cannot take advisory lock: %w", err)
 		}
 
@@ -162,7 +162,7 @@ func (s *APIHTTPServer) hJobsPUT(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hJobsIdGET(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -176,7 +176,7 @@ func (s *APIHTTPServer) hJobsIdGET(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hJobsIdDELETE(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -189,7 +189,7 @@ func (s *APIHTTPServer) hJobsIdDELETE(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hJobsNameGET(h *HTTPHandler) {
-	jobName := h.RouteVariable("name")
+	jobName := h.PathVariable("name")
 
 	job, err := s.LoadJobByName(h, jobName)
 	if err != nil {
@@ -212,11 +212,11 @@ func (s *APIHTTPServer) hJobsNamePUT(h *HTTPHandler) {
 	var job *eventline.Job
 	var subscriptionCreatedOrUpdated bool
 
-	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Service.Pg.WithTx(func(conn pg.Conn) error {
 		id1 := PgAdvisoryLockId1
 		id2 := PgAdvisoryLockId2JobDeployment
 
-		if err := pg.TakeAdvisoryLock(conn, id1, id2); err != nil {
+		if err := pg.TakeAdvisoryTxLock(conn, id1, id2); err != nil {
 			return fmt.Errorf("cannot take advisory lock: %w", err)
 		}
 
@@ -264,7 +264,7 @@ func (s *APIHTTPServer) hJobsNamePUT(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hJobsIdRenamePOST(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -282,7 +282,7 @@ func (s *APIHTTPServer) hJobsIdRenamePOST(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hJobsIdEnablePOST(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -295,7 +295,7 @@ func (s *APIHTTPServer) hJobsIdEnablePOST(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hJobsIdDisablePOST(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -308,7 +308,7 @@ func (s *APIHTTPServer) hJobsIdDisablePOST(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hJobsIdExecutePOST(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}

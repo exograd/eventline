@@ -7,18 +7,17 @@ import (
 	"net/url"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/dhttp"
-	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-daemon/dlog"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
+	"github.com/galdor/go-service/pkg/shttp"
 	"github.com/google/go-github/v45/github"
 )
 
 type Connector struct {
-	Def    *eventline.ConnectorDef
-	Cfg    *ConnectorCfg
-	Daemon *daemon.Daemon
-	Log    *dlog.Logger
+	Def *eventline.ConnectorDef
+	Cfg *ConnectorCfg
+	Pg  *pg.Client
+	Log *log.Logger
 
 	webHTTPServerURI *url.URL
 }
@@ -57,7 +56,7 @@ func (c *Connector) Enabled() bool {
 
 func (c *Connector) Init(ccfg eventline.ConnectorCfg, initData eventline.ConnectorInitData) error {
 	c.Cfg = ccfg.(*ConnectorCfg)
-	c.Daemon = initData.Daemon
+	c.Pg = initData.Pg
 	c.Log = initData.Log
 
 	c.webHTTPServerURI = initData.WebHTTPServerURI
@@ -129,13 +128,13 @@ func (c *Connector) NewClient(identity *eventline.Identity) (*github.Client, err
 		}
 	}
 
-	httpClientCfg := dhttp.ClientCfg{
+	httpClientCfg := shttp.ClientCfg{
 		Log:         c.Log,
 		LogRequests: true,
 		Header:      header,
 	}
 
-	httpClient, err := dhttp.NewClient(httpClientCfg)
+	httpClient, err := shttp.NewClient(httpClientCfg)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create http client: %w", err)
 	}

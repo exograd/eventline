@@ -7,8 +7,7 @@ import (
 	"strconv"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/dhttp"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type Order string
@@ -39,8 +38,8 @@ func (pc *Cursor) ParseQuery(query url.Values, sorts Sorts, accountSettings *Acc
 	if s := query.Get("before"); s != "" {
 		key, err := base64.StdEncoding.DecodeString(s)
 		if err != nil {
-			return dhttp.NewInvalidQueryParameterError("before",
-				"invalid value")
+			return fmt.Errorf("invalid query parameter %q: invalid value",
+				"before")
 		}
 
 		c.Before = string(key)
@@ -49,14 +48,14 @@ func (pc *Cursor) ParseQuery(query url.Values, sorts Sorts, accountSettings *Acc
 	// After
 	if s := query.Get("after"); s != "" {
 		if c.Before != "" {
-			return dhttp.NewInvalidQueryParameterError("after",
-				"%q and %q are both set", "before", "after")
+			return fmt.Errorf("invalid query parameters: %q and %q are "+
+				"both set", "before", "after")
 		}
 
 		key, err := base64.StdEncoding.DecodeString(s)
 		if err != nil {
-			return dhttp.NewInvalidQueryParameterError("after",
-				"invalid value")
+			return fmt.Errorf("invalid query parameter %q: invalid value",
+				"after")
 		}
 
 		c.After = string(key)
@@ -66,14 +65,14 @@ func (pc *Cursor) ParseQuery(query url.Values, sorts Sorts, accountSettings *Acc
 	if s := query.Get("size"); s != "" {
 		i64, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return dhttp.NewInvalidQueryParameterError("size",
-				"invalid format")
+			return fmt.Errorf("invalid query parameter %q: invalid format",
+				"size")
 		} else if i64 < MinCursorSize {
-			return dhttp.NewInvalidQueryParameterError("size",
-				"value must be greater or equal to %d", MinCursorSize)
+			return fmt.Errorf("invalid query parameter %q: value must be "+
+				"greater or equal to %d", "size", MinCursorSize)
 		} else if i64 > MaxCursorSize {
-			return dhttp.NewInvalidQueryParameterError("size",
-				"value must be lower or equal to %d", MaxCursorSize)
+			return fmt.Errorf("invalid query parameter %q: value must be "+
+				"lower or equal to %d", "size", MaxCursorSize)
 		}
 
 		c.Size = int(i64)
@@ -84,8 +83,8 @@ func (pc *Cursor) ParseQuery(query url.Values, sorts Sorts, accountSettings *Acc
 	// Sort
 	if s := query.Get("sort"); s != "" {
 		if !sorts.Contains(s) {
-			return dhttp.NewInvalidQueryParameterError("sort",
-				"unsupported sort")
+			return fmt.Errorf("invalid query parameter %q: unsupported sort",
+				"sort")
 		}
 
 		c.Sort = s
@@ -100,8 +99,8 @@ func (pc *Cursor) ParseQuery(query url.Values, sorts Sorts, accountSettings *Acc
 			c.Order = OrderDesc
 
 		default:
-			return dhttp.NewInvalidQueryParameterError("order",
-				"invalid value")
+			return fmt.Errorf("invalid query parameter %q: invalid value",
+				"order")
 		}
 	}
 

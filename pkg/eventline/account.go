@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/exograd/eventline/pkg/cryptoutils"
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/dcrypto"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
-	"github.com/jackc/pgx/v4"
+	"github.com/galdor/go-service/pkg/pg"
+	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -160,7 +160,7 @@ func (a *Account) CheckPassword(password string) bool {
 }
 
 func GenerateSalt() []byte {
-	return dcrypto.RandomBytes(SaltSize)
+	return cryptoutils.RandomBytes(SaltSize)
 }
 
 func HashPassword(password string, salt []byte) []byte {

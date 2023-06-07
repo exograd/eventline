@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-daemon/dlog"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type SubscriptionWorker struct {
-	Log     *dlog.Logger
+	Log     *log.Logger
 	Service *Service
 }
 
@@ -36,7 +36,7 @@ func (sw *SubscriptionWorker) ProcessJob() (bool, error) {
 	var processingErr error
 	var processed bool
 
-	err := sw.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := sw.Service.Pg.WithTx(func(conn pg.Conn) error {
 		subscription, err := eventline.LoadSubscriptionForProcessing(conn)
 		if err != nil {
 			return fmt.Errorf("cannot load subscription: %w", err)

@@ -1,3 +1,10 @@
+logger:
+  backend_type: "terminal"
+  terminal_backend:
+    color: true
+    force_color: true # necessary for go tests
+  debug_level: 1
+
 pg:
   uri: "postgres://eventline:eventline@localhost:5432/eventline_test"
 

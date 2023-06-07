@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/exograd/go-daemon/pg"
-	"github.com/jackc/pgx/v4"
+	"github.com/galdor/go-service/pkg/pg"
+	"github.com/jackc/pgx/v5"
 )
 
 type Notification struct {

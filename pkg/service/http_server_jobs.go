@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *HTTPServer) LoadJob(h *HTTPHandler, jobId eventline.Id) (*eventline.Job, error) {
@@ -97,7 +97,7 @@ func (s *HTTPServer) DeleteJob(h *HTTPHandler, jobId eventline.Id) error {
 func (s *HTTPServer) RenameJob(h *HTTPHandler, jobId eventline.Id, data *eventline.JobRenamingData) error {
 	scope := h.Context.ProjectScope()
 
-	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Service.Pg.WithTx(func(conn pg.Conn) error {
 		_, err := s.Service.RenameJob(conn, jobId, data, scope)
 		if err != nil {
 			return err
@@ -123,7 +123,7 @@ func (s *HTTPServer) RenameJob(h *HTTPHandler, jobId eventline.Id, data *eventli
 func (s *HTTPServer) EnableJob(h *HTTPHandler, jobId eventline.Id) error {
 	scope := h.Context.ProjectScope()
 
-	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Service.Pg.WithTx(func(conn pg.Conn) error {
 		if _, err := s.Service.EnableJob(conn, jobId, scope); err != nil {
 			return err
 		}
@@ -148,7 +148,7 @@ func (s *HTTPServer) EnableJob(h *HTTPHandler, jobId eventline.Id) error {
 func (s *HTTPServer) DisableJob(h *HTTPHandler, jobId eventline.Id) error {
 	scope := h.Context.ProjectScope()
 
-	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Service.Pg.WithTx(func(conn pg.Conn) error {
 		if _, err := s.Service.DisableJob(conn, jobId, scope); err != nil {
 			return err
 		}
@@ -175,7 +175,7 @@ func (s *HTTPServer) ExecuteJob(h *HTTPHandler, jobId eventline.Id, input *event
 
 	var jobExecution *eventline.JobExecution
 
-	err := s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Service.Pg.WithTx(func(conn pg.Conn) error {
 		var err error
 
 		jobExecution, err = s.Service.ExecuteJob(conn, jobId, input, scope)

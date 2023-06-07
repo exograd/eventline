@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 	"github.com/galdor/go-ejson"
 )
 
@@ -33,7 +33,7 @@ func (data *LoginData) ValidateJSON(v *ejson.Validator) {
 func (s *Service) LogIn(data *LoginData, httpCtx *HTTPContext) (*eventline.Session, error) {
 	var session *eventline.Session
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Pg.WithTx(func(conn pg.Conn) error {
 		// Load the account and check the password
 		var account eventline.Account
 
@@ -114,7 +114,7 @@ func (s *Service) LogIn(data *LoginData, httpCtx *HTTPContext) (*eventline.Sessi
 }
 
 func (s *Service) LogOut(httpCtx *HTTPContext) error {
-	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return s.Pg.WithTx(func(conn pg.Conn) error {
 		// Delete the session
 		if err := httpCtx.Session.Delete(conn); err != nil {
 			return fmt.Errorf("cannot delete session: %w", err)

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 	"github.com/google/go-github/v45/github"
 )
 
@@ -143,7 +143,7 @@ func LockHooks(conn pg.Conn) error {
 	id1 := PgAdvisoryLockId1
 	id2 := PgAdvisoryLockId2GitHubHooks
 
-	if err := pg.TakeAdvisoryLock(conn, id1, id2); err != nil {
+	if err := pg.TakeAdvisoryTxLock(conn, id1, id2); err != nil {
 		return fmt.Errorf("cannot take advisory lock: %w", err)
 	}
 

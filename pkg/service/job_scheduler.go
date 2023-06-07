@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type JobScheduler struct {
-	Log     *dlog.Logger
+	Log     *log.Logger
 	Service *Service
 }
 
@@ -33,11 +33,11 @@ func (js *JobScheduler) Stop() {
 func (js *JobScheduler) ProcessJob() (bool, error) {
 	var processed bool
 
-	err := js.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := js.Service.Pg.WithTx(func(conn pg.Conn) error {
 		id1 := PgAdvisoryLockId1
 		id2 := PgAdvisoryLockId2JobScheduling
 
-		if err := pg.TakeAdvisoryLock(conn, id1, id2); err != nil {
+		if err := pg.TakeAdvisoryTxLock(conn, id1, id2); err != nil {
 			return fmt.Errorf("cannot take advisory lock: %w", err)
 		}
 

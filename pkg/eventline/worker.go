@@ -5,13 +5,13 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/dlog"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type WorkerCfg struct {
-	Log    *dlog.Logger    `json:"-"`
-	Daemon *daemon.Daemon `json:"-"`
+	Log *log.Logger `json:"-"`
+	Pg  *pg.Client  `json:"-"`
 
 	Behaviour WorkerBehaviour `json:"-"`
 
@@ -34,10 +34,10 @@ type WorkerBehaviour interface {
 }
 
 type Worker struct {
-	Name   string
-	Cfg    WorkerCfg
-	Log    *dlog.Logger
-	Daemon *daemon.Daemon
+	Name string
+	Cfg  WorkerCfg
+	Log  *log.Logger
+	Pg   *pg.Client
 
 	timer            *time.Timer
 	wakeUpChan       chan bool
@@ -53,10 +53,10 @@ type Worker struct {
 
 func NewWorker(name string, cfg WorkerCfg) *Worker {
 	w := &Worker{
-		Name:   name,
-		Cfg:    cfg,
-		Log:    cfg.Log,
-		Daemon: cfg.Daemon,
+		Name: name,
+		Cfg:  cfg,
+		Log:  cfg.Log,
+		Pg:   cfg.Pg,
 
 		wakeUpChan:       make(chan bool, 1),
 		notificationChan: cfg.NotificationChan,

@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-service/pkg/pg"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -28,7 +28,7 @@ func TestCheckJobSpec(t *testing.T) {
 		spec = new(eventline.JobSpec)
 		require.NoError(spec.ParseYAML([]byte(data)))
 
-		err := testService.Daemon.Pg.WithConn(func(conn pg.Conn) error {
+		err := testService.Pg.WithConn(func(conn pg.Conn) error {
 			return testService.ValidateJobSpec(conn, spec, scope)
 		})
 
@@ -68,7 +68,7 @@ func TestCheckJobSpec(t *testing.T) {
 		spec = new(eventline.JobSpec)
 		require.NoError(spec.ParseYAML([]byte(data)))
 
-		err := testService.Daemon.Pg.WithConn(func(conn pg.Conn) error {
+		err := testService.Pg.WithConn(func(conn pg.Conn) error {
 			return testService.ValidateJobSpec(conn, spec, scope)
 		})
 
@@ -81,7 +81,7 @@ func TestCheckJobSpec(t *testing.T) {
 `
 	if assertInvalid(data, 1) {
 		// It would be nicer to indicate that the name is missing
-		assertError(0, "/name", "stringTooShort")
+		assertError(0, "/name", "string_too_short")
 	}
 
 	// Simple validation (Job.Check)
@@ -96,7 +96,7 @@ steps: []
 `
 	if assertInvalid(data, 2) {
 		assertError(0, "/trigger/event", "unknown_connector")
-		assertError(1, "/runner/name", "invalidValue")
+		assertError(1, "/runner/name", "invalid_value")
 	}
 
 	// Trigger with mandatory parameters

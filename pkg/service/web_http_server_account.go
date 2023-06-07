@@ -6,7 +6,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupAccountRoutes() {
@@ -42,7 +42,7 @@ func (s *WebHTTPServer) setupAccountRoutes() {
 		s.hAccountAPIKeysCreatePOST,
 		HTTPRouteOptions{})
 
-	s.route("/account/api_keys/id/{id}/delete", "POST",
+	s.route("/account/api_keys/id/:id/delete", "POST",
 		s.hAccountAPIKeysIdDeletePOST,
 		HTTPRouteOptions{})
 }
@@ -215,7 +215,7 @@ func (s *WebHTTPServer) hAccountAPIKeysCreatePOST(h *HTTPHandler) {
 func (s *WebHTTPServer) hAccountAPIKeysIdDeletePOST(h *HTTPHandler) {
 	scope := h.Context.AccountScope()
 
-	keyId, err := h.IdRouteVariable("id")
+	keyId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}

@@ -1,7 +1,7 @@
 package eventline
 
 import (
-	"github.com/exograd/go-daemon/ksuid"
+	"github.com/exograd/eventline/pkg/ksuid"
 )
 
 type Id = ksuid.KSUID

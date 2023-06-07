@@ -4,9 +4,9 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type ConnectorCfg struct {
@@ -16,7 +16,7 @@ type ConnectorCfg struct {
 type Connector struct {
 	Def *eventline.ConnectorDef
 	Cfg *ConnectorCfg
-	Log *dlog.Logger
+	Log *log.Logger
 }
 
 func NewConnector() *Connector {

@@ -7,7 +7,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupJobRoutes() {
@@ -15,68 +15,64 @@ func (s *WebHTTPServer) setupJobRoutes() {
 		s.hJobsGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}", "GET",
+	s.route("/jobs/id/:id", "GET",
 		s.hJobsIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/timeline", "GET",
+	s.route("/jobs/id/:id/timeline", "GET",
 		s.hJobsIdTimelineGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/delete", "POST",
+	s.route("/jobs/id/:id/delete", "POST",
 		s.hJobsIdDeletePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/enable", "POST",
+	s.route("/jobs/id/:id/enable", "POST",
 		s.hJobsIdEnablePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/disable", "POST",
+	s.route("/jobs/id/:id/disable", "POST",
 		s.hJobsIdDisablePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/add_favourite", "POST",
+	s.route("/jobs/id/:id/add_favourite", "POST",
 		s.hJobsIdAddFavouritePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/remove_favourite", "POST",
+	s.route("/jobs/id/:id/remove_favourite", "POST",
 		s.hJobsIdRemoveFavouritePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/rename", "GET",
+	s.route("/jobs/id/:id/rename", "GET",
 		s.hJobsIdRenameGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/rename", "POST",
+	s.route("/jobs/id/:id/rename", "POST",
 		s.hJobsIdRenamePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/execute", "GET",
+	s.route("/jobs/id/:id/execute", "GET",
 		s.hJobsIdExecuteGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/execute", "POST",
+	s.route("/jobs/id/:id/execute", "POST",
 		s.hJobsIdExecutePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/definition", "GET",
+	s.route("/jobs/id/:id/definition", "GET",
 		s.hJobsIdDefinitionGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/metrics", "GET",
+	s.route("/jobs/id/:id/metrics", "GET",
 		s.hJobsIdMetricsGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/metrics/status_counts", "GET",
+	s.route("/jobs/id/:id/metrics/status_counts", "GET",
 		s.hJobsIdMetricsStatusCountsGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/{id}/metrics/running_times", "GET",
+	s.route("/jobs/id/:id/metrics/running_times", "GET",
 		s.hJobsIdMetricsRunningTimesGET,
-		HTTPRouteOptions{Project: true})
-
-	s.route("/jobs/id/{id}/metrics", "GET",
-		s.hJobsIdMetricsGET,
 		HTTPRouteOptions{Project: true})
 }
 
@@ -166,7 +162,7 @@ func (s *WebHTTPServer) hJobsGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdGET(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -177,7 +173,7 @@ func (s *WebHTTPServer) hJobsIdGET(h *HTTPHandler) {
 func (s *WebHTTPServer) hJobsIdTimelineGET(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -240,7 +236,7 @@ func (s *WebHTTPServer) hJobsIdTimelineGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdDeletePOST(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -253,7 +249,7 @@ func (s *WebHTTPServer) hJobsIdDeletePOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdEnablePOST(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -266,7 +262,7 @@ func (s *WebHTTPServer) hJobsIdEnablePOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdDisablePOST(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -281,12 +277,12 @@ func (s *WebHTTPServer) hJobsIdDisablePOST(h *HTTPHandler) {
 func (s *WebHTTPServer) hJobsIdAddFavouritePOST(h *HTTPHandler) {
 	scope := h.Context.AccountProjectScope()
 
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
 
-	err = s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err = s.Service.Pg.WithTx(func(conn pg.Conn) error {
 		if err := s.Service.AddFavouriteJob(conn, jobId, scope); err != nil {
 			return fmt.Errorf("cannot add favourite job: %w", err)
 		}
@@ -311,12 +307,12 @@ func (s *WebHTTPServer) hJobsIdAddFavouritePOST(h *HTTPHandler) {
 func (s *WebHTTPServer) hJobsIdRemoveFavouritePOST(h *HTTPHandler) {
 	scope := h.Context.AccountProjectScope()
 
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
 
-	err = s.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err = s.Service.Pg.WithTx(func(conn pg.Conn) error {
 		if err := s.Service.RemoveFavouriteJob(conn, jobId, scope); err != nil {
 			return fmt.Errorf("cannot remove favourite job: %w", err)
 		}
@@ -339,7 +335,7 @@ func (s *WebHTTPServer) hJobsIdRemoveFavouritePOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdRenameGET(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -368,7 +364,7 @@ func (s *WebHTTPServer) hJobsIdRenameGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdRenamePOST(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -388,7 +384,7 @@ func (s *WebHTTPServer) hJobsIdRenamePOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdExecuteGET(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -417,7 +413,7 @@ func (s *WebHTTPServer) hJobsIdExecuteGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdExecutePOST(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -442,7 +438,7 @@ func (s *WebHTTPServer) hJobsIdExecutePOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdDefinitionGET(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -480,7 +476,7 @@ func (s *WebHTTPServer) hJobsIdDefinitionGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobsIdMetricsGET(h *HTTPHandler) {
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -511,7 +507,7 @@ func (s *WebHTTPServer) hJobsIdMetricsGET(h *HTTPHandler) {
 func (s *WebHTTPServer) hJobsIdMetricsStatusCountsGET(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -556,7 +552,7 @@ func (s *WebHTTPServer) hJobsIdMetricsStatusCountsGET(h *HTTPHandler) {
 func (s *WebHTTPServer) hJobsIdMetricsRunningTimesGET(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	jobId, err := h.IdRouteVariable("id")
+	jobId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}

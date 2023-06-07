@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-daemon/dlog"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type EventWorker struct {
-	Log     *dlog.Logger
+	Log     *log.Logger
 	Service *Service
 }
 
@@ -34,7 +34,7 @@ func (ew *EventWorker) ProcessJob() (bool, error) {
 	var processed bool
 	var jeCreated bool
 
-	err := ew.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := ew.Service.Pg.WithTx(func(conn pg.Conn) error {
 		event, err := eventline.LoadEventForProcessing(conn)
 		if err != nil {
 			return fmt.Errorf("cannot load event: %w", err)

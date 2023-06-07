@@ -6,7 +6,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupIdentityRoutes() {
@@ -22,31 +22,31 @@ func (s *WebHTTPServer) setupIdentityRoutes() {
 		s.hIdentitiesCreatePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/{id}", "GET",
+	s.route("/identities/id/:id", "GET",
 		s.hIdentitiesIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/{id}/configuration", "GET",
+	s.route("/identities/id/:id/configuration", "GET",
 		s.hIdentitiesIdConfigurationGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/{id}/configuration", "POST",
+	s.route("/identities/id/:id/configuration", "POST",
 		s.hIdentitiesIdConfigurationPOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/{id}/refresh", "POST",
+	s.route("/identities/id/:id/refresh", "POST",
 		s.hIdentitiesIdRefreshPOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/{id}/delete", "POST",
+	s.route("/identities/id/:id/delete", "POST",
 		s.hIdentitiesIdDeletePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/connector/{connector}/types", "GET",
+	s.route("/identities/connector/:connector/types", "GET",
 		s.hIdentitiesConnectorTypesGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/connector/{connector}/type/{type}/data", "GET",
+	s.route("/identities/connector/:connector/type/:type/data", "GET",
 		s.hIdentitiesConnectorTypeDataGET,
 		HTTPRouteOptions{Project: true})
 }
@@ -153,7 +153,7 @@ func (s *WebHTTPServer) hIdentitiesCreatePOST(h *HTTPHandler) {
 func (s *WebHTTPServer) hIdentitiesIdGET(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	identityId, err := h.IdRouteVariable("id")
+	identityId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -203,7 +203,7 @@ func (s *WebHTTPServer) hIdentitiesIdGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hIdentitiesIdConfigurationGET(h *HTTPHandler) {
-	identityId, err := h.IdRouteVariable("id")
+	identityId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -242,7 +242,7 @@ func (s *WebHTTPServer) hIdentitiesIdConfigurationGET(h *HTTPHandler) {
 func (s *WebHTTPServer) hIdentitiesIdConfigurationPOST(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	identityId, err := h.IdRouteVariable("id")
+	identityId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -286,7 +286,7 @@ func (s *WebHTTPServer) hIdentitiesIdConfigurationPOST(h *HTTPHandler) {
 func (s *WebHTTPServer) hIdentitiesIdRefreshPOST(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	identityId, err := h.IdRouteVariable("id")
+	identityId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -311,7 +311,7 @@ func (s *WebHTTPServer) hIdentitiesIdRefreshPOST(h *HTTPHandler) {
 func (s *WebHTTPServer) hIdentitiesIdDeletePOST(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	identityId, err := h.IdRouteVariable("id")
+	identityId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -335,7 +335,7 @@ func (s *WebHTTPServer) hIdentitiesIdDeletePOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hIdentitiesConnectorTypesGET(h *HTTPHandler) {
-	cname := h.RouteVariable("connector")
+	cname := h.PathVariable("connector")
 	if err := eventline.ValidateConnectorName(cname); err != nil {
 		h.ReplyError(400, "unknown_connector", "%v", err)
 		return
@@ -361,7 +361,7 @@ func (s *WebHTTPServer) hIdentitiesConnectorTypesGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hIdentitiesConnectorTypeDataGET(h *HTTPHandler) {
-	cname := h.RouteVariable("connector")
+	cname := h.PathVariable("connector")
 	if err := eventline.ValidateConnectorName(cname); err != nil {
 		h.ReplyError(400, "unknown_connector", "%v", err)
 		return
@@ -369,7 +369,7 @@ func (s *WebHTTPServer) hIdentitiesConnectorTypeDataGET(h *HTTPHandler) {
 
 	cdef := eventline.GetConnectorDef(cname)
 
-	itype := h.RouteVariable("type")
+	itype := h.PathVariable("type")
 	if err := cdef.ValidateIdentityType(itype); err != nil {
 		h.ReplyError(400, "unknown_identity", "%v", err)
 		return

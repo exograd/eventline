@@ -7,23 +7,23 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupJobExecutionRoutes() {
-	s.route("/job_executions/id/{id}", "GET",
+	s.route("/job_executions/id/:id", "GET",
 		s.hJobExecutionsIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/job_executions/id/{id}/content", "GET",
+	s.route("/job_executions/id/:id/content", "GET",
 		s.hJobExecutionsIdContentGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/job_executions/id/{id}/abort", "POST",
+	s.route("/job_executions/id/:id/abort", "POST",
 		s.hJobExecutionsIdAbortPOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/job_executions/id/{id}/restart", "POST",
+	s.route("/job_executions/id/:id/restart", "POST",
 		s.hJobExecutionsIdRestartPOST,
 		HTTPRouteOptions{Project: true})
 }
@@ -31,7 +31,7 @@ func (s *WebHTTPServer) setupJobExecutionRoutes() {
 func (s *WebHTTPServer) hJobExecutionsIdGET(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	jeId, err := h.IdRouteVariable("id")
+	jeId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -80,7 +80,7 @@ func (s *WebHTTPServer) hJobExecutionsIdGET(h *HTTPHandler) {
 func (s *WebHTTPServer) hJobExecutionsIdContentGET(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	jeId, err := h.IdRouteVariable("id")
+	jeId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -160,7 +160,7 @@ func (s *WebHTTPServer) hJobExecutionsIdContentGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobExecutionsIdAbortPOST(h *HTTPHandler) {
-	jeId, err := h.IdRouteVariable("id")
+	jeId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -173,7 +173,7 @@ func (s *WebHTTPServer) hJobExecutionsIdAbortPOST(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hJobExecutionsIdRestartPOST(h *HTTPHandler) {
-	jeId, err := h.IdRouteVariable("id")
+	jeId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}

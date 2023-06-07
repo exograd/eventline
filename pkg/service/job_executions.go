@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *Service) LoadJobExecutionContext(conn pg.Conn, je *eventline.JobExecution) (*eventline.ExecutionContext, error) {
 	var ctx eventline.ExecutionContext
 
-	err := s.Daemon.Pg.WithConn(func(conn pg.Conn) (err error) {
+	err := s.Pg.WithConn(func(conn pg.Conn) (err error) {
 		err = ctx.Load(conn, je)
 		return
 	})
@@ -83,7 +83,7 @@ func (s *Service) AbortJobExecution(jeId eventline.Id, scope eventline.Scope) (*
 
 	now := time.Now().UTC()
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, jeId, scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
@@ -140,7 +140,7 @@ func (s *Service) RestartJobExecution(jeId eventline.Id, scope eventline.Scope) 
 
 	now := time.Now().UTC()
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, jeId, scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
@@ -231,7 +231,7 @@ func (s *Service) UpdateJobExecutionFailure(conn pg.Conn, je *eventline.JobExecu
 func (s *Service) handleJobExecutionTermination(jeId eventline.Id) error {
 	now := time.Now().UTC()
 
-	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var je eventline.JobExecution
 		if err := je.LoadForUpdateNoScope(conn, jeId); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)

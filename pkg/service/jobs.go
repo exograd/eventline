@@ -8,8 +8,8 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	rlocal "github.com/exograd/eventline/pkg/runners/local"
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type JobSpecValidator struct {

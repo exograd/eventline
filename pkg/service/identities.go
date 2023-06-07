@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/dhttp"
-	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-daemon/dlog"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
+	"github.com/galdor/go-service/pkg/shttp"
 )
 
 var (
@@ -39,7 +39,7 @@ func (s *Service) CreateIdentity(newIdentity *eventline.NewIdentity, scope event
 
 	projectScope := scope.(*eventline.ProjectScope)
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Pg.WithTx(func(conn pg.Conn) error {
 		now := time.Now().UTC()
 
 		exists, err := eventline.IdentityNameExists(conn, newIdentity.Name, scope)
@@ -85,7 +85,7 @@ func (s *Service) CreateIdentity(newIdentity *eventline.NewIdentity, scope event
 func (s *Service) UpdateIdentity(identityId eventline.Id, newIdentity *eventline.NewIdentity, scope eventline.Scope) (*eventline.Identity, error) {
 	var identity eventline.Identity
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Pg.WithTx(func(conn pg.Conn) error {
 		if err := identity.LoadForUpdate(conn, identityId, scope); err != nil {
 			return fmt.Errorf("cannot load identity: %w", err)
 		}
@@ -130,7 +130,7 @@ func (s *Service) UpdateIdentity(identityId eventline.Id, newIdentity *eventline
 }
 
 func (s *Service) DeleteIdentity(identityId eventline.Id, scope eventline.Scope) error {
-	return s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var identity eventline.Identity
 
 		if err := identity.LoadForUpdate(conn, identityId, scope); err != nil {
@@ -181,7 +181,7 @@ func (s *Service) IdentityRedirectionURI(identity *eventline.Identity, sessionId
 func (s *Service) RefreshIdentity(identityId eventline.Id, scope eventline.Scope) error {
 	var refreshErr error
 
-	err := s.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := s.Pg.WithTx(func(conn pg.Conn) error {
 		var identity eventline.Identity
 		if err := identity.LoadForUpdate(conn, identityId, scope); err != nil {
 			return fmt.Errorf("cannot load identity: %w", err)
@@ -230,7 +230,7 @@ func (s *Service) refreshIdentity(conn pg.Conn, identity *eventline.Identity, sc
 
 func (s *Service) oauth2HTTPClient(identityId eventline.Id, sessionId *eventline.Id) (*http.Client, error) {
 
-	logger := s.Log.Child("oauth2", dlog.Data{
+	logger := s.Log.Child("oauth2", log.Data{
 		"identity": identityId.String(),
 	})
 
@@ -238,12 +238,12 @@ func (s *Service) oauth2HTTPClient(identityId eventline.Id, sessionId *eventline
 		logger.Data["session"] = sessionId.String()
 	}
 
-	httpClientCfg := dhttp.ClientCfg{
+	httpClientCfg := shttp.ClientCfg{
 		Log:         logger,
 		LogRequests: true,
 	}
 
-	httpClient, err := dhttp.NewClient(httpClientCfg)
+	httpClient, err := shttp.NewClient(httpClientCfg)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create http client: %w", err)
 	}

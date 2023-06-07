@@ -23,7 +23,7 @@ func (s *WebHTTPServer) setupExternalRoutes() {
 		}
 	}
 
-	s.route("/ext/connectors/github/hooks/*", "POST",
+	s.route("/ext/connectors/github/hooks/*subpath", "POST",
 		s.hExtConnectorsGithubHooksPOST,
 		HTTPRouteOptions{Public: true})
 }
@@ -33,7 +33,7 @@ func (s *WebHTTPServer) hExtConnectorsGithubHooksPOST(h *HTTPHandler) {
 		h.Log.Data["github_delivery_id"] = deliveryId
 	}
 
-	target := h.RouteVariable("*")
+	target := h.PathVariable("subpath")
 
 	var params cgithub.Parameters
 	params.ParseTarget(target)

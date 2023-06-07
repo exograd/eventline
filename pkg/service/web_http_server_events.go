@@ -7,7 +7,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupEventRoutes() {
@@ -15,11 +15,11 @@ func (s *WebHTTPServer) setupEventRoutes() {
 		s.hEventsGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/events/id/{id}", "GET",
+	s.route("/events/id/:id", "GET",
 		s.hEventsIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/events/id/{id}/replay", "POST",
+	s.route("/events/id/:id/replay", "POST",
 		s.hEventsIdReplayPOST,
 		HTTPRouteOptions{Project: true})
 }
@@ -83,7 +83,7 @@ func (s *WebHTTPServer) hEventsGET(h *HTTPHandler) {
 func (s *WebHTTPServer) hEventsIdGET(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	eventId, err := h.IdRouteVariable("id")
+	eventId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (s *WebHTTPServer) hEventsIdGET(h *HTTPHandler) {
 func (s *WebHTTPServer) hEventsIdReplayPOST(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	eventId, err := h.IdRouteVariable("id")
+	eventId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}

@@ -10,7 +10,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 	"github.com/google/go-github/v45/github"
 )
 
@@ -267,7 +267,7 @@ func (c *Connector) processWebhookEventPush(e *github.PushEvent, params *Paramet
 }
 
 func (c *Connector) CreateEvents(ename string, eventTime *time.Time, eventData eventline.EventData, params *Parameters) error {
-	return c.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	return c.Pg.WithTx(func(conn pg.Conn) error {
 		var subs eventline.Subscriptions
 
 		subs, err := LoadSubscriptionsByParams(conn, ename, params)

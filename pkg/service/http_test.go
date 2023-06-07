@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/exograd/go-daemon/dhttp"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -59,7 +58,7 @@ func assertRequestError(t *testing.T, err error, status int, code string) bool {
 		return false
 	}
 
-	var reqErr *dhttp.APIRequestError
+	var reqErr *APIRequestError
 	if !errors.As(err, &reqErr) {
 		assert.Fail(t, fmt.Sprintf("%#v is not an api request error", err))
 		return false

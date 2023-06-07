@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type JobExecutionGC struct {
-	Log     *dlog.Logger
+	Log     *log.Logger
 	Service *Service
 }
 
@@ -33,7 +33,7 @@ func (jegc *JobExecutionGC) Stop() {
 func (jegc *JobExecutionGC) ProcessJob() (bool, error) {
 	var deleted bool
 
-	err := jegc.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := jegc.Service.Pg.WithTx(func(conn pg.Conn) error {
 		n, err := eventline.DeleteExpiredJobExecutions(conn)
 		if err != nil {
 			return fmt.Errorf("cannot delete job executions: %w", err)

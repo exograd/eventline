@@ -3,7 +3,7 @@ package eventline
 import (
 	"fmt"
 
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (j *Job) LoadStatusCounts(conn pg.Conn, params *MetricParameters) (MetricPoints, error) {

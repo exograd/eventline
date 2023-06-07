@@ -1,13 +1,15 @@
 package eventline
 
-import "github.com/exograd/go-daemon/dcrypto"
+import (
+	"github.com/exograd/eventline/pkg/cryptoutils"
+)
 
-var GlobalEncryptionKey dcrypto.AES256Key
+var GlobalEncryptionKey cryptoutils.AES256Key
 
 func EncryptAES256(data []byte) ([]byte, error) {
-	return dcrypto.EncryptAES256(data, GlobalEncryptionKey)
+	return cryptoutils.EncryptAES256(data, GlobalEncryptionKey)
 }
 
 func DecryptAES256(data []byte) ([]byte, error) {
-	return dcrypto.DecryptAES256(data, GlobalEncryptionKey)
+	return cryptoutils.DecryptAES256(data, GlobalEncryptionKey)
 }

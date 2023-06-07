@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/dlog"
+	"github.com/galdor/go-log"
 )
 
 type Runner interface {
@@ -20,7 +20,7 @@ func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
 		return nil, fmt.Errorf("unknown runner %q", name)
 	}
 
-	logger := s.Log.Child("runner", dlog.Data{
+	logger := s.Log.Child("runner", log.Data{
 		"runner":        name,
 		"job_execution": data.JobExecution.Id.String(),
 	})
@@ -29,8 +29,8 @@ func (s *Service) StartRunner(data *eventline.RunnerData) (Runner, error) {
 	refreshInterval := time.Duration(refreshIntervalSeconds) * time.Second
 
 	initData := eventline.RunnerInitData{
-		Log:    logger,
-		Daemon: s.Daemon,
+		Log: logger,
+		Pg:  s.Pg,
 
 		Def:  def,
 		Cfg:  def.Cfg,

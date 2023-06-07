@@ -1,7 +1,5 @@
 package service
 
-import "github.com/exograd/go-daemon/dhttp"
-
 type APIHTTPServer struct {
 	*HTTPServer
 }
@@ -11,7 +9,7 @@ func NewAPIHTTPServer(service *Service) (*APIHTTPServer, error) {
 		HTTPServer: &HTTPServer{
 			Log: service.Log.Child("api", nil),
 
-			Pg: service.Daemon.Pg,
+			Pg: service.Pg,
 
 			Service: service,
 		},
@@ -28,7 +26,7 @@ func (s *APIHTTPServer) route(path, method string, fn HTTPRouteFunc, options HTT
 }
 
 func (s *APIHTTPServer) initHTTPServer() {
-	s.Server = s.Service.Daemon.HTTPServers["api"]
+	s.Server = s.Service.Service.HTTPServer("api")
 
 	s.route("/status", "HEAD", s.hStatusHEAD,
 		HTTPRouteOptions{Public: true})
@@ -43,12 +41,4 @@ func (s *APIHTTPServer) initHTTPServer() {
 
 func (s *APIHTTPServer) hStatusHEAD(h *HTTPHandler) {
 	h.ReplyEmpty(204)
-}
-
-func (s *Service) apiHTTPErrorHandler(dh *dhttp.Handler, status int, code, msg string, data dhttp.APIErrorData) {
-	dh.ReplyJSON(status, dhttp.APIError{
-		Message: msg,
-		Code:    code,
-		Data:    data,
-	})
 }

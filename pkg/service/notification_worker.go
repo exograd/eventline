@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-daemon/dlog"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type NotificationWorker struct {
-	Log     *dlog.Logger
+	Log     *log.Logger
 	Service *Service
 }
 
@@ -35,7 +35,7 @@ func (nw *NotificationWorker) ProcessJob() (bool, error) {
 	var processingErr error
 	var processed bool
 
-	err := nw.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := nw.Service.Pg.WithTx(func(conn pg.Conn) error {
 		notification, err := eventline.LoadNotificationForDelivery(conn)
 		if err != nil {
 			return fmt.Errorf("cannot load notification: %w", err)

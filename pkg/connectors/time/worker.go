@@ -5,14 +5,13 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type Worker struct {
-	Log    *dlog.Logger
-	Daemon *daemon.Daemon
+	Log *log.Logger
+	Pg  *pg.Client
 
 	worker *eventline.Worker
 }
@@ -23,7 +22,7 @@ func NewWorker() *Worker {
 
 func (w *Worker) Init(ew *eventline.Worker) {
 	w.Log = ew.Log
-	w.Daemon = ew.Daemon
+	w.Pg = ew.Pg
 
 	w.worker = ew
 }
@@ -38,7 +37,7 @@ func (w *Worker) Stop() {
 func (w *Worker) ProcessJob() (bool, error) {
 	var event *eventline.Event
 
-	err := w.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := w.Pg.WithTx(func(conn pg.Conn) error {
 		s, es, err := LoadSubscriptionForProcessing(conn)
 		if err != nil {
 			return fmt.Errorf("cannot load subscription: %w", err)

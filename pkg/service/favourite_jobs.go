@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *Service) AddFavouriteJob(conn pg.Conn, jobId eventline.Id, scope eventline.Scope) error {

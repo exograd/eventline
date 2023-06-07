@@ -13,10 +13,9 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/exograd/go-daemon/daemon"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 var RunnerDefs = map[string]*RunnerDef{}
@@ -49,8 +48,8 @@ type RunnerDef struct {
 }
 
 type RunnerInitData struct {
-	Log    *dlog.Logger
-	Daemon *daemon.Daemon
+	Log *log.Logger
+	Pg  *pg.Client
 
 	Def  *RunnerDef
 	Cfg  RunnerCfg
@@ -82,8 +81,8 @@ type RunnerBehaviour interface {
 }
 
 type Runner struct {
-	Log       *dlog.Logger
-	Daemon    *daemon.Daemon
+	Log       *log.Logger
+	Pg        *pg.Client
 	Cfg       RunnerCfg
 	Behaviour RunnerBehaviour
 
@@ -119,9 +118,9 @@ func NewRunner(data RunnerInitData) (*Runner, error) {
 	}
 
 	r := &Runner{
-		Log:    data.Log,
-		Daemon: data.Daemon,
-		Cfg:    data.Cfg,
+		Log: data.Log,
+		Pg:  data.Pg,
+		Cfg: data.Cfg,
 
 		JobExecution:     data.Data.JobExecution,
 		StepExecutions:   data.Data.StepExecutions,
@@ -624,7 +623,7 @@ func (r *Runner) StepCommandString(se *StepExecution, s *Step, rootPath string) 
 func (r *Runner) updateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution, error) {
 	var je JobExecution
 
-	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := r.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, jeId, scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
@@ -656,7 +655,7 @@ func (r *Runner) updateJobExecutionAbortion(jeId Id, scope Scope) (*JobExecution
 	var je JobExecution
 	var ses StepExecutions
 
-	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := r.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, jeId, scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
@@ -706,7 +705,7 @@ func (r *Runner) updateJobExecutionFailure(jeId Id, jeErr error, scope Scope) (*
 	var je JobExecution
 	var ses StepExecutions
 
-	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := r.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, jeId, scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
@@ -796,7 +795,7 @@ func (r *Runner) updateStepExecution(jeId, seId Id, fn func(*StepExecution), sco
 	var je JobExecution
 	var se StepExecution
 
-	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := r.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, jeId, scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}
@@ -825,7 +824,7 @@ func (r *Runner) updateStepExecution(jeId, seId Id, fn func(*StepExecution), sco
 }
 
 func (r *Runner) UpdateStepExecutionOutput(se *StepExecution, data []byte) error {
-	return r.Daemon.Pg.WithConn(func(conn pg.Conn) (err error) {
+	return r.Pg.WithConn(func(conn pg.Conn) (err error) {
 		err = se.UpdateOutput(conn, data)
 		return
 	})
@@ -834,7 +833,7 @@ func (r *Runner) UpdateStepExecutionOutput(se *StepExecution, data []byte) error
 func (r *Runner) refreshJobExecution() (*JobExecution, error) {
 	var je JobExecution
 
-	err := r.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := r.Pg.WithTx(func(conn pg.Conn) error {
 		if err := je.LoadForUpdate(conn, r.jeId, r.Scope); err != nil {
 			return fmt.Errorf("cannot load job execution: %w", err)
 		}

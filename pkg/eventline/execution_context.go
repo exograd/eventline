@@ -7,7 +7,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type ExecutionContext struct {

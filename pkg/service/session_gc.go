@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/dlog"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type SessionGC struct {
-	Log     *dlog.Logger
+	Log     *log.Logger
 	Service *Service
 }
 
@@ -35,7 +35,7 @@ func (sgc *SessionGC) ProcessJob() (bool, error) {
 
 	retention := sgc.Service.Cfg.SessionRetention
 
-	err := sgc.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := sgc.Service.Pg.WithTx(func(conn pg.Conn) error {
 		n, err := eventline.DeleteOldSessions(conn, retention)
 		if err != nil {
 			return fmt.Errorf("cannot delete sessions: %w", err)

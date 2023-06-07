@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *APIHTTPServer) setupEventRoutes() {
@@ -13,11 +13,11 @@ func (s *APIHTTPServer) setupEventRoutes() {
 		s.hEventsGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/events/id/{id}", "GET",
+	s.route("/events/id/:id", "GET",
 		s.hEventsIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/events/id/{id}/replay", "POST",
+	s.route("/events/id/:id/replay", "POST",
 		s.hEventsIdReplayPOST,
 		HTTPRouteOptions{Project: true})
 }
@@ -50,7 +50,7 @@ func (s *APIHTTPServer) hEventsGET(h *HTTPHandler) {
 func (s *APIHTTPServer) hEventsIdGET(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	eventId, err := h.IdRouteVariable("id")
+	eventId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -81,7 +81,7 @@ func (s *APIHTTPServer) hEventsIdGET(h *HTTPHandler) {
 func (s *APIHTTPServer) hEventsIdReplayPOST(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	eventId, err := h.IdRouteVariable("id")
+	eventId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}

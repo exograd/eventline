@@ -11,16 +11,16 @@ func (s *APIHTTPServer) setupProjectRoutes() {
 	s.route("/projects", "POST", s.hProjectsPOST,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/projects/id/{id}", "GET", s.hProjectsIdGET,
+	s.route("/projects/id/:id", "GET", s.hProjectsIdGET,
 		HTTPRouteOptions{})
 
-	s.route("/projects/name/{name}", "GET", s.hProjectsNameGET,
+	s.route("/projects/name/:name", "GET", s.hProjectsNameGET,
 		HTTPRouteOptions{})
 
-	s.route("/projects/id/{id}", "PUT", s.hProjectsIdPUT,
+	s.route("/projects/id/:id", "PUT", s.hProjectsIdPUT,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/projects/id/{id}", "DELETE", s.hProjectsIdDELETE,
+	s.route("/projects/id/:id", "DELETE", s.hProjectsIdDELETE,
 		HTTPRouteOptions{Admin: true})
 }
 
@@ -48,7 +48,7 @@ func (s *APIHTTPServer) hProjectsPOST(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hProjectsIdGET(h *HTTPHandler) {
-	projectId, err := h.IdRouteVariable("id")
+	projectId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -62,7 +62,7 @@ func (s *APIHTTPServer) hProjectsIdGET(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hProjectsNameGET(h *HTTPHandler) {
-	projectName := h.RouteVariable("name")
+	projectName := h.PathVariable("name")
 
 	project, err := s.LoadProjectByName(h, projectName)
 	if err != nil {
@@ -73,7 +73,7 @@ func (s *APIHTTPServer) hProjectsNameGET(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hProjectsIdPUT(h *HTTPHandler) {
-	projectId, err := h.IdRouteVariable("id")
+	projectId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
@@ -92,7 +92,7 @@ func (s *APIHTTPServer) hProjectsIdPUT(h *HTTPHandler) {
 }
 
 func (s *APIHTTPServer) hProjectsIdDELETE(h *HTTPHandler) {
-	projectId, err := h.IdRouteVariable("id")
+	projectId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}

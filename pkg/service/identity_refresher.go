@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
-	"github.com/exograd/go-daemon/dlog"
+	"github.com/galdor/go-log"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 type IdentityRefresher struct {
-	Log     *dlog.Logger
+	Log     *log.Logger
 	Service *Service
 
 	w *eventline.Worker
@@ -39,7 +39,7 @@ func (ir *IdentityRefresher) ProcessJob() (bool, error) {
 	var refreshErr error
 	var processed bool
 
-	err := ir.Service.Daemon.Pg.WithTx(func(conn pg.Conn) error {
+	err := ir.Service.Pg.WithTx(func(conn pg.Conn) error {
 		identity, err := eventline.LoadIdentityForRefresh(conn)
 		if err != nil {
 			return fmt.Errorf("cannot load identity: %w", err)

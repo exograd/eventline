@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/go-daemon/pg"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupStepExecutionRoutes() {
-	s.route("/step_executions/id/{id}/log_file", "GET",
+	s.route("/step_executions/id/:id/log_file", "GET",
 		s.hStepExecutionsIdLogFileGET,
 		HTTPRouteOptions{Project: true})
 }
@@ -18,7 +18,7 @@ func (s *WebHTTPServer) setupStepExecutionRoutes() {
 func (s *WebHTTPServer) hStepExecutionsIdLogFileGET(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
-	seId, err := h.IdRouteVariable("id")
+	seId, err := h.IdPathVariable("id")
 	if err != nil {
 		return
 	}
