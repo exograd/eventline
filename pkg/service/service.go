@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"path"
 	"sync"
-	"text/template"
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/galdor/go-ejson"
@@ -32,8 +31,6 @@ type Service struct {
 
 	BuildIdHash      string
 	WebHTTPServerURI *url.URL
-
-	TextTemplate *template.Template
 
 	workers                map[string]*eventline.Worker
 	workerStopChan         chan struct{}
@@ -156,10 +153,6 @@ func (s *Service) Init(ss *goservice.Service) error {
 		return err
 	}
 
-	if err := s.initTextTemplate(); err != nil {
-		return err
-	}
-
 	if err := s.initWebHTTPServerURI(); err != nil {
 		return err
 	}
@@ -203,19 +196,6 @@ func (s *Service) Init(ss *goservice.Service) error {
 
 func (s *Service) initEncryptionKey() error {
 	eventline.GlobalEncryptionKey = s.Cfg.EncryptionKey
-
-	return nil
-}
-
-func (s *Service) initTextTemplate() error {
-	dirPath := path.Join(s.Cfg.DataDirectory, "templates")
-
-	template, err := eventline.LoadTextTemplates(dirPath)
-	if err != nil {
-		return fmt.Errorf("cannot load text templates: %w", err)
-	}
-
-	s.TextTemplate = template
 
 	return nil
 }

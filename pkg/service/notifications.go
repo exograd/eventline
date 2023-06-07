@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-service/pkg/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-service/pkg/pg"
 	"github.com/jhillyerd/enmime"
 )
 
@@ -147,13 +147,7 @@ func (s *Service) RenderNotificationText(name string, data interface{}) ([]byte,
 		Data: data,
 	}
 
-	var buf bytes.Buffer
-
-	if err := s.TextTemplate.ExecuteTemplate(&buf, name, obj); err != nil {
-		return nil, err
-	}
-
-	return buf.Bytes(), nil
+	return s.Service.RenderTextTemplate(name, obj)
 }
 
 func (s *Service) DeliverNotification(conn pg.Conn, n *eventline.Notification) error {

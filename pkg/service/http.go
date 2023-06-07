@@ -454,7 +454,7 @@ func (h *HTTPHandler) ReplyContent(status int, content web.Content) {
 }
 
 func (h *HTTPHandler) ReplyView(status int, view *web.View) {
-	view.RootTemplate = h.Service.WebHTTPServer.HTMLTemplate
+	view.RootTemplate = h.Service.Service.HTMLTemplate
 
 	h.ReplyContent(status, view)
 }
