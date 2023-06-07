@@ -14,7 +14,7 @@ func (s *APIHTTPServer) setupLoginRoute() {
 
 func (s *APIHTTPServer) hLoginPOST(h *HTTPHandler) {
 	var loginData LoginData
-	if err := h.JSONRequestObject(&loginData); err != nil {
+	if err := h.JSONRequestData(&loginData); err != nil {
 		return
 	}
 

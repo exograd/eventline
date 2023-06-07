@@ -192,7 +192,7 @@ func (s *HTTPServer) ExecuteJob(h *HTTPHandler, jobId eventline.Id, input *event
 		if errors.As(err, &unknownJobErr) {
 			h.ReplyError(404, "unknown_job", "%v", err)
 		} else if errors.As(err, &validationErrors) {
-			h.ReplyRequestBodyValidationErrors(validationErrors)
+			h.ReplyValidationErrors(validationErrors)
 		} else {
 			h.ReplyInternalError(500, "%v", err)
 		}

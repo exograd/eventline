@@ -8,7 +8,7 @@ require (
 	github.com/galdor/go-ejson v0.0.0-20230607142913-f5dcba16e15e
 	github.com/galdor/go-log v0.0.0-20230605123224-cb794ee76fa0
 	github.com/galdor/go-program v0.0.0-20230403162644-22adfbe9fbab
-	github.com/galdor/go-service v0.0.0-20230606154356-3f323df8179f
+	github.com/galdor/go-service v0.0.0-20230607154407-14a45023057e
 	github.com/galdor/go-uuid v0.0.0-20230418134831-d236b757febe
 	github.com/google/go-github/v40 v40.0.0
 	github.com/google/go-github/v45 v45.1.0

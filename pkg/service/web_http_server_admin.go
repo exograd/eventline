@@ -91,7 +91,7 @@ func (s *WebHTTPServer) hAdminAccountsCreateGET(h *HTTPHandler) {
 
 func (s *WebHTTPServer) hAdminAccountsCreatePOST(h *HTTPHandler) {
 	var newAccount eventline.NewAccount
-	if err := h.JSONRequestObject(&newAccount); err != nil {
+	if err := h.JSONRequestData(&newAccount); err != nil {
 		return
 	}
 
@@ -169,7 +169,7 @@ func (s *WebHTTPServer) hAdminAccountsIdEditPOST(h *HTTPHandler) {
 	}
 
 	var update eventline.AccountUpdate
-	if err := h.JSONRequestObject(&update); err != nil {
+	if err := h.JSONRequestData(&update); err != nil {
 		return
 	}
 
@@ -246,7 +246,7 @@ func (s *WebHTTPServer) hAdminAccountsIdChangePasswordPOST(h *HTTPHandler) {
 	}
 
 	var update eventline.AccountPasswordUpdate
-	if err := h.JSONRequestObject(&update); err != nil {
+	if err := h.JSONRequestData(&update); err != nil {
 		return
 	}
 

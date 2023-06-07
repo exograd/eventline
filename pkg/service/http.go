@@ -15,7 +15,6 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/galdor/go-ejson"
 	"github.com/galdor/go-log"
 	"github.com/galdor/go-service/pkg/pg"
 	"github.com/galdor/go-service/pkg/shttp"
@@ -107,40 +106,6 @@ func (h *HTTPHandler) TimestampQueryParameter(name string) (*time.Time, error) {
 	t := time.Unix(i64, 0).UTC()
 
 	return &t, nil
-}
-
-func (h *HTTPHandler) JSONRequestObject(obj ejson.Validatable) error {
-	return h.JSONRequestObject2(obj, nil)
-}
-
-func (h *HTTPHandler) JSONRequestObject2(obj ejson.Validatable, fn func(*ejson.Validator)) error {
-	if err := h.JSONRequestData(obj); err != nil {
-		return err
-	}
-
-	v := ejson.NewValidator()
-
-	obj.ValidateJSON(v)
-
-	if fn != nil {
-		fn(v)
-	}
-
-	if err := v.Error(); err != nil {
-		h.ReplyRequestBodyValidationErrors(err.(ejson.ValidationErrors))
-		return fmt.Errorf("invalid request body: %w", err)
-	}
-
-	return nil
-}
-
-func (h *HTTPHandler) ReplyRequestBodyValidationErrors(err ejson.ValidationErrors) {
-	data := map[string]interface{}{
-		"validation_errors": err,
-	}
-
-	h.ReplyErrorData(400, "invalid_request_body", data,
-		"invalid request body:\n%v", err)
 }
 
 type HTTPRouteOptions struct {

@@ -58,7 +58,7 @@ func (s *WebHTTPServer) hLoginGET(h *HTTPHandler) {
 
 func (s *WebHTTPServer) hLoginPOST(h *HTTPHandler) {
 	var loginData LoginData
-	if err := h.JSONRequestObject(&loginData); err != nil {
+	if err := h.JSONRequestData(&loginData); err != nil {
 		return
 	}
 

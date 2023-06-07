@@ -82,7 +82,7 @@ func (s *WebHTTPServer) hProjectsCreateGET(h *HTTPHandler) {
 
 func (s *WebHTTPServer) hProjectsCreatePOST(h *HTTPHandler) {
 	var newProject eventline.NewProject
-	if err := h.JSONRequestObject(&newProject); err != nil {
+	if err := h.JSONRequestData(&newProject); err != nil {
 		return
 	}
 
@@ -222,7 +222,7 @@ func (s *WebHTTPServer) hProjectsIdConfigurationPOST(h *HTTPHandler) {
 		})
 	}
 
-	if err := h.JSONRequestObject2(&cfg, extraChecks); err != nil {
+	if err := h.JSONRequestData2(&cfg, extraChecks); err != nil {
 		return
 	}
 

@@ -35,7 +35,7 @@ func (s *APIHTTPServer) hProjectsGET(h *HTTPHandler) {
 
 func (s *APIHTTPServer) hProjectsPOST(h *HTTPHandler) {
 	var newProject eventline.NewProject
-	if err := h.JSONRequestObject(&newProject); err != nil {
+	if err := h.JSONRequestData(&newProject); err != nil {
 		return
 	}
 
@@ -79,7 +79,7 @@ func (s *APIHTTPServer) hProjectsIdPUT(h *HTTPHandler) {
 	}
 
 	var newProject eventline.NewProject
-	if err := h.JSONRequestObject(&newProject); err != nil {
+	if err := h.JSONRequestData(&newProject); err != nil {
 		return
 	}
 

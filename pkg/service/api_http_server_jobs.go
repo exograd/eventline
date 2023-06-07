@@ -139,7 +139,7 @@ func (s *APIHTTPServer) hJobsPUT(h *HTTPHandler) {
 		var validationErrors ejson.ValidationErrors
 
 		if errors.As(err, &validationErrors) {
-			h.ReplyRequestBodyValidationErrors(validationErrors)
+			h.ReplyValidationErrors(validationErrors)
 		} else {
 			h.ReplyInternalError(500, "%v", err)
 		}
@@ -241,7 +241,7 @@ func (s *APIHTTPServer) hJobsNamePUT(h *HTTPHandler) {
 		var validationErrors ejson.ValidationErrors
 
 		if errors.As(err, &validationErrors) {
-			h.ReplyRequestBodyValidationErrors(validationErrors)
+			h.ReplyValidationErrors(validationErrors)
 		} else {
 			h.ReplyInternalError(500, "%v", err)
 		}

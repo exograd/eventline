@@ -117,7 +117,7 @@ func (s *WebHTTPServer) hIdentitiesCreatePOST(h *HTTPHandler) {
 	scope := h.Context.ProjectScope()
 
 	var newIdentity eventline.NewIdentity
-	if err := h.JSONRequestObject(&newIdentity); err != nil {
+	if err := h.JSONRequestData(&newIdentity); err != nil {
 		return
 	}
 
@@ -248,7 +248,7 @@ func (s *WebHTTPServer) hIdentitiesIdConfigurationPOST(h *HTTPHandler) {
 	}
 
 	var newIdentity eventline.NewIdentity
-	if err := h.JSONRequestObject(&newIdentity); err != nil {
+	if err := h.JSONRequestData(&newIdentity); err != nil {
 		return
 	}
 

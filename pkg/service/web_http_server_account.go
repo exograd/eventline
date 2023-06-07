@@ -91,7 +91,7 @@ func (s *WebHTTPServer) hAccountConfigurationGET(h *HTTPHandler) {
 
 func (s *WebHTTPServer) hAccountConfigurationPOST(h *HTTPHandler) {
 	var update eventline.AccountSelfUpdate
-	if err := h.JSONRequestObject(&update); err != nil {
+	if err := h.JSONRequestData(&update); err != nil {
 		return
 	}
 
@@ -117,7 +117,7 @@ func (s *WebHTTPServer) hAccountChangePasswordGET(h *HTTPHandler) {
 
 func (s *WebHTTPServer) hAccountChangePasswordPOST(h *HTTPHandler) {
 	var update eventline.AccountPasswordUpdate
-	if err := h.JSONRequestObject(&update); err != nil {
+	if err := h.JSONRequestData(&update); err != nil {
 		return
 	}
 
@@ -186,7 +186,7 @@ func (s *WebHTTPServer) hAccountAPIKeysCreatePOST(h *HTTPHandler) {
 	scope := h.Context.AccountScope()
 
 	var newKey eventline.NewAPIKey
-	if err := h.JSONRequestObject(&newKey); err != nil {
+	if err := h.JSONRequestData(&newKey); err != nil {
 		return
 	}
 
