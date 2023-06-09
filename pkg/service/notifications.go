@@ -8,10 +8,10 @@ import (
 	"path"
 	"time"
 
+	"github.com/Shopify/gomail"
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/galdor/go-ejson"
 	"github.com/galdor/go-service/pkg/pg"
-	"github.com/jhillyerd/enmime"
 )
 
 type NotificationsCfg struct {
@@ -66,21 +66,40 @@ func (s *Service) CreateNotification(conn pg.Conn, recipients []string, subject,
 	projectId := scope.(*eventline.ProjectScope).ProjectId
 	now := time.Now().UTC()
 
-	message, err := s.ComposeNotificationMessage(recipients, subject,
-		templateName, templateData)
+	// Render the message body
+	body, err := s.RenderNotificationText(templateName, templateData)
 	if err != nil {
-		return fmt.Errorf("cannot compose message: %w", err)
+		return fmt.Errorf("cannot render message: %w", err)
 	}
+
+	// It is really easy to get leading and trailing spaces in templates,
+	// especially newline characters. Removing them here is a lot easier that
+	// removing all newlines in complex if/else/end blocks.
+	body = bytes.TrimSpace(body)
 
 	if cfg.Signature != "" {
-		message = append(message, []byte("\n\n--\n"+cfg.Signature+"\n")...)
+		body = append(body, []byte("\n\n--\n"+cfg.Signature+"\n")...)
 	}
 
+	// Compose and render the message
+	m := gomail.NewMessage()
+
+	m.SetAddressHeader("From", cfg.FromAddress, "Eventline")
+	m.SetHeader("To", recipients...)
+	m.SetHeader("Subject", cfg.SubjectPrefix+subject)
+	m.SetBody("text/plain", string(body))
+
+	var buf bytes.Buffer
+	if _, err := m.WriteTo(&buf); err != nil {
+		return fmt.Errorf("cannot render message: %w", err)
+	}
+
+	// Create the notification
 	notification := eventline.Notification{
 		Id:               eventline.GenerateId(),
 		ProjectId:        projectId,
 		Recipients:       recipients,
-		Message:          message,
+		Message:          buf.Bytes(),
 		NextDeliveryTime: now,
 		DeliveryDelay:    0,
 	}
@@ -90,52 +109,6 @@ func (s *Service) CreateNotification(conn pg.Conn, recipients []string, subject,
 	}
 
 	return nil
-}
-
-func (s *Service) ComposeNotificationMessage(recipients []string, subject, templateName string, templateData interface{}) ([]byte, error) {
-	cfg := s.Cfg.Notifications
-
-	// Careful here, the enmime builder functions all create a new copy of the
-	// builder for *every single change*. Not much we can do about it
-	// infortunately.
-
-	builder := enmime.Builder()
-
-	builder = builder.From("Eventline", cfg.FromAddress)
-
-	for _, recipient := range recipients {
-		builder = builder.To("", recipient)
-	}
-
-	builder = builder.Subject(cfg.SubjectPrefix + subject)
-
-	body, err := s.RenderNotificationText(templateName, templateData)
-	if err != nil {
-		return nil, fmt.Errorf("cannot render message: %w", err)
-	}
-
-	// It is really easy to get leading and trailing spaces in templates,
-	// especially newline characters. Removing them here is a lot easier that
-	// removing all newlines in complex if/else/end blocks.
-	body = bytes.TrimSpace(body)
-
-	builder = builder.Text(body)
-
-	if err := builder.Error(); err != nil {
-		return nil, err
-	}
-
-	part, err := builder.Build()
-	if err != nil {
-		return nil, fmt.Errorf("cannot build mime part: %w", err)
-	}
-
-	var buf bytes.Buffer
-	if err := part.Encode(&buf); err != nil {
-		return nil, fmt.Errorf("cannot encode part: %w", err)
-	}
-
-	return buf.Bytes(), err
 }
 
 func (s *Service) RenderNotificationText(name string, data interface{}) ([]byte, error) {
