@@ -2,11 +2,7 @@ package service
 
 import (
 	"path"
-	"regexp"
 )
-
-var assetCacheBustingRE = regexp.MustCompile(
-	`^(.+)\.(?:[a-z0-9]+)\.(css|js|png)$`)
 
 func (s *WebHTTPServer) setupAssetRoutes() {
 	s.route("/favicon.ico", "GET",
