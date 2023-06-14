@@ -327,7 +327,7 @@ func (h *HTTPHandler) LoadSession(sessionId eventline.Id) error {
 	h.SetContextSession(&session)
 
 	// Send back the cookie to update its expiration date
-	h.SetSessionCookie(sessionCookie(sessionId))
+	h.SetSessionCookie(h.Service.sessionCookie(sessionId))
 
 	return nil
 }
@@ -503,6 +503,6 @@ func (h *HTTPHandler) ReplyAuthError(status int, code string, format string, arg
 }
 
 func (h *HTTPHandler) DeleteCookie() {
-	cookie := expiredCookie()
+	cookie := h.Service.expiredCookie()
 	http.SetCookie(h.ResponseWriter, cookie)
 }

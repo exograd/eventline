@@ -6,8 +6,8 @@ import (
 	"path"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-service/pkg/pg"
 	"github.com/exograd/go-oauth2c"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 func (s *WebHTTPServer) processOAuth2Request(h *HTTPHandler) {
@@ -44,7 +44,7 @@ func (s *WebHTTPServer) processOAuth2Request(h *HTTPHandler) {
 		}
 
 		h.SetContextSession(&session)
-		h.SetSessionCookie(sessionCookie(session.Id))
+		h.SetSessionCookie(s.Service.sessionCookie(session.Id))
 
 		// Load the identity referenced in the state
 		scope := h.Context.ProjectScope()

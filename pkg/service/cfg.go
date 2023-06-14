@@ -29,7 +29,8 @@ type ServiceCfg struct {
 
 	EncryptionKey cryptoutils.AES256Key `json:"encryption_key"`
 
-	WebHTTPServerURI string `json:"web_http_server_uri"`
+	WebHTTPServerURI    string `json:"web_http_server_uri"`
+	InsecureHTTPCookies bool   `json:"insecure_http_cookies"`
 
 	Connectors map[string]json.RawMessage `json:"connectors"`
 

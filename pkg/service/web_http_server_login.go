@@ -67,7 +67,7 @@ func (s *WebHTTPServer) hLoginPOST(h *HTTPHandler) {
 		return
 	}
 
-	h.SetSessionCookie(sessionCookie(session.Id))
+	h.SetSessionCookie(s.Service.sessionCookie(session.Id))
 
 	h.ReplyJSONLocation(200, h.RedirectionTarget(), nil)
 }
@@ -83,7 +83,7 @@ func (s *WebHTTPServer) hLogoutPOST(h *HTTPHandler) {
 		return
 	}
 
-	h.SetSessionCookie(expiredCookie())
+	h.SetSessionCookie(s.Service.expiredCookie())
 
 	h.ReplyJSONLocation(201, "/login", nil)
 }

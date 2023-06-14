@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-service/pkg/pg"
 	"github.com/galdor/go-ejson"
+	"github.com/galdor/go-service/pkg/pg"
 )
 
 const (
@@ -155,24 +155,24 @@ func (s *Service) CreateSession(conn pg.Conn, ns *eventline.NewSession, scope ev
 	return &session, nil
 }
 
-func sessionCookie(sessionId eventline.Id) *http.Cookie {
+func (s *Service) sessionCookie(sessionId eventline.Id) *http.Cookie {
 	return &http.Cookie{
 		Name:     SessionCookieName,
 		Value:    sessionId.String(),
 		Path:     "/",
 		MaxAge:   SessionTTL,
-		Secure:   true,
+		Secure:   !s.Cfg.InsecureHTTPCookies,
 		SameSite: http.SameSiteLaxMode,
 		HttpOnly: true,
 	}
 }
 
-func expiredCookie() *http.Cookie {
+func (s *Service) expiredCookie() *http.Cookie {
 	return &http.Cookie{
 		Name:     SessionCookieName,
 		Path:     "/",
 		MaxAge:   -1,
-		Secure:   true,
+		Secure:   !s.Cfg.InsecureHTTPCookies,
 		SameSite: http.SameSiteLaxMode,
 		HttpOnly: true,
 	}

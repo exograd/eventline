@@ -298,6 +298,14 @@ The URI which can be used to access the Eventline web interface from outside
 of the server. This URI will be used to generate webhook URIs among other
 thing.
 
+`insecure_http_cookies` (optional boolean, default to `false`) :: If true, do
+not set the secure attribute for HTTP cookies sent by the web HTTP server.
+This allows Eventline to be used over HTTP.
++
+CAUTION: Using Eventline without HTTPS is fundamentally insecure: anyone able
+to inspect network traffic can obtain critical information transferred between
+the web browser and Eventline. Do not do it.
+
 `connectors` (optional object) :: The configuration of each connector. Refer
 to the connector documentation for the settings available for each connector.
 
@@ -387,7 +395,7 @@ the end of all emails.
 `allowed_domains` (optional string array) :: A list of domains which can used
 in notification email addresses. If the array is empty, all domains are
 allowed.
-
++
 TIP: the `allowed_domains` setting is useful to make sure you that all
 notifications are sent to email addresses you control: this way you can limit
 the chances of losing notifications due to a mistake, and you guarantee that
