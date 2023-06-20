@@ -152,5 +152,5 @@ FORCE:
 .PHONY: all assets build evcli clean
 .PHONY: check vet test
 .PHONY: doc doc-html
-.PHONE: docker-images
+.PHONY: docker-images
 .PHONY: install install-flat
