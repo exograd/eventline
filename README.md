@@ -107,6 +107,14 @@ repository](doc/handbook/handbook.adoc), on the [Exograd
 website](https://www.exograd.com/doc/eventline/handbook.html) and in each
 GitHub release.
 
+## External resources
+### Terraform
+A Terraform provided developed by [Adyxax](https://github.com/adyxax/) is
+available on the [Terraform
+registry](https://registry.terraform.io/providers/adyxax/eventline). See the
+[documentation](https://registry.terraform.io/providers/adyxax/eventline/latest/docs)
+for more information.
+
 ## Commercial use
 We also provide Eventline Pro with multiple extensions and commercial support.
 
