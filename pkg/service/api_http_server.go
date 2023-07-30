@@ -34,6 +34,7 @@ func (s *APIHTTPServer) initHTTPServer() {
 	s.setupAccountRoutes()
 	s.setupLoginRoute()
 	s.setupProjectRoutes()
+	s.setupIdentityRoutes()
 	s.setupJobRoutes()
 	s.setupJobExecutionRoutes()
 	s.setupEventRoutes()
