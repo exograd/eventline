@@ -16,6 +16,8 @@ func (s *APIHTTPServer) setupIdentityRoutes() {
 		HTTPRouteOptions{Project: true})
 	s.route("/identities/id/:id", "GET", s.hIdentitiesIdGET,
 		HTTPRouteOptions{Project: true})
+	s.route("/identities/id/:id", "PUT", s.hIdentitiesIdPUT,
+		HTTPRouteOptions{Project: true})
 	s.route("/identities/id/:id", "DELETE", s.hIdentitiesIdDELETE,
 		HTTPRouteOptions{Project: true})
 }
@@ -82,6 +84,35 @@ func (s *APIHTTPServer) hIdentitiesIdGET(h *HTTPHandler) {
 
 	identity, err := s.LoadIdentity(h, identityId)
 	if err != nil {
+		return
+	}
+
+	h.ReplyJSON(200, identity)
+}
+
+func (s *APIHTTPServer) hIdentitiesIdPUT(h *HTTPHandler) {
+	scope := h.Context.ProjectScope()
+
+	identityId, err := h.IdPathVariable("id")
+	if err != nil {
+		return
+	}
+
+	var newIdentity eventline.NewIdentity
+	if err := h.JSONRequestData(&newIdentity); err != nil {
+		return
+	}
+
+	identity, err := s.Service.UpdateIdentity(identityId, &newIdentity, scope)
+	if err != nil {
+		var duplicateIdentityNameErr *DuplicateIdentityNameError
+
+		if errors.As(err, &duplicateIdentityNameErr) {
+			h.ReplyError(400, "duplicate_identity_name", "%v", err)
+		} else {
+			h.ReplyInternalError(500, "cannot update identity: %v", err)
+		}
+
 		return
 	}
 
