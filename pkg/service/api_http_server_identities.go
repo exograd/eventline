@@ -16,6 +16,8 @@ func (s *APIHTTPServer) setupIdentityRoutes() {
 		HTTPRouteOptions{Project: true})
 	s.route("/identities/id/:id", "GET", s.hIdentitiesIdGET,
 		HTTPRouteOptions{Project: true})
+	s.route("/identities/id/:id", "DELETE", s.hIdentitiesIdDELETE,
+		HTTPRouteOptions{Project: true})
 }
 
 func (s *APIHTTPServer) hIdentitiesGET(h *HTTPHandler) {
@@ -65,7 +67,7 @@ func (s *APIHTTPServer) hIdentitiesPOST(h *HTTPHandler) {
 	}
 
 	extra := map[string]interface{}{
-		"id": identity.Id.String(),
+		"id":     identity.Id.String(),
 		"status": identity.Status,
 	}
 
@@ -84,4 +86,30 @@ func (s *APIHTTPServer) hIdentitiesIdGET(h *HTTPHandler) {
 	}
 
 	h.ReplyJSON(200, identity)
+}
+
+func (s *APIHTTPServer) hIdentitiesIdDELETE(h *HTTPHandler) {
+	scope := h.Context.ProjectScope()
+
+	identityId, err := h.IdPathVariable("id")
+	if err != nil {
+		return
+	}
+
+	if err := s.Service.DeleteIdentity(identityId, scope); err != nil {
+		var unknownIdentityErr *eventline.UnknownIdentityError
+		var identityInUseErr *IdentityInUseError
+
+		if errors.As(err, &unknownIdentityErr) {
+			h.ReplyError(404, "unknown_identity", "%v", err)
+		} else if errors.As(err, &identityInUseErr) {
+			h.ReplyError(400, "identity_in_use", "%v", err)
+		} else {
+			h.ReplyInternalError(500, "cannot delete identity: %v", err)
+		}
+
+		return
+	}
+
+	h.ReplyEmpty(204)
 }
