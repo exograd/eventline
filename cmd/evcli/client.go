@@ -345,3 +345,22 @@ func (c *Client) RestartJobExecution(id eventline.Id) error {
 
 	return c.SendRequest("POST", uri, nil, nil)
 }
+
+func (c *Client) FetchIdentityByName(name string) (*eventline.RawIdentity, error) {
+	uri := NewURL("identities", "name", name)
+
+	var identity eventline.RawIdentity
+
+	err := c.SendRequest("GET", uri, nil, &identity)
+	if err != nil {
+		return nil, err
+	}
+
+	return &identity, nil
+}
+
+func (c *Client) DeleteIdentity(id string) error {
+	uri := NewURL("identities", "id", id)
+
+	return c.SendRequest("DELETE", uri, nil, nil)
+}

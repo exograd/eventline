@@ -34,6 +34,7 @@ func main() {
 	addEventCommands()
 	addJobCommands()
 	addJobExecutionCommands()
+	addIdentityCommands()
 
 	p.AddCommand("version", "print the version of evcli and exit", cmdVersion)
 

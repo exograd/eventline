@@ -70,6 +70,8 @@ type Identity struct {
 	RawData      json.RawMessage `json:"data"`
 }
 
+type RawIdentity Identity
+
 type Identities []*Identity
 
 func (ni *NewIdentity) ValidateJSON(v *ejson.Validator) {
