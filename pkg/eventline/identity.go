@@ -30,6 +30,14 @@ func (err UnknownIdentityError) Error() string {
 	return fmt.Sprintf("unknown identity %q", err.Id)
 }
 
+type UnknownIdentityNameError struct {
+	Name string
+}
+
+func (err UnknownIdentityNameError) Error() string {
+	return fmt.Sprintf("unknown identity %q", err.Name)
+}
+
 type IdentityStatus string
 
 const (
@@ -290,6 +298,23 @@ SELECT id, project_id, name, status, error_message,
 	err := pg.QueryObject(conn, i, query, id)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return &UnknownIdentityError{Id: id}
+	}
+
+	return err
+}
+
+func (i *Identity) LoadByName(conn pg.Conn, name string, scope Scope) error {
+	query := fmt.Sprintf(`
+SELECT id, project_id, name, status, error_message,
+       creation_time, update_time, last_use_time, refresh_time,
+       connector, type, data
+  FROM identities
+  WHERE %s AND name = $1
+`, scope.SQLCondition())
+
+	err := pg.QueryObject(conn, i, query, name)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return &UnknownIdentityNameError{Name: name}
 	}
 
 	return err

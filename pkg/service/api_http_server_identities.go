@@ -11,13 +11,19 @@ import (
 func (s *APIHTTPServer) setupIdentityRoutes() {
 	s.route("/identities", "GET", s.hIdentitiesGET,
 		HTTPRouteOptions{Project: true})
-	s.route("/identities", "POST",
-		s.hIdentitiesPOST,
+
+	s.route("/identities", "POST", s.hIdentitiesPOST,
 		HTTPRouteOptions{Project: true})
+
 	s.route("/identities/id/:id", "GET", s.hIdentitiesIdGET,
 		HTTPRouteOptions{Project: true})
+
+	s.route("/identities/name/:name", "GET", s.hIdentitiesNameGET,
+		HTTPRouteOptions{Project: true})
+
 	s.route("/identities/id/:id", "PUT", s.hIdentitiesIdPUT,
 		HTTPRouteOptions{Project: true})
+
 	s.route("/identities/id/:id", "DELETE", s.hIdentitiesIdDELETE,
 		HTTPRouteOptions{Project: true})
 }
@@ -83,6 +89,17 @@ func (s *APIHTTPServer) hIdentitiesIdGET(h *HTTPHandler) {
 	}
 
 	identity, err := s.LoadIdentity(h, identityId)
+	if err != nil {
+		return
+	}
+
+	h.ReplyJSON(200, identity)
+}
+
+func (s *APIHTTPServer) hIdentitiesNameGET(h *HTTPHandler) {
+	identityName := h.PathVariable("name")
+
+	identity, err := s.LoadIdentityByName(h, identityName)
 	if err != nil {
 		return
 	}
