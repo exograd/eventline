@@ -1,5 +1,18 @@
 package service
 
+import (
+	"encoding/json"
+
+	"github.com/galdor/go-service/pkg/shttp"
+)
+
+type APIError struct {
+	Message string          `json:"error"`
+	Code    string          `json:"code,omitempty"`
+	RawData json.RawMessage `json:"data,omitempty"`
+	Data    shttp.ErrorData `json:"-"`
+}
+
 type APIHTTPServer struct {
 	*HTTPServer
 }
@@ -42,4 +55,14 @@ func (s *APIHTTPServer) initHTTPServer() {
 
 func (s *APIHTTPServer) hStatusHEAD(h *HTTPHandler) {
 	h.ReplyEmpty(204)
+}
+
+func (s *Service) jsonErrorHandler(h *shttp.Handler, status int, code string, msg string, data shttp.ErrorData) {
+	responseData := APIError{
+		Message: msg,
+		Code:    code,
+		Data:    data,
+	}
+
+	h.ReplyJSON(status, &responseData)
 }

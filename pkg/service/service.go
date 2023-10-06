@@ -116,7 +116,7 @@ func (s *Service) ServiceCfg() *goservice.ServiceCfg {
 	// backward compatible. Hence the messy go-service service configuration
 	// initialization.
 
-	s.Cfg.APIHTTPServer.ErrorHandler = shttp.JSONErrorHandler
+	s.Cfg.APIHTTPServer.ErrorHandler = s.jsonErrorHandler
 	s.Cfg.WebHTTPServer.ErrorHandler = s.webErrorHandler
 
 	cfg := goservice.ServiceCfg{

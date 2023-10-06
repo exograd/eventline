@@ -14,7 +14,7 @@ import (
 
 type APIRequestError struct {
 	Status   int
-	APIError *shttp.JSONError
+	APIError *APIError
 	Message  string
 }
 
@@ -55,7 +55,7 @@ func (c *APIClient) SendRequest(method string, uri *url.URL, header map[string]s
 		resBody, err := ioutil.ReadAll(res.Body)
 		if err == nil {
 			if res.Header.Get("Content-Type") == "application/json" {
-				var apiErr shttp.JSONError
+				var apiErr APIError
 				if err := json.Unmarshal(resBody, &apiErr); err == nil {
 					reqErr.APIError = &apiErr
 					reqErr.Message += ": " + apiErr.Message
