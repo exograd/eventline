@@ -94,3 +94,9 @@ type JobPage struct {
 	Previous *eventline.Cursor `json:"previous,omitempty"`
 	Next     *eventline.Cursor `json:"next,omitempty"`
 }
+
+type RawIdentityPage struct {
+	Elements eventline.RawIdentities `json:"elements"`
+	Previous *eventline.Cursor       `json:"previous,omitempty"`
+	Next     *eventline.Cursor       `json:"next,omitempty"`
+}

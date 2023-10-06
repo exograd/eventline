@@ -359,6 +359,34 @@ func (c *Client) FetchIdentityByName(name string) (*eventline.RawIdentity, error
 	return &identity, nil
 }
 
+func (c *Client) FetchIdentities() (eventline.RawIdentities, error) {
+	var identities eventline.RawIdentities
+
+	cursor := eventline.Cursor{Size: 20}
+
+	for {
+		var page RawIdentityPage
+
+		uri := NewURL("identities")
+		uri.RawQuery = cursor.Query().Encode()
+
+		err := c.SendRequest("GET", uri, nil, &page)
+		if err != nil {
+			return nil, err
+		}
+
+		identities = append(identities, page.Elements...)
+
+		if page.Next == nil {
+			break
+		}
+
+		cursor = *page.Next
+	}
+
+	return identities, nil
+}
+
 func (c *Client) DeleteIdentity(id string) error {
 	uri := NewURL("identities", "id", id)
 

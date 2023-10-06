@@ -70,9 +70,11 @@ type Identity struct {
 	RawData      json.RawMessage `json:"data"`
 }
 
+type Identities []*Identity
+
 type RawIdentity Identity
 
-type Identities []*Identity
+type RawIdentities []*RawIdentity
 
 func (ni *NewIdentity) ValidateJSON(v *ejson.Validator) {
 	// Note that connector and type have already been validated by
