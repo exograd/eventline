@@ -178,10 +178,15 @@ func (c *Client) FetchProjectByName(name string) (*eventline.Project, error) {
 	return &project, nil
 }
 
-func (c *Client) CreateProject(project *eventline.Project) error {
+func (c *Client) CreateProject(newProject *eventline.NewProject) (*eventline.Project, error) {
 	uri := NewURL("projects")
 
-	return c.SendRequest("POST", uri, project, project)
+	var project eventline.Project
+	if err := c.SendRequest("POST", uri, newProject, &project); err != nil {
+		return nil, err
+	}
+
+	return &project, nil
 }
 
 func (c *Client) DeleteProject(id eventline.Id) error {

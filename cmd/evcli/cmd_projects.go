@@ -46,11 +46,12 @@ func cmdListProjects(p *program.Program) {
 func cmdCreateProject(p *program.Program) {
 	name := p.ArgumentValue("name")
 
-	project := &eventline.Project{
+	newProject := eventline.NewProject{
 		Name: name,
 	}
 
-	if err := app.Client.CreateProject(project); err != nil {
+	project, err := app.Client.CreateProject(&newProject)
+	if err != nil {
 		p.Fatal("cannot create project: %v", err)
 	}
 
