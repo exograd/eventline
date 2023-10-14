@@ -149,6 +149,11 @@ func (pni *NewIdentity) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+func (i *NewIdentity) IsOAuth2() bool {
+	_, ok := i.Data.(OAuth2IdentityData)
+	return ok
+}
+
 func (pi *Identity) MarshalJSON() ([]byte, error) {
 	type Identity2 Identity
 

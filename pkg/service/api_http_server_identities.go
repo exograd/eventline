@@ -61,6 +61,12 @@ func (s *APIHTTPServer) hIdentitiesPOST(h *HTTPHandler) {
 		return
 	}
 
+	if newIdentity.IsOAuth2() {
+		h.ReplyError(400, "invalid_oauth2_identity",
+			"cannot create oauth2 identity through the api")
+		return
+	}
+
 	identity, err := s.Service.CreateIdentity(&newIdentity, scope)
 	if err != nil {
 		var duplicateIdentityNameErr *DuplicateIdentityNameError
@@ -117,6 +123,12 @@ func (s *APIHTTPServer) hIdentitiesIdPUT(h *HTTPHandler) {
 
 	var newIdentity eventline.NewIdentity
 	if err := h.JSONRequestData(&newIdentity); err != nil {
+		return
+	}
+
+	if newIdentity.IsOAuth2() {
+		h.ReplyError(400, "invalid_oauth2_identity",
+			"cannot create oauth2 identity through the api")
 		return
 	}
 
