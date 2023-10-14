@@ -143,7 +143,7 @@ func (c *Client) FetchProjects() (eventline.Projects, error) {
 	cursor := eventline.Cursor{Size: 1}
 
 	for {
-		var page ProjectPage
+		var page Page[*eventline.Project]
 
 		uri := NewURL("projects")
 		uri.RawQuery = cursor.Query().Encode()
@@ -227,7 +227,7 @@ func (c *Client) FetchJobs() (eventline.Jobs, error) {
 	cursor := eventline.Cursor{Size: 20}
 
 	for {
-		var page JobPage
+		var page Page[*eventline.Job]
 
 		uri := NewURL("jobs")
 		uri.RawQuery = cursor.Query().Encode()
@@ -370,7 +370,7 @@ func (c *Client) FetchIdentities() (eventline.RawIdentities, error) {
 	cursor := eventline.Cursor{Size: 20}
 
 	for {
-		var page RawIdentityPage
+		var page Page[*eventline.RawIdentity]
 
 		uri := NewURL("identities")
 		uri.RawQuery = cursor.Query().Encode()

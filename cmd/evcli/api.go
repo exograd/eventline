@@ -74,12 +74,6 @@ type LoginResponse struct {
 	Key    string            `json:"key"`
 }
 
-type ProjectPage struct {
-	Elements eventline.Projects `json:"elements"`
-	Previous *eventline.Cursor  `json:"previous,omitempty"`
-	Next     *eventline.Cursor  `json:"next,omitempty"`
-}
-
 type Parameter struct {
 	Name        string      `json:"name"`
 	Type        string      `json:"type"`
@@ -89,14 +83,8 @@ type Parameter struct {
 
 type Parameters []*Parameter
 
-type JobPage struct {
-	Elements eventline.Jobs    `json:"elements"`
+type Page[E any] struct {
+	Elements []E               `json:"elements"`
 	Previous *eventline.Cursor `json:"previous,omitempty"`
 	Next     *eventline.Cursor `json:"next,omitempty"`
-}
-
-type RawIdentityPage struct {
-	Elements eventline.RawIdentities `json:"elements"`
-	Previous *eventline.Cursor       `json:"previous,omitempty"`
-	Next     *eventline.Cursor       `json:"next,omitempty"`
 }
