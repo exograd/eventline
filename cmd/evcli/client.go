@@ -387,6 +387,12 @@ func (c *Client) FetchIdentities() (eventline.RawIdentities, error) {
 	return identities, nil
 }
 
+func (c *Client) CreateIdentity(newIdentity *eventline.RawNewIdentity) error {
+	uri := NewURL("identities")
+
+	return c.SendRequest("POST", uri, newIdentity, nil)
+}
+
 func (c *Client) DeleteIdentity(id string) error {
 	uri := NewURL("identities", "id", id)
 

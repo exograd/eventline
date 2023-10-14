@@ -54,6 +54,8 @@ type NewIdentity struct {
 	RawData   json.RawMessage `json:"data"`
 }
 
+type RawNewIdentity NewIdentity
+
 type Identity struct {
 	Id           Id              `json:"id"`
 	ProjectId    *Id             `json:"project_id"`

@@ -1,15 +1,31 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"strings"
+
+	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/galdor/go-program"
 )
 
 func addIdentityCommands() {
 	var c *program.Command
 
-	// // list-identities
+	// list-identities
 	c = p.AddCommand("list-identities", "list all identities",
 		cmdListIdentities)
+
+	// create-identity
+	c = p.AddCommand("create-identity", "create a new identity",
+		cmdCreateIdentity)
+
+	c.AddArgument("name", "the name of the identity")
+	c.AddArgument("connector", "the name of the connector")
+	c.AddArgument("type", "the type of the identity")
+	c.AddTrailingArgument("field",
+		"key/value identity data fields represented as \"<key>=<value>\" "+
+			"arguments")
 
 	// delete-identity
 	c = p.AddCommand("delete-identity", "delete an identity",
@@ -45,6 +61,38 @@ func cmdListIdentities(p *program.Program) {
 	table.Write()
 }
 
+func cmdCreateIdentity(p *program.Program) {
+	app.IdentifyCurrentProject()
+
+	name := p.ArgumentValue("name")
+	connector := p.ArgumentValue("connector")
+	itype := p.ArgumentValue("type")
+	fieldStrings := p.TrailingArgumentValues("field")
+
+	data, err := ParseIdentityFields(fieldStrings)
+	if err != nil {
+		p.Fatal("invalid fields: %v", err)
+	}
+
+	encodedData, err := json.Marshal(data)
+	if err != nil {
+		p.Fatal("cannot encode field data: %v", err)
+	}
+
+	newIdentity := eventline.RawNewIdentity{
+		Name:      name,
+		Connector: connector,
+		Type:      itype,
+		RawData:   encodedData,
+	}
+
+	if err := app.Client.CreateIdentity(&newIdentity); err != nil {
+		p.Fatal("cannot create identity: %v", err)
+	}
+
+	p.Info("identity %q created", newIdentity.Name)
+}
+
 func cmdDeleteIdentity(p *program.Program) {
 	app.IdentifyCurrentProject()
 
@@ -60,4 +108,30 @@ func cmdDeleteIdentity(p *program.Program) {
 	}
 
 	p.Info("identity %q deleted", identity.Id)
+}
+
+func ParseIdentityFields(ss []string) (map[string]interface{}, error) {
+	// With current connectors, all non-oauth2 identities only use string
+	// fields. If this changes, we will need a way to access identity
+	// definitions in evcli through the API.
+
+	data := make(map[string]interface{})
+
+	for _, s := range ss {
+		equal := strings.IndexByte(s, '=')
+		if equal == -1 {
+			return nil, fmt.Errorf("%q: invalid format", s)
+		}
+
+		key := s[:equal]
+		if key == "" {
+			return nil, fmt.Errorf("%q: empty key", s)
+		}
+
+		value := s[equal+1:]
+
+		data[key] = value
+	}
+
+	return data, nil
 }
