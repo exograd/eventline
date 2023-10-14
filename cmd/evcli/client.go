@@ -393,6 +393,12 @@ func (c *Client) CreateIdentity(newIdentity *eventline.RawNewIdentity) error {
 	return c.SendRequest("POST", uri, newIdentity, nil)
 }
 
+func (c *Client) UpdateIdentity(id eventline.Id, newIdentity *eventline.RawNewIdentity) error {
+	uri := NewURL("identities", "id", id.String())
+
+	return c.SendRequest("PUT", uri, newIdentity, nil)
+}
+
 func (c *Client) DeleteIdentity(id string) error {
 	uri := NewURL("identities", "id", id)
 

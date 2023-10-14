@@ -27,6 +27,17 @@ func addIdentityCommands() {
 		"key/value identity data fields represented as \"<key>=<value>\" "+
 			"arguments")
 
+	// update-identity
+	c = p.AddCommand("update-identity", "update an identity",
+		cmdUpdateIdentity)
+
+	c.AddArgument("name", "the name of the identity")
+	c.AddArgument("connector", "the name of the connector")
+	c.AddArgument("type", "the type of the identity")
+	c.AddTrailingArgument("field",
+		"key/value identity data fields represented as \"<key>=<value>\" "+
+			"arguments")
+
 	// delete-identity
 	c = p.AddCommand("delete-identity", "delete an identity",
 		cmdDeleteIdentity)
@@ -91,6 +102,44 @@ func cmdCreateIdentity(p *program.Program) {
 	}
 
 	p.Info("identity %q created", newIdentity.Name)
+}
+
+func cmdUpdateIdentity(p *program.Program) {
+	app.IdentifyCurrentProject()
+
+	name := p.ArgumentValue("name")
+	connector := p.ArgumentValue("connector")
+	itype := p.ArgumentValue("type")
+	fieldStrings := p.TrailingArgumentValues("field")
+
+	data, err := ParseIdentityFields(fieldStrings)
+	if err != nil {
+		p.Fatal("invalid fields: %v", err)
+	}
+
+	encodedData, err := json.Marshal(data)
+	if err != nil {
+		p.Fatal("cannot encode field data: %v", err)
+	}
+
+	identity, err := app.Client.FetchIdentityByName(name)
+	if err != nil {
+		p.Fatal("cannot fetch identity: %v", err)
+	}
+
+	newIdentity := eventline.RawNewIdentity{
+		Name:      name,
+		Connector: connector,
+		Type:      itype,
+		RawData:   encodedData,
+	}
+
+	err = app.Client.UpdateIdentity(identity.Id, &newIdentity)
+	if err != nil {
+		p.Fatal("cannot update identity: %v", err)
+	}
+
+	p.Info("identity %q updated", newIdentity.Name)
 }
 
 func cmdDeleteIdentity(p *program.Program) {
