@@ -392,16 +392,26 @@ func (c *Client) FetchIdentities() (eventline.RawIdentities, error) {
 	return identities, nil
 }
 
-func (c *Client) CreateIdentity(newIdentity *eventline.RawNewIdentity) error {
+func (c *Client) CreateIdentity(newIdentity *eventline.RawNewIdentity) (*eventline.RawIdentity, error) {
 	uri := NewURL("identities")
 
-	return c.SendRequest("POST", uri, newIdentity, nil)
+	var identity eventline.RawIdentity
+	if err := c.SendRequest("POST", uri, newIdentity, &identity); err != nil {
+		return nil, err
+	}
+
+	return &identity, nil
 }
 
-func (c *Client) UpdateIdentity(id eventline.Id, newIdentity *eventline.RawNewIdentity) error {
+func (c *Client) UpdateIdentity(id eventline.Id, newIdentity *eventline.RawNewIdentity) (*eventline.RawIdentity, error) {
 	uri := NewURL("identities", "id", id.String())
 
-	return c.SendRequest("PUT", uri, newIdentity, nil)
+	var identity eventline.RawIdentity
+	if err := c.SendRequest("PUT", uri, newIdentity, &identity); err != nil {
+		return nil, err
+	}
+
+	return &identity, nil
 }
 
 func (c *Client) DeleteIdentity(id string) error {

@@ -80,12 +80,7 @@ func (s *APIHTTPServer) hIdentitiesPOST(h *HTTPHandler) {
 		return
 	}
 
-	extra := map[string]interface{}{
-		"id":     identity.Id.String(),
-		"status": identity.Status,
-	}
-
-	h.ReplyJSON(201, extra)
+	h.ReplyJSON(201, identity)
 }
 
 func (s *APIHTTPServer) hIdentitiesIdGET(h *HTTPHandler) {

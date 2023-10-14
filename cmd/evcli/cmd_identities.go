@@ -97,11 +97,12 @@ func cmdCreateIdentity(p *program.Program) {
 		RawData:   encodedData,
 	}
 
-	if err := app.Client.CreateIdentity(&newIdentity); err != nil {
+	identity, err := app.Client.CreateIdentity(&newIdentity)
+	if err != nil {
 		p.Fatal("cannot create identity: %v", err)
 	}
 
-	p.Info("identity %q created", newIdentity.Name)
+	p.Info("identity %q created", identity.Name)
 }
 
 func cmdUpdateIdentity(p *program.Program) {
@@ -134,12 +135,12 @@ func cmdUpdateIdentity(p *program.Program) {
 		RawData:   encodedData,
 	}
 
-	err = app.Client.UpdateIdentity(identity.Id, &newIdentity)
+	identity2, err := app.Client.UpdateIdentity(identity.Id, &newIdentity)
 	if err != nil {
 		p.Fatal("cannot update identity: %v", err)
 	}
 
-	p.Info("identity %q updated", newIdentity.Name)
+	p.Info("identity %q updated", identity2.Name)
 }
 
 func cmdDeleteIdentity(p *program.Program) {
