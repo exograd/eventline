@@ -65,9 +65,18 @@ and interrupted if it has.
 
 Create a new project.
 
+==== `create-identity`
+
+Create a new identity. The command cannot be used to create identities which
+rely on a web browser for initialization, for example OAuth2 identities.
+
 ==== `delete-job`
 
 Delete a job. All past job executions will also be deleted.
+
+==== `delete-identity`
+
+Delete an identity.
 
 ==== `delete-project`
 
@@ -137,6 +146,10 @@ name of a command as argument, print help about this command.
 
 Print a list of all jobs in the current project.
 
+==== `list-identities`
+
+List all identities in the current project.
+
 ==== `list-projects`
 
 Print a list of all projects.
@@ -194,6 +207,10 @@ NOTE: If Evcli is installed in a location which is not writable by the user
 such as the path used by `install-evcli` (`/usr/local/bin`), the `update`
 command must be executed with the appropriate permissions, for example using
 `sudo`.
+
+==== `update-identity`
+
+Update an existing identity.
 
 ==== `version`
 
