@@ -375,6 +375,59 @@ for job instantiation or not.
 }
 ----
 
+[#data-identities]
+==== Identities
+
+Identities are represented as JSON objects containing the following fields:
+
+`id` (identifier) :: The identifier of the identity.
+
+`project_id` (identifier) :: The identifier of the project the identity is
+part of.
+
+`name` (name) :: The name of the identity.
+
+`status` (string) :: The current status of the identity, either `pending`,
+`ready` or `error`.
+
+`error_message` (optinoal string) :: If the identity has status `error`, a
+description of the error.
+
+`creation_time` (date) :: The date the identity was created.
+
+`update_time` (date) :: The date the identity was created.
+
+`last_use_time` (optional date) :: The last time the identity was used.
+
+`refresh_time` (optional date) :: The last time the identity was refreshed for
+identities which must be refreshed regularly.
+
+`connector` (string) :: The name of the connector.
+
+`type` (string) :: The type of the identity.
+
+`data` (object) :: The set of data contained by the identity. Depends on the
+connector and type. See the documentation of the identity in the
+<<chapter-connectors,connector section>> for more information.
+
+.Example
+[source,json]
+----
+{
+  "id": "2X7hQLbWL5iQa6z17pMnXFlbqtP",
+  "project_id": "1zY1y6offsPNwvhFxgpteVO0GvM",
+  "name": "bob-account",
+  "status": "ready",
+  "creation_time": "2023-10-22T16:47:04Z",
+  "connector": "generic",
+  "type": "password",
+  "data": {
+    "login": "bob",
+    "password": "67d4155eb1840d15f2bb67a481d88ee5d11770081ac2a810"
+  }
+}
+----
+
 === Routes
 
 ==== Accounts
@@ -541,3 +594,62 @@ The response is an <<data-events,event object>>.
 ===== `POST /events/id/{id}/replay`
 
 Replay an event by identifier.
+
+==== Identities
+
+===== `GET /identities`
+
+Fetch a paginated list of identities.
+
+The response is a page of <<data-identities,identity objects>>.
+
+===== `POST /identities`
+
+Create a new identity.
+
+The request must be a JSON object containing the following field:
+
+`name` (name) :: The name of the identity.
+
+`connector` (string) :: the name of the connector.
+
+`type` (string) :: the type of the identity.
+
+`data` (object) :: the set of data associated with the identity.
+
+The response is the <<data-identities,identity object>> which was created.
+
+NOTE: Identities requiring a web browser such as OAuth2-based identities
+cannot be created using the API.
+
+===== `GET /identities/id/{id}`
+
+Fetch a identity by identifier.
+
+The response is a <<data-identities,identity object>>.
+
+===== `GET /identities/name/{name}`
+
+Fetch a identity by name.
+
+The response is a <<data-identities,identity object>>.
+
+===== `PUT /identities/id/{id}`
+
+Update an existing identity.
+
+The request must be a JSON object containing the following field:
+
+`name` (name) :: The name of the identity.
+
+`connector` (string) :: the name of the connector.
+
+`type` (string) :: the type of the identity.
+
+`data` (object) :: the set of data associated with the identity.
+
+The response is the modified <<data-identities,identity object>>.
+
+===== `DELETE /identities/id/{id}`
+
+Delete a identity by identifier.
