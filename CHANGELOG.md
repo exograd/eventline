@@ -1,6 +1,16 @@
 # Changelog
 ## v1.1.0
-_Work in progress._
+### Features
+- Add the possibility to rename jobs. Since jobs are primarily identified by
+  their name, deploying a job with a different name creates a new job instead
+  of renaming the existing one. This new feature makes it possible to rename a
+  job, for example to archive it.
+- Add a `/jobs/id/:id/rename` API route.
+- Add a `rename-job` evcli command.
+- Update the API to add identity handling. Thanks to
+  [Adyxax](https://www.adyxax.org) For his contributions!
+- Add an option to send non-secure cookie (see the `insecure_http_cookies`
+  setting).
 
 ### Breaking changes
 - In the logger configuration, the `backend` member is replaced by either
@@ -20,13 +30,9 @@ _Work in progress._
       color: true
   ```
 
-### Features
-- Add the possibility to rename jobs. Since jobs are primarily identified by
-  their name, deploying a job with a different name creates a new job instead
-  of renaming the existing one. This new feature makes it possible to rename a
-  job, for example to archive it.
-- Add a `/jobs/id/:id/rename` API route.
-- Add a `rename-job` evcli command.
+### Misc
+- Update the base service library to
+  [go-service](https://github.com/galdor/go-service).
 
 ## v1.0.8
 ### Bug fixes
