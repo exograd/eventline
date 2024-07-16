@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-ejson"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/ejson"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *APIHTTPServer) setupJobRoutes() {
@@ -17,28 +17,28 @@ func (s *APIHTTPServer) setupJobRoutes() {
 	s.route("/jobs", "PUT", s.hJobsPUT,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id", "GET", s.hJobsIdGET,
+	s.route("/jobs/id/{id}", "GET", s.hJobsIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id", "DELETE", s.hJobsIdDELETE,
+	s.route("/jobs/id/{id}", "DELETE", s.hJobsIdDELETE,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/name/:name", "GET", s.hJobsNameGET,
+	s.route("/jobs/name/{name}", "GET", s.hJobsNameGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/name/:name", "PUT", s.hJobsNamePUT,
+	s.route("/jobs/name/{name}", "PUT", s.hJobsNamePUT,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/rename", "POST", s.hJobsIdRenamePOST,
+	s.route("/jobs/id/{id}/rename", "POST", s.hJobsIdRenamePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/enable", "POST", s.hJobsIdEnablePOST,
+	s.route("/jobs/id/{id}/enable", "POST", s.hJobsIdEnablePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/disable", "POST", s.hJobsIdDisablePOST,
+	s.route("/jobs/id/{id}/disable", "POST", s.hJobsIdDisablePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/execute", "POST", s.hJobsIdExecutePOST,
+	s.route("/jobs/id/{id}/execute", "POST", s.hJobsIdExecutePOST,
 		HTTPRouteOptions{Project: true})
 }
 

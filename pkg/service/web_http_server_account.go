@@ -6,7 +6,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupAccountRoutes() {
@@ -42,7 +42,7 @@ func (s *WebHTTPServer) setupAccountRoutes() {
 		s.hAccountAPIKeysCreatePOST,
 		HTTPRouteOptions{})
 
-	s.route("/account/api_keys/id/:id/delete", "POST",
+	s.route("/account/api_keys/id/{id}/delete", "POST",
 		s.hAccountAPIKeysIdDeletePOST,
 		HTTPRouteOptions{})
 }

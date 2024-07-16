@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"regexp"
 
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type Filter struct {

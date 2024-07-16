@@ -9,7 +9,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/go-oauth2c"
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type OAuth2Identity struct {

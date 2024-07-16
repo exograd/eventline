@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type Parameters struct {

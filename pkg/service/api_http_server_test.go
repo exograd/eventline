@@ -6,7 +6,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/test"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 	"github.com/stretchr/testify/require"
 )
 

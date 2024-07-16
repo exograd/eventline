@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *Service) CreateSubscription(conn pg.Conn, job *eventline.Job, scope eventline.Scope) (*eventline.Subscription, error) {

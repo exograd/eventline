@@ -3,7 +3,7 @@ package eventline
 import (
 	"regexp"
 
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 const (

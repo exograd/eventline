@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 var (

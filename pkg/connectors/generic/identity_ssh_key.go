@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type SSHKeyIdentity struct {

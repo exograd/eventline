@@ -7,23 +7,23 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupJobExecutionRoutes() {
-	s.route("/job_executions/id/:id", "GET",
+	s.route("/job_executions/id/{id}", "GET",
 		s.hJobExecutionsIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/job_executions/id/:id/content", "GET",
+	s.route("/job_executions/id/{id}/content", "GET",
 		s.hJobExecutionsIdContentGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/job_executions/id/:id/abort", "POST",
+	s.route("/job_executions/id/{id}/abort", "POST",
 		s.hJobExecutionsIdAbortPOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/job_executions/id/:id/restart", "POST",
+	s.route("/job_executions/id/{id}/restart", "POST",
 		s.hJobExecutionsIdRestartPOST,
 		HTTPRouteOptions{Project: true})
 }

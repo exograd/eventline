@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/galdor/go-service/pkg/shttp"
+	"go.n16f.net/service/pkg/shttp"
 )
 
 type WebHTTPServer struct {
@@ -37,7 +37,7 @@ func (s *WebHTTPServer) route(path, method string, fn HTTPRouteFunc, options HTT
 func (s *WebHTTPServer) initHTTPServer() {
 	s.Server = s.Service.Service.HTTPServer("web")
 
-	s.route("/", "GET", s.hGET,
+	s.route("/{$}", "GET", s.hGET,
 		HTTPRouteOptions{})
 
 	s.route("/status", "HEAD", s.hStatusHEAD,

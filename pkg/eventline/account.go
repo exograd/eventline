@@ -10,8 +10,8 @@ import (
 
 	"github.com/exograd/eventline/pkg/cryptoutils"
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/galdor/go-ejson"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/ejson"
+	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
 	"golang.org/x/crypto/pbkdf2"
 )

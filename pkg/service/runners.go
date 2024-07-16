@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-log"
+	"go.n16f.net/log"
 )
 
 type Runner interface {

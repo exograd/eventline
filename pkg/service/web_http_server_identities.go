@@ -6,7 +6,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupIdentityRoutes() {
@@ -22,31 +22,31 @@ func (s *WebHTTPServer) setupIdentityRoutes() {
 		s.hIdentitiesCreatePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/:id", "GET",
+	s.route("/identities/id/{id}", "GET",
 		s.hIdentitiesIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/:id/configuration", "GET",
+	s.route("/identities/id/{id}/configuration", "GET",
 		s.hIdentitiesIdConfigurationGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/:id/configuration", "POST",
+	s.route("/identities/id/{id}/configuration", "POST",
 		s.hIdentitiesIdConfigurationPOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/:id/refresh", "POST",
+	s.route("/identities/id/{id}/refresh", "POST",
 		s.hIdentitiesIdRefreshPOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/:id/delete", "POST",
+	s.route("/identities/id/{id}/delete", "POST",
 		s.hIdentitiesIdDeletePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/connector/:connector/types", "GET",
+	s.route("/identities/connector/{connector}/types", "GET",
 		s.hIdentitiesConnectorTypesGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/connector/:connector/type/:type/data", "GET",
+	s.route("/identities/connector/{connector}/type/:type/data", "GET",
 		s.hIdentitiesConnectorTypeDataGET,
 		HTTPRouteOptions{Project: true})
 }

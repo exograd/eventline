@@ -8,10 +8,10 @@ import (
 	"testing"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"github.com/galdor/go-log"
-	"github.com/galdor/go-service/pkg/pg"
-	goservice "github.com/galdor/go-service/pkg/service"
-	"github.com/galdor/go-service/pkg/shttp"
+	"go.n16f.net/log"
+	"go.n16f.net/service/pkg/pg"
+	goservice "go.n16f.net/service/pkg/service"
+	"go.n16f.net/service/pkg/shttp"
 )
 
 var (

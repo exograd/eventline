@@ -7,7 +7,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupEventRoutes() {
@@ -15,11 +15,11 @@ func (s *WebHTTPServer) setupEventRoutes() {
 		s.hEventsGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/events/id/:id", "GET",
+	s.route("/events/id/{id}", "GET",
 		s.hEventsIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/events/id/:id/replay", "POST",
+	s.route("/events/id/{id}/replay", "POST",
 		s.hEventsIdReplayPOST,
 		HTTPRouteOptions{Project: true})
 }

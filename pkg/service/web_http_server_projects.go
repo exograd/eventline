@@ -6,8 +6,8 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/galdor/go-ejson"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/ejson"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupProjectRoutes() {
@@ -27,19 +27,19 @@ func (s *WebHTTPServer) setupProjectRoutes() {
 		s.hProjectsDialogGET,
 		HTTPRouteOptions{})
 
-	s.route("/projects/id/:id/select", "POST",
+	s.route("/projects/id/{id}/select", "POST",
 		s.hProjectsIdSelectPOST,
 		HTTPRouteOptions{})
 
-	s.route("/projects/id/:id/configuration", "GET",
+	s.route("/projects/id/{id}/configuration", "GET",
 		s.hProjectsIdConfigurationGET,
 		HTTPRouteOptions{})
 
-	s.route("/projects/id/:id/configuration", "POST",
+	s.route("/projects/id/{id}/configuration", "POST",
 		s.hProjectsIdConfigurationPOST,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/projects/id/:id/delete", "POST",
+	s.route("/projects/id/{id}/delete", "POST",
 		s.hProjectsIdDeletePOST,
 		HTTPRouteOptions{Admin: true})
 }
@@ -222,7 +222,12 @@ func (s *WebHTTPServer) hProjectsIdConfigurationPOST(h *HTTPHandler) {
 		})
 	}
 
-	if err := h.JSONRequestData2(&cfg, extraChecks); err != nil {
+	data, err := h.RequestData()
+	if err != nil {
+		return
+	}
+
+	if err := h.JSONRequestDataExt(data, &cfg, extraChecks); err != nil {
 		return
 	}
 

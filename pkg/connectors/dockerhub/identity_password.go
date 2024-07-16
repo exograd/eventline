@@ -2,7 +2,7 @@ package dockerhub
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type PasswordIdentity struct {

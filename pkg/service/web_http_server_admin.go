@@ -6,7 +6,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupAdminRoutes() {
@@ -26,23 +26,23 @@ func (s *WebHTTPServer) setupAdminRoutes() {
 		s.hAdminAccountsCreatePOST,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/admin/accounts/id/:id/edit", "GET",
+	s.route("/admin/accounts/id/{id}/edit", "GET",
 		s.hAdminAccountsIdEditGET,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/admin/accounts/id/:id/edit", "POST",
+	s.route("/admin/accounts/id/{id}/edit", "POST",
 		s.hAdminAccountsIdEditPOST,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/admin/accounts/id/:id/change_password", "GET",
+	s.route("/admin/accounts/id/{id}/change_password", "GET",
 		s.hAdminAccountsIdChangePasswordGET,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/admin/accounts/id/:id/change_password", "POST",
+	s.route("/admin/accounts/id/{id}/change_password", "POST",
 		s.hAdminAccountsIdChangePasswordPOST,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/admin/accounts/id/:id/delete", "POST",
+	s.route("/admin/accounts/id/{id}/delete", "POST",
 		s.hAdminAccountsIdDeletePOST,
 		HTTPRouteOptions{Admin: true})
 }

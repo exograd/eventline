@@ -7,7 +7,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type UnknownIdentityDefError struct {

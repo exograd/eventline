@@ -7,7 +7,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/eventline/pkg/web"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *WebHTTPServer) setupJobRoutes() {
@@ -15,63 +15,63 @@ func (s *WebHTTPServer) setupJobRoutes() {
 		s.hJobsGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id", "GET",
+	s.route("/jobs/id/{id}", "GET",
 		s.hJobsIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/timeline", "GET",
+	s.route("/jobs/id/{id}/timeline", "GET",
 		s.hJobsIdTimelineGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/delete", "POST",
+	s.route("/jobs/id/{id}/delete", "POST",
 		s.hJobsIdDeletePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/enable", "POST",
+	s.route("/jobs/id/{id}/enable", "POST",
 		s.hJobsIdEnablePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/disable", "POST",
+	s.route("/jobs/id/{id}/disable", "POST",
 		s.hJobsIdDisablePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/add_favourite", "POST",
+	s.route("/jobs/id/{id}/add_favourite", "POST",
 		s.hJobsIdAddFavouritePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/remove_favourite", "POST",
+	s.route("/jobs/id/{id}/remove_favourite", "POST",
 		s.hJobsIdRemoveFavouritePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/rename", "GET",
+	s.route("/jobs/id/{id}/rename", "GET",
 		s.hJobsIdRenameGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/rename", "POST",
+	s.route("/jobs/id/{id}/rename", "POST",
 		s.hJobsIdRenamePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/execute", "GET",
+	s.route("/jobs/id/{id}/execute", "GET",
 		s.hJobsIdExecuteGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/execute", "POST",
+	s.route("/jobs/id/{id}/execute", "POST",
 		s.hJobsIdExecutePOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/definition", "GET",
+	s.route("/jobs/id/{id}/definition", "GET",
 		s.hJobsIdDefinitionGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/metrics", "GET",
+	s.route("/jobs/id/{id}/metrics", "GET",
 		s.hJobsIdMetricsGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/metrics/status_counts", "GET",
+	s.route("/jobs/id/{id}/metrics/status_counts", "GET",
 		s.hJobsIdMetricsStatusCountsGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/jobs/id/:id/metrics/running_times", "GET",
+	s.route("/jobs/id/{id}/metrics/running_times", "GET",
 		s.hJobsIdMetricsRunningTimesGET,
 		HTTPRouteOptions{Project: true})
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *APIHTTPServer) setupIdentityRoutes() {
@@ -15,16 +15,16 @@ func (s *APIHTTPServer) setupIdentityRoutes() {
 	s.route("/identities", "POST", s.hIdentitiesPOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/:id", "GET", s.hIdentitiesIdGET,
+	s.route("/identities/id/{id}", "GET", s.hIdentitiesIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/name/:name", "GET", s.hIdentitiesNameGET,
+	s.route("/identities/name/{name}", "GET", s.hIdentitiesNameGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/:id", "PUT", s.hIdentitiesIdPUT,
+	s.route("/identities/id/{id}", "PUT", s.hIdentitiesIdPUT,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/id/:id", "DELETE", s.hIdentitiesIdDELETE,
+	s.route("/identities/id/{id}", "DELETE", s.hIdentitiesIdDELETE,
 		HTTPRouteOptions{Project: true})
 }
 

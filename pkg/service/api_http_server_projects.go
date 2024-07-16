@@ -11,16 +11,16 @@ func (s *APIHTTPServer) setupProjectRoutes() {
 	s.route("/projects", "POST", s.hProjectsPOST,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/projects/id/:id", "GET", s.hProjectsIdGET,
+	s.route("/projects/id/{id}", "GET", s.hProjectsIdGET,
 		HTTPRouteOptions{})
 
-	s.route("/projects/name/:name", "GET", s.hProjectsNameGET,
+	s.route("/projects/name/{name}", "GET", s.hProjectsNameGET,
 		HTTPRouteOptions{})
 
-	s.route("/projects/id/:id", "PUT", s.hProjectsIdPUT,
+	s.route("/projects/id/{id}", "PUT", s.hProjectsIdPUT,
 		HTTPRouteOptions{Admin: true})
 
-	s.route("/projects/id/:id", "DELETE", s.hProjectsIdDELETE,
+	s.route("/projects/id/{id}", "DELETE", s.hProjectsIdDELETE,
 		HTTPRouteOptions{Admin: true})
 }
 

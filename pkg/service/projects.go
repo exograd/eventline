@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-service/pkg/pg"
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/ejson"
 )
 
 type ProjectConfiguration struct {

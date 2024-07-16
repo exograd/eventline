@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/galdor/go-service/pkg/shttp"
+	"go.n16f.net/service/pkg/shttp"
 )
 
 type APIRequestError struct {

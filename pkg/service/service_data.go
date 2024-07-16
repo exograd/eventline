@@ -11,7 +11,7 @@ import (
 	rdocker "github.com/exograd/eventline/pkg/runners/docker"
 	rlocal "github.com/exograd/eventline/pkg/runners/local"
 	rssh "github.com/exograd/eventline/pkg/runners/ssh"
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type ServiceData struct {

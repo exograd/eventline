@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-log"
-	"github.com/galdor/go-service/pkg/pg"
-	"github.com/galdor/go-service/pkg/shttp"
+	"go.n16f.net/log"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/service/pkg/shttp"
 )
 
 var (

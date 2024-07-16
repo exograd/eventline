@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 
-	"github.com/galdor/go-service/pkg/shttp"
+	"go.n16f.net/service/pkg/shttp"
 )
 
 type APIError struct {

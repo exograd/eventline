@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 )
 
 func (s *Service) ReplayEvent(eventId eventline.Id, scope eventline.Scope) (*eventline.Event, error) {

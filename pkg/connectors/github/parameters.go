@@ -3,7 +3,7 @@ package github
 import (
 	"strings"
 
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type Parameters struct {

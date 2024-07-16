@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-program"
+	"go.n16f.net/program"
 )
 
 func addIdentityCommands() {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-service/pkg/pg"
+	"go.n16f.net/service/pkg/pg"
 	"github.com/google/go-github/v45/github"
 )
 

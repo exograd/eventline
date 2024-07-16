@@ -3,7 +3,7 @@ package ssh
 import (
 	"path"
 
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type RunnerCfg struct {

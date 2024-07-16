@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type EventRef struct {

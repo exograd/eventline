@@ -1,14 +1,14 @@
 package service
 
 func (s *APIHTTPServer) setupJobExecutionRoutes() {
-	s.route("/job_executions/id/:id", "GET", s.hJobExecutionsIdGET,
+	s.route("/job_executions/id/{id}", "GET", s.hJobExecutionsIdGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/job_executions/id/:id/abort", "POST",
+	s.route("/job_executions/id/{id}/abort", "POST",
 		s.hJobExecutionsIdAbortPOST,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/job_executions/id/:id/restart", "POST",
+	s.route("/job_executions/id/{id}/restart", "POST",
 		s.hJobExecutionsIdRestartPOST,
 		HTTPRouteOptions{Project: true})
 }

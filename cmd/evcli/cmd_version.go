@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/galdor/go-program"
+	"go.n16f.net/program"
 )
 
 func cmdVersion(p *program.Program) {

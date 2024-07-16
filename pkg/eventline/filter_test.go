@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 	"github.com/stretchr/testify/require"
 )
 

@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/exograd/eventline/pkg/service"
-	goservice "github.com/galdor/go-service/pkg/service"
+	goservice "go.n16f.net/service/pkg/service"
 )
 
 var buildId string

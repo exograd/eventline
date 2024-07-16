@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-program"
+	"go.n16f.net/program"
 )
 
 var (

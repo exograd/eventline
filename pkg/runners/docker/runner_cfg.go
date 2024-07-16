@@ -3,7 +3,7 @@ package docker
 import (
 	"net/url"
 
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/ejson"
 )
 
 type RunnerCfg struct {

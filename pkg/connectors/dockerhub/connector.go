@@ -2,8 +2,8 @@ package dockerhub
 
 import (
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/galdor/go-ejson"
-	"github.com/galdor/go-log"
+	"go.n16f.net/ejson"
+	"go.n16f.net/log"
 )
 
 type ConnectorCfg struct {

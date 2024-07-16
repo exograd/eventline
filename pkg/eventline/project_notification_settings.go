@@ -5,8 +5,8 @@ import (
 	"net/mail"
 	"strings"
 
-	"github.com/galdor/go-service/pkg/pg"
-	"github.com/galdor/go-ejson"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/ejson"
 	"github.com/jackc/pgx/v5"
 )
 

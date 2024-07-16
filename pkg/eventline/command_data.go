@@ -1,6 +1,6 @@
 package eventline
 
-import "github.com/galdor/go-ejson"
+import "go.n16f.net/ejson"
 
 type CommandData struct {
 	Parameters []*Parameter `json:"parameters,omitempty"`
