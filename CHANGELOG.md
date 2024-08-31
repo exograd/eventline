@@ -1,4 +1,8 @@
 # Changelog
+## v1.1.1
+### Misc
+- Update dependencies.
+
 ## v1.1.0
 ### Features
 - Add the possibility to rename jobs. Since jobs are primarily identified by
