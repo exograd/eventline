@@ -3,7 +3,7 @@ package time
 import (
 	"time"
 
-	"github.com/exograd/eventline/pkg/utils"
+	"go.n16f.net/program"
 )
 
 type WeekDay string
@@ -48,7 +48,7 @@ func (wd WeekDay) Number() (n int) {
 		n = 0
 
 	default:
-		utils.Panicf("unhandled week day %q", string(wd))
+		program.Panicf("unhandled week day %q", string(wd))
 	}
 
 	return

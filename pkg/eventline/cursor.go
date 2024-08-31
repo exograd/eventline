@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/exograd/eventline/pkg/utils"
+	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
 )
 
@@ -167,7 +167,7 @@ func (c *Cursor) SQLConditionOrderLimit2(sorts Sorts, correlation string) string
 	}
 	sortPart := sorts.Column(sort)
 	if sortPart == "" {
-		utils.Panicf("unknown sort %q", sort)
+		program.Panicf("unknown sort %q", sort)
 	}
 	if correlation != "" {
 		sortPart = correlation + "." + sortPart
@@ -187,7 +187,7 @@ func (c *Cursor) SQLConditionOrderLimit2(sorts Sorts, correlation string) string
 			orderPart = "ASC"
 		}
 	} else {
-		utils.Panicf("unsupported order %q", order)
+		program.Panicf("unsupported order %q", order)
 	}
 
 	var condPart string

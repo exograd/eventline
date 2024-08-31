@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/exograd/eventline/pkg/utils"
-	"go.n16f.net/ejson"
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/ejson"
+	"go.n16f.net/program"
+	"go.n16f.net/service/pkg/pg"
 )
 
 var APIKeySorts Sorts = Sorts{
@@ -60,7 +60,7 @@ func (k *APIKey) SortKey(sort string) (key string) {
 	case "name":
 		key = k.Name
 	default:
-		utils.Panicf("unknown api key sort %q", sort)
+		program.Panicf("unknown api key sort %q", sort)
 	}
 
 	return

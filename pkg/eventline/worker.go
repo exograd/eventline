@@ -4,8 +4,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/exograd/eventline/pkg/utils"
 	"go.n16f.net/log"
+	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
 )
 
@@ -120,7 +120,9 @@ func (w *Worker) main() {
 		func() {
 			defer func() {
 				if value := recover(); value != nil {
-					msg, trace := utils.RecoverValueData(value)
+					msg := program.RecoverValueString(value)
+					trace := program.StackTrace(0, 20, true)
+
 					w.Log.Error("panic: %s\n%s", msg, trace)
 					time.Sleep(w.sleepDuration)
 				}

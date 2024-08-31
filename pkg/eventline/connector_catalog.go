@@ -1,8 +1,8 @@
 package eventline
 
 import (
-	"github.com/exograd/eventline/pkg/utils"
 	"go.n16f.net/ejson"
+	"go.n16f.net/program"
 )
 
 var Connectors = map[string]Connector{}
@@ -28,7 +28,7 @@ func FindConnector(name string) (Connector, bool) {
 func GetConnector(name string) Connector {
 	c, found := Connectors[name]
 	if !found {
-		utils.Panicf("unknown connector %q", name)
+		program.Panicf("unknown connector %q", name)
 	}
 
 	return c

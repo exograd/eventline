@@ -3,7 +3,7 @@ package eventline
 import (
 	"fmt"
 
-	"github.com/exograd/eventline/pkg/utils"
+	"go.n16f.net/program"
 )
 
 type UnknownConnectorDefError struct {
@@ -46,7 +46,7 @@ func (c *ConnectorDef) IdentityExists(typeName string) (exists bool) {
 func (c *ConnectorDef) Identity(typeName string) *IdentityDef {
 	def, found := c.Identities[typeName]
 	if !found {
-		utils.Panicf("unknown identity %q in connector %q", typeName, c.Name)
+		program.Panicf("unknown identity %q in connector %q", typeName, c.Name)
 	}
 
 	return def
@@ -72,7 +72,7 @@ func (c *ConnectorDef) EventExists(typeName string) (exists bool) {
 func (c *ConnectorDef) Event(typeName string) *EventDef {
 	def, found := c.Events[typeName]
 	if !found {
-		utils.Panicf("unknown event %q in connector %q", typeName, c.Name)
+		program.Panicf("unknown event %q in connector %q", typeName, c.Name)
 	}
 
 	return def

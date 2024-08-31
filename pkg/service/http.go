@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/eventline/pkg/web"
 	"go.n16f.net/log"
+	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
 	"go.n16f.net/service/pkg/shttp"
 )
@@ -351,7 +351,7 @@ func (h *HTTPHandler) maybeCheckAdmin() error {
 	if h.Context.AccountRole == nil {
 		// Can happen if a route has options Public and Admin at the same
 		// time, which does not make any sense.
-		utils.Panicf("missing account role in admin route")
+		program.Panicf("missing account role in admin route")
 	}
 
 	accountRole := *h.Context.AccountRole

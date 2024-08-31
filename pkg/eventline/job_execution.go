@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/exograd/eventline/pkg/utils"
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/program"
+	"go.n16f.net/service/pkg/pg"
 )
 
 var JobExecutionSorts Sorts = Sorts{
@@ -106,7 +106,7 @@ func (je *JobExecution) SortKey(sort string) (key string) {
 	case "scheduled_time":
 		key = je.ScheduledTime.Format(time.RFC3339)
 	default:
-		utils.Panicf("unknown job execution sort %q", sort)
+		program.Panicf("unknown job execution sort %q", sort)
 	}
 
 	return

@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/exograd/eventline/pkg/utils"
-	"go.n16f.net/ejson"
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/ejson"
+	"go.n16f.net/program"
+	"go.n16f.net/service/pkg/pg"
 )
 
 var IdentitySorts Sorts = Sorts{
@@ -96,7 +96,7 @@ func (i *Identity) SortKey(sort string) (key string) {
 	case "name":
 		key = i.Name
 	default:
-		utils.Panicf("unknown identity sort %q", sort)
+		program.Panicf("unknown identity sort %q", sort)
 	}
 
 	return

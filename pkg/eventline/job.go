@@ -10,9 +10,10 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/utils"
-	"go.n16f.net/ejson"
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/ejson"
+	"go.n16f.net/program"
+	"go.n16f.net/service/pkg/pg"
 	"gopkg.in/yaml.v3"
 )
 
@@ -142,7 +143,7 @@ func (j *Job) SortKey(sort string) (key string) {
 	case "name":
 		key = j.Spec.Name
 	default:
-		utils.Panicf("unknown job sort %q", sort)
+		program.Panicf("unknown job sort %q", sort)
 	}
 
 	return

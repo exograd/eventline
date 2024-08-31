@@ -15,6 +15,7 @@ import (
 	"github.com/exograd/eventline/pkg/utils"
 	"go.n16f.net/ejson"
 	"go.n16f.net/log"
+	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
 )
 
@@ -192,7 +193,9 @@ func (r *Runner) main() {
 
 	defer func() {
 		if value := recover(); value != nil {
-			msg, trace := utils.RecoverValueData(value)
+			msg := program.RecoverValueString(value)
+			trace := program.StackTrace(0, 20, true)
+
 			r.Log.Error("panic: %s\n%s", msg, trace)
 
 			panicErr := fmt.Errorf("panic: %s", msg)
@@ -599,7 +602,7 @@ func (r *Runner) StepCommand(se *StepExecution, s *Step, rootPath string) (name 
 		args = s.Script.Arguments
 
 	default:
-		utils.Panicf("unhandled step %#v", s)
+		program.Panicf("unhandled step %#v", s)
 	}
 
 	return

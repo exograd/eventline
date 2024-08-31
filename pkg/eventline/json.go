@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/exograd/eventline/pkg/utils"
+	"go.n16f.net/program"
 )
 
 func JSONFields(value interface{}) (map[string]string, error) {
@@ -69,6 +69,6 @@ func jsonFields(value interface{}, key string, fields map[string]string) {
 		fields[key] = "null"
 
 	default:
-		utils.Panicf("unhandled json value %#v", value)
+		program.Panicf("unhandled json value %#v", value)
 	}
 }

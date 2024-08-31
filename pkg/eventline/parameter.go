@@ -8,6 +8,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/utils"
 	"go.n16f.net/ejson"
+	"go.n16f.net/program"
 )
 
 var (
@@ -161,7 +162,7 @@ func (p *Parameter) CheckValue(v *ejson.Validator, token string, value interface
 	case ParameterTypeBoolean:
 		return p.checkValueBoolean(v, token, value)
 	default:
-		utils.Panicf("unhandled parameter type %v", p.Type)
+		program.Panicf("unhandled parameter type %v", p.Type)
 	}
 
 	return nil
@@ -255,7 +256,7 @@ func (p *Parameter) ValueString(value interface{}) (s string) {
 		}
 
 	default:
-		utils.Panicf("unhandled parameter type %v", p.Type)
+		program.Panicf("unhandled parameter type %v", p.Type)
 	}
 
 	return

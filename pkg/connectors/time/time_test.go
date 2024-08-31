@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/exograd/eventline/pkg/utils"
 	"github.com/stretchr/testify/assert"
+	"go.n16f.net/program"
 )
 
 func TestNextHour(t *testing.T) {
@@ -97,7 +97,7 @@ func TestNextWeekDay(t *testing.T) {
 func testTime(s string) time.Time {
 	t, err := time.Parse("2006-01-02 15:04:05Z07:00", s)
 	if err != nil {
-		utils.Panicf("invalid time %q: %v", s, err)
+		program.Panicf("invalid time %q: %v", s, err)
 	}
 
 	return t

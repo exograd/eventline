@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/exograd/eventline/pkg/utils"
 	"go.n16f.net/ejson"
+	"go.n16f.net/program"
 )
 
 type Parameters struct {
@@ -122,7 +122,7 @@ func (p *Parameters) FirstTick() (tick time.Time) {
 			p.Weekly.Second)
 
 	default:
-		utils.Panicf("unhandled tick parameters %#v", p)
+		program.Panicf("unhandled tick parameters %#v", p)
 	}
 
 	return
@@ -148,7 +148,7 @@ func (p *Parameters) NextTick(expectedTick time.Time) (tick time.Time) {
 			p.Weekly.Minute, p.Weekly.Second)
 
 	default:
-		utils.Panicf("unhandled tick parameters %#v", p)
+		program.Panicf("unhandled tick parameters %#v", p)
 	}
 
 	return

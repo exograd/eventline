@@ -5,6 +5,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
+	"go.n16f.net/program"
 )
 
 // The set of information we inject into every rendered piece of web content.
@@ -54,7 +55,7 @@ func (ctx *WebContext) formatDate(t time.Time, format eventline.DateFormat) (s s
 		s = utils.FormatRelativeDate(t, time.Now().UTC())
 
 	default:
-		utils.Panicf("unsupported date format %q", format)
+		program.Panicf("unsupported date format %q", format)
 	}
 
 	return

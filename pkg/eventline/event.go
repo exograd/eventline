@@ -6,10 +6,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/exograd/eventline/pkg/utils"
-	"go.n16f.net/ejson"
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/ejson"
+	"go.n16f.net/program"
+	"go.n16f.net/service/pkg/pg"
 )
 
 var EventSorts Sorts = Sorts{
@@ -66,7 +66,7 @@ func (e *Event) SortKey(sort string) (key string) {
 	case "event_time":
 		key = e.EventTime.Format(time.RFC3339)
 	default:
-		utils.Panicf("unknown event sort %q", sort)
+		program.Panicf("unknown event sort %q", sort)
 	}
 
 	return

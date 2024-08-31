@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/cryptoutils"
-	"github.com/exograd/eventline/pkg/utils"
-	"go.n16f.net/ejson"
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/ejson"
+	"go.n16f.net/program"
+	"go.n16f.net/service/pkg/pg"
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -175,7 +175,7 @@ func (a *Account) SortKey(sort string) (key string) {
 	case "username":
 		key = a.Username
 	default:
-		utils.Panicf("unknown account sort %q", sort)
+		program.Panicf("unknown account sort %q", sort)
 	}
 
 	return
