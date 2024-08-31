@@ -11,6 +11,7 @@ import (
 
 	dockertypes "github.com/docker/docker/api/types"
 	dockercontainer "github.com/docker/docker/api/types/container"
+	dockerimage "github.com/docker/docker/api/types/image"
 	dockermount "github.com/docker/docker/api/types/mount"
 	dockerclient "github.com/docker/docker/client"
 	dockerjsonmessage "github.com/docker/docker/pkg/jsonmessage"
@@ -63,7 +64,7 @@ func (r *Runner) pullImage(ctx context.Context) error {
 		authKey = key
 	}
 
-	var options dockertypes.ImagePullOptions
+	var options dockerimage.PullOptions
 
 	if authKey != "" {
 		registryAuth, err := registryAuth(authKey)
@@ -190,7 +191,7 @@ func (r *Runner) createContainer(ctx context.Context) error {
 func (r *Runner) deleteContainer() error {
 	ctx := context.Background()
 
-	options := dockertypes.ContainerRemoveOptions{
+	options := dockercontainer.RemoveOptions{
 		RemoveVolumes: true,
 		Force:         true,
 	}
@@ -225,7 +226,7 @@ func (r *Runner) copyFiles(ctx context.Context) error {
 }
 
 func (r *Runner) startContainer(ctx context.Context) error {
-	options := dockertypes.ContainerStartOptions{}
+	options := dockercontainer.StartOptions{}
 
 	return r.client.ContainerStart(ctx, r.containerId, options)
 }

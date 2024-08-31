@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	dockertypes "github.com/docker/docker/api/types"
+	dockerregistry "github.com/docker/docker/api/types/registry"
 	cdockerhub "github.com/exograd/eventline/pkg/connectors/dockerhub"
 	cgithub "github.com/exograd/eventline/pkg/connectors/github"
 	"github.com/exograd/eventline/pkg/eventline"
@@ -53,7 +53,7 @@ func registryAuth(authKey string) (string, error) {
 	username := parts[0]
 	password := parts[1]
 
-	auth := dockertypes.AuthConfig{
+	auth := dockerregistry.AuthConfig{
 		Username: username,
 		Password: password,
 	}
