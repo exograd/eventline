@@ -66,7 +66,7 @@ func (e *Event) SortKey(sort string) (key string) {
 	case "event_time":
 		key = e.EventTime.Format(time.RFC3339)
 	default:
-		program.Panicf("unknown event sort %q", sort)
+		program.Panic("unknown event sort %q", sort)
 	}
 
 	return

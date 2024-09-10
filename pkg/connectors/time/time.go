@@ -48,7 +48,7 @@ func (wd WeekDay) Number() (n int) {
 		n = 0
 
 	default:
-		program.Panicf("unhandled week day %q", string(wd))
+		program.Panic("unhandled week day %q", string(wd))
 	}
 
 	return

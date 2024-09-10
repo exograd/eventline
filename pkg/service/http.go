@@ -351,7 +351,7 @@ func (h *HTTPHandler) maybeCheckAdmin() error {
 	if h.Context.AccountRole == nil {
 		// Can happen if a route has options Public and Admin at the same
 		// time, which does not make any sense.
-		program.Panicf("missing account role in admin route")
+		program.Panic("missing account role in admin route")
 	}
 
 	accountRole := *h.Context.AccountRole

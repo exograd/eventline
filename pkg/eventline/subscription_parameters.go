@@ -17,13 +17,13 @@ func SubscriptionParametersEqual(sp1, sp2 SubscriptionParameters) bool {
 
 	sp1Data, err := json.Marshal(sp1)
 	if err != nil {
-		program.Panicf("cannot encode subscription parameters %#v: %v",
+		program.Panic("cannot encode subscription parameters %#v: %v",
 			sp1, err)
 	}
 
 	sp2Data, err := json.Marshal(sp2)
 	if err != nil {
-		program.Panicf("cannot encode subscription parameters %#v: %v",
+		program.Panic("cannot encode subscription parameters %#v: %v",
 			sp2, err)
 	}
 

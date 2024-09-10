@@ -61,7 +61,7 @@ func (p *Project) SortKey(sort string) (key string) {
 	case "name":
 		key = p.Name
 	default:
-		program.Panicf("unknown project sort %q", sort)
+		program.Panic("unknown project sort %q", sort)
 	}
 
 	return

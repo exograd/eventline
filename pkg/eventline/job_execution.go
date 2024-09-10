@@ -106,7 +106,7 @@ func (je *JobExecution) SortKey(sort string) (key string) {
 	case "scheduled_time":
 		key = je.ScheduledTime.Format(time.RFC3339)
 	default:
-		program.Panicf("unknown job execution sort %q", sort)
+		program.Panic("unknown job execution sort %q", sort)
 	}
 
 	return

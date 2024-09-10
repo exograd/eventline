@@ -167,7 +167,7 @@ func (c *Cursor) SQLConditionOrderLimit2(sorts Sorts, correlation string) string
 	}
 	sortPart := sorts.Column(sort)
 	if sortPart == "" {
-		program.Panicf("unknown sort %q", sort)
+		program.Panic("unknown sort %q", sort)
 	}
 	if correlation != "" {
 		sortPart = correlation + "." + sortPart
@@ -187,7 +187,7 @@ func (c *Cursor) SQLConditionOrderLimit2(sorts Sorts, correlation string) string
 			orderPart = "ASC"
 		}
 	} else {
-		program.Panicf("unsupported order %q", order)
+		program.Panic("unsupported order %q", order)
 	}
 
 	var condPart string

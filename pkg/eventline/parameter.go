@@ -162,7 +162,7 @@ func (p *Parameter) CheckValue(v *ejson.Validator, token string, value interface
 	case ParameterTypeBoolean:
 		return p.checkValueBoolean(v, token, value)
 	default:
-		program.Panicf("unhandled parameter type %v", p.Type)
+		program.Panic("unhandled parameter type %v", p.Type)
 	}
 
 	return nil
@@ -256,7 +256,7 @@ func (p *Parameter) ValueString(value interface{}) (s string) {
 		}
 
 	default:
-		program.Panicf("unhandled parameter type %v", p.Type)
+		program.Panic("unhandled parameter type %v", p.Type)
 	}
 
 	return

@@ -28,7 +28,7 @@ func FindConnector(name string) (Connector, bool) {
 func GetConnector(name string) Connector {
 	c, found := Connectors[name]
 	if !found {
-		program.Panicf("unknown connector %q", name)
+		program.Panic("unknown connector %q", name)
 	}
 
 	return c

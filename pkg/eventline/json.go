@@ -69,6 +69,6 @@ func jsonFields(value interface{}, key string, fields map[string]string) {
 		fields[key] = "null"
 
 	default:
-		program.Panicf("unhandled json value %#v", value)
+		program.Panic("unhandled json value %#v", value)
 	}
 }

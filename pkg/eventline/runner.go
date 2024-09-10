@@ -602,7 +602,7 @@ func (r *Runner) StepCommand(se *StepExecution, s *Step, rootPath string) (name 
 		args = s.Script.Arguments
 
 	default:
-		program.Panicf("unhandled step %#v", s)
+		program.Panic("unhandled step %#v", s)
 	}
 
 	return

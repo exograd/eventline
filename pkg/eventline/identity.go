@@ -96,7 +96,7 @@ func (i *Identity) SortKey(sort string) (key string) {
 	case "name":
 		key = i.Name
 	default:
-		program.Panicf("unknown identity sort %q", sort)
+		program.Panic("unknown identity sort %q", sort)
 	}
 
 	return

@@ -55,7 +55,7 @@ func (ctx *WebContext) formatDate(t time.Time, format eventline.DateFormat) (s s
 		s = utils.FormatRelativeDate(t, time.Now().UTC())
 
 	default:
-		program.Panicf("unsupported date format %q", format)
+		program.Panic("unsupported date format %q", format)
 	}
 
 	return

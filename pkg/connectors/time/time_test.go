@@ -97,7 +97,7 @@ func TestNextWeekDay(t *testing.T) {
 func testTime(s string) time.Time {
 	t, err := time.Parse("2006-01-02 15:04:05Z07:00", s)
 	if err != nil {
-		program.Panicf("invalid time %q: %v", s, err)
+		program.Panic("invalid time %q: %v", s, err)
 	}
 
 	return t

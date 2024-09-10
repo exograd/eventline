@@ -60,7 +60,7 @@ func (k *APIKey) SortKey(sort string) (key string) {
 	case "name":
 		key = k.Name
 	default:
-		program.Panicf("unknown api key sort %q", sort)
+		program.Panic("unknown api key sort %q", sort)
 	}
 
 	return

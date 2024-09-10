@@ -143,7 +143,7 @@ func (j *Job) SortKey(sort string) (key string) {
 	case "name":
 		key = j.Spec.Name
 	default:
-		program.Panicf("unknown job sort %q", sort)
+		program.Panic("unknown job sort %q", sort)
 	}
 
 	return

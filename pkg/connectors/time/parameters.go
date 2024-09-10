@@ -122,7 +122,7 @@ func (p *Parameters) FirstTick() (tick time.Time) {
 			p.Weekly.Second)
 
 	default:
-		program.Panicf("unhandled tick parameters %#v", p)
+		program.Panic("unhandled tick parameters %#v", p)
 	}
 
 	return
@@ -148,7 +148,7 @@ func (p *Parameters) NextTick(expectedTick time.Time) (tick time.Time) {
 			p.Weekly.Minute, p.Weekly.Second)
 
 	default:
-		program.Panicf("unhandled tick parameters %#v", p)
+		program.Panic("unhandled tick parameters %#v", p)
 	}
 
 	return

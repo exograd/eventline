@@ -175,7 +175,7 @@ func (a *Account) SortKey(sort string) (key string) {
 	case "username":
 		key = a.Username
 	default:
-		program.Panicf("unknown account sort %q", sort)
+		program.Panic("unknown account sort %q", sort)
 	}
 
 	return
