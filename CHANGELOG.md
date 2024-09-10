@@ -1,4 +1,11 @@
 # Changelog
+## v1.1.2
+### Bug fixes
+- Fix multiple HTTP route issues.
+
+### Misc
+- Update the Docker image to use Alpine 3.20.
+
 ## v1.1.1
 ### Misc
 - Update dependencies.
