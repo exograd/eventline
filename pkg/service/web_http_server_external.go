@@ -2,6 +2,7 @@ package service
 
 import (
 	"path"
+	"strings"
 
 	cgithub "github.com/exograd/eventline/pkg/connectors/github"
 	"github.com/exograd/eventline/pkg/eventline"
@@ -23,7 +24,7 @@ func (s *WebHTTPServer) setupExternalRoutes() {
 		}
 	}
 
-	s.route("/ext/connectors/github/hooks/*subpath", "POST",
+	s.route("/ext/connectors/github/hooks/", "POST",
 		s.hExtConnectorsGithubHooksPOST,
 		HTTPRouteOptions{Public: true})
 }
@@ -33,7 +34,8 @@ func (s *WebHTTPServer) hExtConnectorsGithubHooksPOST(h *HTTPHandler) {
 		h.Log.Data["github_delivery_id"] = deliveryId
 	}
 
-	target := h.PathVariable("subpath")
+	target := strings.TrimPrefix(h.Request.URL.Path,
+		"/ext/connectors/github/hooks/")
 
 	var params cgithub.Parameters
 	params.ParseTarget(target)

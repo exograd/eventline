@@ -46,7 +46,7 @@ func (s *WebHTTPServer) setupIdentityRoutes() {
 		s.hIdentitiesConnectorTypesGET,
 		HTTPRouteOptions{Project: true})
 
-	s.route("/identities/connector/{connector}/type/:type/data", "GET",
+	s.route("/identities/connector/{connector}/type/{type}/data", "GET",
 		s.hIdentitiesConnectorTypeDataGET,
 		HTTPRouteOptions{Project: true})
 }

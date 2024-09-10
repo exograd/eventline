@@ -2,6 +2,7 @@ package service
 
 import (
 	"path"
+	"strings"
 )
 
 func (s *WebHTTPServer) setupAssetRoutes() {
@@ -9,7 +10,7 @@ func (s *WebHTTPServer) setupAssetRoutes() {
 		s.hFaviconGET,
 		HTTPRouteOptions{Public: true})
 
-	s.route("/assets/*subpath", "GET",
+	s.route("/assets/", "GET",
 		s.hAssetsGET,
 		HTTPRouteOptions{Public: true})
 }
@@ -19,7 +20,7 @@ func (s *WebHTTPServer) hFaviconGET(h *HTTPHandler) {
 }
 
 func (s *WebHTTPServer) hAssetsGET(h *HTTPHandler) {
-	subpath := h.PathVariable("subpath")
+	subpath := strings.TrimPrefix(h.Request.URL.Path, "/assets/")
 
 	dirPath := path.Join(s.Service.Cfg.DataDirectory, "assets")
 	filePath := path.Join(dirPath, subpath)
