@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 
-FROM alpine:3.16
+FROM alpine:3.20
 
 LABEL org.opencontainers.image.authors="Exograd"
 LABEL org.opencontainers.image.url="https://www.eventline.net"
