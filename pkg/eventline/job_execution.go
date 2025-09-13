@@ -304,7 +304,7 @@ func LoadJobExecutionPage(conn pg.Conn, options JobExecutionPageOptions, cursor 
 	jobCond := "TRUE"
 	if options.JobId != nil {
 		jobId := *options.JobId
-		jobCond = fmt.Sprintf("job_id=" + pg.QuoteString(jobId.String()))
+		jobCond = "job_id=" + pg.QuoteString(jobId.String())
 	}
 
 	query := fmt.Sprintf(`

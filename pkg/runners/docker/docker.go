@@ -9,7 +9,6 @@ import (
 	"io"
 	"net/url"
 
-	dockertypes "github.com/docker/docker/api/types"
 	dockercontainer "github.com/docker/docker/api/types/container"
 	dockerimage "github.com/docker/docker/api/types/image"
 	dockermount "github.com/docker/docker/api/types/mount"
@@ -200,7 +199,7 @@ func (r *Runner) deleteContainer() error {
 }
 
 func (r *Runner) copyFiles(ctx context.Context) error {
-	options := dockertypes.CopyToContainerOptions{
+	options := dockercontainer.CopyToContainerOptions{
 		AllowOverwriteDirWithFile: true,
 	}
 
@@ -236,7 +235,7 @@ func (r *Runner) exec(ctx context.Context, se *eventline.StepExecution, step *ev
 	cmdName, cmdArgs := r.runner.StepCommand(se, step, r.DirPath())
 	cmd := append([]string{cmdName}, cmdArgs...)
 
-	execCfg := dockertypes.ExecConfig{
+	execCfg := dockercontainer.ExecOptions{
 		Cmd:          cmd,
 		AttachStdout: true,
 		AttachStderr: true,
@@ -250,7 +249,7 @@ func (r *Runner) exec(ctx context.Context, se *eventline.StepExecution, step *ev
 	execId := createRes.ID
 
 	// Start the execution process
-	execStartCheck := dockertypes.ExecStartCheck{}
+	execStartCheck := dockercontainer.ExecAttachOptions{}
 
 	startRes, err := r.client.ContainerExecAttach(ctx, execId, execStartCheck)
 	if err != nil {

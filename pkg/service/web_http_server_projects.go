@@ -213,13 +213,15 @@ func (s *WebHTTPServer) hProjectsIdConfigurationPOST(h *HTTPHandler) {
 
 	var cfg ProjectConfiguration
 
-	extraChecks := func(v *ejson.Validator) {
+	extraChecks := func(v *ejson.Validator) error {
 		ncfg := s.Service.Cfg.Notifications
 
 		ns := cfg.ProjectNotificationSettings
 		v.WithChild("project_notification_settings", func() {
 			ns.CheckEmailAddresses(v, ncfg.AllowedDomains)
 		})
+
+		return nil
 	}
 
 	data, err := h.RequestData()
