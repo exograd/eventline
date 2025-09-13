@@ -1,6 +1,8 @@
 influx:
   uri: "http://localhost:8086"
-  bucket: "eventline/main"
+  org: "eventline"
+  bucket: "main"
+  token: "admin"
 
 encryption_key: "kDWhsf6HuLOr/3i0rTfOMaFhAWDwfjjgOOKG+TdodyE="
 

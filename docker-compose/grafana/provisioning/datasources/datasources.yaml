@@ -2,6 +2,11 @@ apiVersion: 1
 datasources:
   - name: "influxdb"
     type: "influxdb"
-    database: "eventline"
-    url: "http://influxdb:8086"
-    httpMode: "POST"
+    isDefault: true
+    url: "http://eventline-influxdb:8086"
+    jsonData:
+      dbName: "main"
+      httpMode: "POST"
+      httpHeaderName1: 'Authorization'
+    secureJsonData:
+      httpHeaderValue1: 'Token admin'

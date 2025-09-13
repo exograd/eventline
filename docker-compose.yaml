@@ -1,11 +1,11 @@
 services:
   postgres:
-    image: "postgres:14.4"
+    image: "postgres:17"
     command: >
-      postgres -c "shared_buffers=6GB"
-               -c "max_connections=40"
+      postgres -c "shared_buffers=1GB"
+               -c "max_connections=20"
                -c "log_statement=all"
-    container_name: "postgres"
+    container_name: "eventline-postgres"
     ports: ["5432:5432"]
     volumes:
       - "./docker-compose/postgres:/docker-entrypoint-initdb.d:ro"
@@ -18,18 +18,25 @@ services:
       options:
         max-size: "10m"
   influxdb:
-    image: "influxdb:1.8"
-    container_name: "influxdb"
+    image: "influxdb:2.7"
+    container_name: "eventline-influxdb"
     ports: ["8086:8086"]
     volumes:
       - "./docker-compose/influxdb:/docker-entrypoint-initdb.d:ro"
       - "influxdb-data:/var/lib/influxdb:rw"
     environment:
+      DOCKER_INFLUXDB_INIT_MODE: "setup"
+      DOCKER_INFLUXDB_INIT_USERNAME: "admin"
+      DOCKER_INFLUXDB_INIT_PASSWORD: "adminadminadmin"
+      DOCKER_INFLUXDB_INIT_ORG: "eventline"
+      DOCKER_INFLUXDB_INIT_BUCKET: "main"
+      DOCKER_INFLUXDB_INIT_RETENTION: "10d"
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "admin"
       INFLUXDB_REPORTING_DISABLED: "true"
     logging: *logging
   grafana:
-    image: "grafana/grafana:9.0.7"
-    container_name: "grafana"
+    image: "grafana/grafana:12.1.0"
+    container_name: "eventline-grafana"
     user: "root"
     ports: ["3000:3000"]
     volumes:
