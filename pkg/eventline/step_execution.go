@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"time"
 
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type UnknownStepExecutionError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err UnknownStepExecutionError) Error() string {
@@ -36,9 +37,9 @@ var StepExecutionStatusValues = []StepExecutionStatus{
 }
 
 type StepExecution struct {
-	Id             Id                  `json:"id"`
-	ProjectId      Id                  `json:"project_id"`
-	JobExecutionId Id                  `json:"job_execution_id"`
+	Id             uuid.UUID           `json:"id"`
+	ProjectId      uuid.UUID           `json:"project_id"`
+	JobExecutionId uuid.UUID           `json:"job_execution_id"`
 	Position       int                 `json:"position"`
 	Status         StepExecutionStatus `json:"status"`
 	StartTime      *time.Time          `json:"start_time,omitempty"`
@@ -63,7 +64,7 @@ func (se *StepExecution) Duration() *time.Duration {
 	return &d
 }
 
-func (se *StepExecution) Load(conn pg.Conn, id Id, scope Scope) error {
+func (se *StepExecution) Load(conn pg.Conn, id uuid.UUID, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, job_execution_id, position, status,
        start_time, end_time, failure_message, output
@@ -79,7 +80,7 @@ SELECT id, project_id, job_execution_id, position, status,
 	return err
 }
 
-func (ses *StepExecutions) LoadByJobExecutionId(conn pg.Conn, jeId Id) error {
+func (ses *StepExecutions) LoadByJobExecutionId(conn pg.Conn, jeId uuid.UUID) error {
 	query := `
 SELECT id, project_id, job_execution_id, position, status,
        start_time, end_time, failure_message, output
@@ -90,7 +91,7 @@ SELECT id, project_id, job_execution_id, position, status,
 	return pg.QueryObjects(conn, ses, query, jeId)
 }
 
-func (ses *StepExecutions) LoadByJobExecutionIdWithTruncatedOutput(conn pg.Conn, jeId Id, maxOutputSize int, truncationString string) error {
+func (ses *StepExecutions) LoadByJobExecutionIdWithTruncatedOutput(conn pg.Conn, jeId uuid.UUID, maxOutputSize int, truncationString string) error {
 	query := `
 SELECT id, project_id, job_execution_id, position, status,
        start_time, end_time, failure_message,
@@ -102,7 +103,7 @@ SELECT id, project_id, job_execution_id, position, status,
 	return pg.QueryObjects(conn, ses, query, jeId, maxOutputSize, truncationString)
 }
 
-func (ses *StepExecutions) LoadByJobExecutionIdForUpdate(conn pg.Conn, jeId Id) error {
+func (ses *StepExecutions) LoadByJobExecutionIdForUpdate(conn pg.Conn, jeId uuid.UUID) error {
 	query := `
 SELECT id, project_id, job_execution_id, position, status,
        start_time, end_time, failure_message, output

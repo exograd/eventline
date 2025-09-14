@@ -19,7 +19,7 @@ GO_TEST_OPTIONS ?= -count 1
 
 define evweb_make1
 $(MAKE) -C evweb --no-print-directory		\
-  $2 INPUT_DIR=$1 OUTPUT_DIR=../data/assets
+  $2 INPUT_DIR=$1 OUTPUT_DIR=../data/assets >/dev/null 2>&1
 endef
 
 define evweb_make

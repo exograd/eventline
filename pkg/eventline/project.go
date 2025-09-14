@@ -10,6 +10,7 @@ import (
 	"go.n16f.net/ejson"
 	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 var ProjectSorts Sorts = Sorts{
@@ -22,7 +23,7 @@ var ProjectSorts Sorts = Sorts{
 }
 
 type UnknownProjectError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err UnknownProjectError) Error() string {
@@ -42,7 +43,7 @@ type NewProject struct {
 }
 
 type Project struct {
-	Id           Id        `json:"id"`
+	Id           uuid.UUID `json:"id"`
 	Name         string    `json:"name"`
 	CreationTime time.Time `json:"creation_time"`
 	UpdateTime   time.Time `json:"update_time"`
@@ -84,7 +85,7 @@ SELECT COUNT(*)
 	return count > 0, nil
 }
 
-func (p *Project) Load(conn pg.Conn, id Id) error {
+func (p *Project) Load(conn pg.Conn, id uuid.UUID) error {
 	query := `
 SELECT id, name, creation_time, update_time
   FROM projects
@@ -128,7 +129,7 @@ SELECT id, name, creation_time, update_time
 	return &p, nil
 }
 
-func (p *Project) LoadForUpdate(conn pg.Conn, id Id) error {
+func (p *Project) LoadForUpdate(conn pg.Conn, id uuid.UUID) error {
 	query := `
 SELECT id, name, creation_time, update_time
   FROM projects

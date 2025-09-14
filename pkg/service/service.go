@@ -15,6 +15,7 @@ import (
 	"go.n16f.net/service/pkg/pg"
 	goservice "go.n16f.net/service/pkg/service"
 	"go.n16f.net/service/pkg/shttp"
+	"go.n16f.net/uuid"
 )
 
 type Service struct {
@@ -44,7 +45,7 @@ type Service struct {
 	runnerStopChan chan struct{}
 	runnerWg       sync.WaitGroup
 
-	jobExecutionTerminationChan chan eventline.Id
+	jobExecutionTerminationChan chan uuid.UUID
 }
 
 func NewService(data ServiceData) *Service {
@@ -72,7 +73,7 @@ func NewService(data ServiceData) *Service {
 		runnerDefs:     make(map[string]*eventline.RunnerDef),
 		runnerStopChan: make(chan struct{}),
 
-		jobExecutionTerminationChan: make(chan eventline.Id),
+		jobExecutionTerminationChan: make(chan uuid.UUID),
 	}
 
 	return s

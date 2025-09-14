@@ -166,10 +166,10 @@ data related to the error.
 
 ==== Identifiers
 
-Most objects in Eventline are referenced by their unique identifier.
-Identifiers are https://github.com/segmentio/ksuid[KSUID]. They are
-represented in JSON by strings containing the textual representation of the
-KSUID, e.g. `"23BUGaDgMUxucZnXMzyUEGRcujl"`.
+Most objects in Eventline are referenced by their unique identifier. Identifiers
+are https://datatracker.ietf.org/doc/html/rfc9562[UUIDs]. They are represented
+in JSON by strings containing the textual representation of the UUID, e.g.
+`"01994918-57e6-7eb7-a6aa-932e8601b224"`.
 
 ==== Names
 

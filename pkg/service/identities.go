@@ -12,6 +12,7 @@ import (
 	"go.n16f.net/log"
 	"go.n16f.net/service/pkg/pg"
 	"go.n16f.net/service/pkg/shttp"
+	"go.n16f.net/uuid"
 )
 
 var (
@@ -27,7 +28,7 @@ func (err DuplicateIdentityNameError) Error() string {
 }
 
 type IdentityInUseError struct {
-	Id eventline.Id
+	Id uuid.UUID
 }
 
 func (err IdentityInUseError) Error() string {
@@ -58,7 +59,7 @@ func (s *Service) CreateIdentity(newIdentity *eventline.NewIdentity, scope event
 		}
 
 		identity = &eventline.Identity{
-			Id:           eventline.GenerateId(),
+			Id:           uuid.MustGenerate(uuid.V7),
 			ProjectId:    &projectScope.ProjectId,
 			Name:         newIdentity.Name,
 			Status:       status,
@@ -82,7 +83,7 @@ func (s *Service) CreateIdentity(newIdentity *eventline.NewIdentity, scope event
 	return identity, nil
 }
 
-func (s *Service) UpdateIdentity(identityId eventline.Id, newIdentity *eventline.NewIdentity, scope eventline.Scope) (*eventline.Identity, error) {
+func (s *Service) UpdateIdentity(identityId uuid.UUID, newIdentity *eventline.NewIdentity, scope eventline.Scope) (*eventline.Identity, error) {
 	var identity eventline.Identity
 
 	err := s.Pg.WithTx(func(conn pg.Conn) error {
@@ -129,7 +130,7 @@ func (s *Service) UpdateIdentity(identityId eventline.Id, newIdentity *eventline
 	return &identity, nil
 }
 
-func (s *Service) DeleteIdentity(identityId eventline.Id, scope eventline.Scope) error {
+func (s *Service) DeleteIdentity(identityId uuid.UUID, scope eventline.Scope) error {
 	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var identity eventline.Identity
 
@@ -152,7 +153,7 @@ func (s *Service) DeleteIdentity(identityId eventline.Id, scope eventline.Scope)
 	})
 }
 
-func (s *Service) IdentityRedirectionURI(identity *eventline.Identity, sessionId eventline.Id, defaultURI string) (string, error) {
+func (s *Service) IdentityRedirectionURI(identity *eventline.Identity, sessionId uuid.UUID, defaultURI string) (string, error) {
 	// For the time being, OAuth2 identities are the only ones using a
 	// redirection mechanism.
 
@@ -178,7 +179,7 @@ func (s *Service) IdentityRedirectionURI(identity *eventline.Identity, sessionId
 	return defaultURI, nil
 }
 
-func (s *Service) RefreshIdentity(identityId eventline.Id, scope eventline.Scope) error {
+func (s *Service) RefreshIdentity(identityId uuid.UUID, scope eventline.Scope) error {
 	var refreshErr error
 
 	err := s.Pg.WithTx(func(conn pg.Conn) error {
@@ -228,7 +229,7 @@ func (s *Service) refreshIdentity(conn pg.Conn, identity *eventline.Identity, sc
 	return nil
 }
 
-func (s *Service) oauth2HTTPClient(identityId eventline.Id, sessionId *eventline.Id) (*http.Client, error) {
+func (s *Service) oauth2HTTPClient(identityId uuid.UUID, sessionId *uuid.UUID) (*http.Client, error) {
 
 	logger := s.Log.Child("oauth2", log.Data{
 		"identity": identityId.String(),

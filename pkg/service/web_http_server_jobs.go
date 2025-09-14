@@ -8,6 +8,7 @@ import (
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/eventline/pkg/web"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 func (s *WebHTTPServer) setupJobRoutes() {
@@ -86,9 +87,9 @@ func (s *WebHTTPServer) hJobsGET(h *HTTPHandler) {
 	}
 
 	var page *eventline.Page
-	var lastJobExecutions map[eventline.Id]*eventline.JobExecution
-	var jobStats map[eventline.Id]*eventline.JobStats
-	var favouriteJobTable = map[eventline.Id]bool{}
+	var lastJobExecutions map[uuid.UUID]*eventline.JobExecution
+	var jobStats map[uuid.UUID]*eventline.JobStats
+	var favouriteJobTable = map[uuid.UUID]bool{}
 
 	err = s.Pg.WithConn(func(conn pg.Conn) error {
 		var err error
@@ -118,7 +119,7 @@ func (s *WebHTTPServer) hJobsGET(h *HTTPHandler) {
 		}
 		page.Elements = pageElements
 
-		jobIds := make(eventline.Ids, len(page.Elements))
+		jobIds := make([]uuid.UUID, len(page.Elements))
 		for i, e := range page.Elements {
 			jobIds[i] = e.(*eventline.Job).Id
 		}
@@ -143,9 +144,9 @@ func (s *WebHTTPServer) hJobsGET(h *HTTPHandler) {
 
 	bodyData := struct {
 		Page              *eventline.Page
-		LastJobExecutions map[eventline.Id]*eventline.JobExecution
-		JobStats          map[eventline.Id]*eventline.JobStats
-		FavouriteJobTable map[eventline.Id]bool
+		LastJobExecutions map[uuid.UUID]*eventline.JobExecution
+		JobStats          map[uuid.UUID]*eventline.JobStats
+		FavouriteJobTable map[uuid.UUID]bool
 	}{
 		Page:              page,
 		LastJobExecutions: lastJobExecutions,

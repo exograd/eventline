@@ -10,11 +10,12 @@ import (
 	"net/url"
 
 	"github.com/exograd/eventline/pkg/eventline"
+	"go.n16f.net/uuid"
 )
 
 type Client struct {
 	APIKey    string
-	ProjectId *eventline.Id
+	ProjectId *uuid.UUID
 
 	httpClient *http.Client
 
@@ -189,7 +190,7 @@ func (c *Client) CreateProject(newProject *eventline.NewProject) (*eventline.Pro
 	return &project, nil
 }
 
-func (c *Client) DeleteProject(id eventline.Id) error {
+func (c *Client) DeleteProject(id uuid.UUID) error {
 	uri := NewURL("projects", "id", id.String())
 
 	return c.SendRequest("DELETE", uri, nil, nil)
@@ -326,7 +327,7 @@ func (c *Client) ExecuteJob(id string, input *eventline.JobExecutionInput) (*eve
 	return &jobExecution, nil
 }
 
-func (c *Client) FetchJobExecution(id eventline.Id) (*eventline.JobExecution, error) {
+func (c *Client) FetchJobExecution(id uuid.UUID) (*eventline.JobExecution, error) {
 	uri := NewURL("job_executions", "id", id.String())
 
 	var je eventline.JobExecution
@@ -339,13 +340,13 @@ func (c *Client) FetchJobExecution(id eventline.Id) (*eventline.JobExecution, er
 	return &je, nil
 }
 
-func (c *Client) AbortJobExecution(id eventline.Id) error {
+func (c *Client) AbortJobExecution(id uuid.UUID) error {
 	uri := NewURL("job_executions", "id", id.String(), "abort")
 
 	return c.SendRequest("POST", uri, nil, nil)
 }
 
-func (c *Client) RestartJobExecution(id eventline.Id) error {
+func (c *Client) RestartJobExecution(id uuid.UUID) error {
 	uri := NewURL("job_executions", "id", id.String(), "restart")
 
 	return c.SendRequest("POST", uri, nil, nil)
@@ -403,7 +404,7 @@ func (c *Client) CreateIdentity(newIdentity *eventline.RawNewIdentity) (*eventli
 	return &identity, nil
 }
 
-func (c *Client) UpdateIdentity(id eventline.Id, newIdentity *eventline.RawNewIdentity) (*eventline.RawIdentity, error) {
+func (c *Client) UpdateIdentity(id uuid.UUID, newIdentity *eventline.RawNewIdentity) (*eventline.RawIdentity, error) {
 	uri := NewURL("identities", "id", id.String())
 
 	var identity eventline.RawIdentity

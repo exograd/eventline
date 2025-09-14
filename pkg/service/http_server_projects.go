@@ -7,6 +7,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 func (s *HTTPServer) LoadProjectPage(h *HTTPHandler) (*eventline.Page, error) {
@@ -32,7 +33,7 @@ func (s *HTTPServer) LoadProjectPage(h *HTTPHandler) (*eventline.Page, error) {
 	return page, nil
 }
 
-func (s *HTTPServer) LoadProject(h *HTTPHandler, projectId eventline.Id) (*eventline.Project, error) {
+func (s *HTTPServer) LoadProject(h *HTTPHandler, projectId uuid.UUID) (*eventline.Project, error) {
 	var project eventline.Project
 
 	err := s.Pg.WithConn(func(conn pg.Conn) error {
@@ -99,7 +100,7 @@ func (s *HTTPServer) CreateProject(h *HTTPHandler, newProject *eventline.NewProj
 	return project, nil
 }
 
-func (s *HTTPServer) UpdateProject(h *HTTPHandler, projectId eventline.Id, newProject *eventline.NewProject) (*eventline.Project, error) {
+func (s *HTTPServer) UpdateProject(h *HTTPHandler, projectId uuid.UUID, newProject *eventline.NewProject) (*eventline.Project, error) {
 	var project eventline.Project
 
 	err := s.Pg.WithTx(func(conn pg.Conn) error {
@@ -146,7 +147,7 @@ func (s *HTTPServer) UpdateProject(h *HTTPHandler, projectId eventline.Id, newPr
 	return &project, nil
 }
 
-func (s *HTTPServer) DeleteProject(h *HTTPHandler, projectId eventline.Id) error {
+func (s *HTTPServer) DeleteProject(h *HTTPHandler, projectId uuid.UUID) error {
 	if err := s.Service.DeleteProject(projectId, h.Context); err != nil {
 		var unknownProjectErr *eventline.UnknownProjectError
 

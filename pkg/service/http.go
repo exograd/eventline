@@ -18,6 +18,7 @@ import (
 	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
 	"go.n16f.net/service/pkg/shttp"
+	"go.n16f.net/uuid"
 )
 
 var (
@@ -116,7 +117,7 @@ type HTTPRouteOptions struct {
 
 type HTTPContext struct {
 	// If authenticated
-	AccountId       *eventline.Id
+	AccountId       *uuid.UUID
 	AccountRole     *eventline.AccountRole
 	AccountSettings *eventline.AccountSettings
 
@@ -125,7 +126,7 @@ type HTTPContext struct {
 
 	// If there is a current project
 	ProjectIdChecked bool // true if we have performed project id detection
-	ProjectId        *eventline.Id
+	ProjectId        *uuid.UUID
 	ProjectName      string
 }
 
@@ -266,7 +267,7 @@ func (h *HTTPHandler) loadAPIKey(key string) error {
 
 	projectIdString := h.Request.Header.Get("X-Eventline-Project-Id")
 	if projectIdString != "" {
-		var projectId eventline.Id
+		var projectId uuid.UUID
 		if err := projectId.Parse(projectIdString); err != nil {
 			h.ReplyError(400, "invalid_project_id",
 				"invalid project id: %v", err)
@@ -297,7 +298,7 @@ func (h *HTTPHandler) maybeAuthSession() error {
 		return ErrInvalidSessionCookie
 	}
 
-	var sessionId eventline.Id
+	var sessionId uuid.UUID
 	if err := sessionId.Parse(cookie.Value); err != nil {
 		h.DeleteCookie()
 		h.ReplyAuthError(400, "invalid_session_cookie", "invalid session cookie")
@@ -307,7 +308,7 @@ func (h *HTTPHandler) maybeAuthSession() error {
 	return h.LoadSession(sessionId)
 }
 
-func (h *HTTPHandler) LoadSession(sessionId eventline.Id) error {
+func (h *HTTPHandler) LoadSession(sessionId uuid.UUID) error {
 	var session eventline.Session
 	err := h.Service.Pg.WithConn(func(conn pg.Conn) error {
 		return session.LoadUpdate(conn, sessionId)
@@ -416,7 +417,7 @@ func (h *HTTPHandler) maybeLoadProjectData() error {
 	return nil
 }
 
-func (h *HTTPHandler) IdPathVariable(name string) (id eventline.Id, err error) {
+func (h *HTTPHandler) IdPathVariable(name string) (id uuid.UUID, err error) {
 	value := h.PathVariable(name)
 
 	if err = id.Parse(value); err != nil {

@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"time"
 
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type JobStats struct {
-	JobId        Id             `json:"job_id"`
+	JobId        uuid.UUID      `json:"job_id"`
 	NbExecutions int            `json:"nb_executions"`
 	DurationP50  *time.Duration `json:"duration_p50,omitempty"`
 	SuccessRatio float64        `json:"success_ratio"` // last 7 days
@@ -25,7 +26,7 @@ func (js *JobStats) SuccessPercentageString() string {
 	return fmt.Sprintf("%.0f%%", js.SuccessPercentage())
 }
 
-func LoadJobStats(conn pg.Conn, jobIds Ids, scope Scope) (map[Id]*JobStats, error) {
+func LoadJobStats(conn pg.Conn, jobIds []uuid.UUID, scope Scope) (map[uuid.UUID]*JobStats, error) {
 	query := fmt.Sprintf(`
 SELECT job_id,
        COUNT(id) AS nb_executions,
@@ -50,7 +51,7 @@ SELECT job_id,
 		return nil, err
 	}
 
-	table := make(map[Id]*JobStats)
+	table := make(map[uuid.UUID]*JobStats)
 	for _, js := range jss {
 		table[js.JobId] = js
 	}

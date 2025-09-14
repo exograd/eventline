@@ -11,6 +11,7 @@ import (
 	"go.n16f.net/ejson"
 	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 var IdentitySorts Sorts = Sorts{
@@ -23,7 +24,7 @@ var IdentitySorts Sorts = Sorts{
 }
 
 type UnknownIdentityError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err UnknownIdentityError) Error() string {
@@ -57,8 +58,8 @@ type NewIdentity struct {
 type RawNewIdentity NewIdentity
 
 type Identity struct {
-	Id           Id              `json:"id"`
-	ProjectId    *Id             `json:"project_id"`
+	Id           uuid.UUID       `json:"id"`
+	ProjectId    *uuid.UUID      `json:"project_id"`
 	Name         string          `json:"name"`
 	Status       IdentityStatus  `json:"status"`
 	ErrorMessage string          `json:"error_message,omitempty"`
@@ -279,7 +280,7 @@ SELECT 1
 	return true, nil
 }
 
-func (i *Identity) Load(conn pg.Conn, id Id, scope Scope) error {
+func (i *Identity) Load(conn pg.Conn, id uuid.UUID, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, name, status, error_message,
        creation_time, update_time, last_use_time, refresh_time,
@@ -296,7 +297,7 @@ SELECT id, project_id, name, status, error_message,
 	return err
 }
 
-func (i *Identity) LoadForUpdate(conn pg.Conn, id Id, scope Scope) error {
+func (i *Identity) LoadForUpdate(conn pg.Conn, id uuid.UUID, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, name, status, error_message,
        creation_time, update_time, last_use_time, refresh_time,
@@ -369,7 +370,7 @@ SELECT id, project_id, name, status, error_message,
 	return pg.QueryObjects(conn, is, query)
 }
 
-func LoadIdentityIdByName(conn pg.Conn, name string, scope Scope) (Id, error) {
+func LoadIdentityIdByName(conn pg.Conn, name string, scope Scope) (*uuid.UUID, error) {
 	ctx := context.Background()
 
 	query := fmt.Sprintf(`
@@ -378,12 +379,12 @@ SELECT id
   WHERE %s AND name = $1
 `, scope.SQLCondition())
 
-	var id Id
+	var id uuid.UUID
 	if err := conn.QueryRow(ctx, query, name).Scan(&id); err != nil {
-		return ZeroId, err
+		return nil, err
 	}
 
-	return id, nil
+	return &id, nil
 }
 
 func LoadIdentityForRefresh(conn pg.Conn) (*Identity, error) {
@@ -528,18 +529,13 @@ func (is Identities) Page(cursor *Cursor) *Page {
 }
 
 func (i *Identity) FromRow(row pgx.Row) error {
-	var projectId Id
 	var encryptedData []byte
 
-	err := row.Scan(&i.Id, &projectId, &i.Name, &i.Status, &i.ErrorMessage,
+	err := row.Scan(&i.Id, &i.ProjectId, &i.Name, &i.Status, &i.ErrorMessage,
 		&i.CreationTime, &i.UpdateTime, &i.LastUseTime, &i.RefreshTime,
 		&i.Connector, &i.Type, &encryptedData)
 	if err != nil {
 		return err
-	}
-
-	if !projectId.IsZero() {
-		i.ProjectId = &projectId
 	}
 
 	i.RawData, err = DecryptAES256(encryptedData)

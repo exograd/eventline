@@ -7,9 +7,10 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/ejson"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
-func (s *HTTPServer) LoadJob(h *HTTPHandler, jobId eventline.Id) (*eventline.Job, error) {
+func (s *HTTPServer) LoadJob(h *HTTPHandler, jobId uuid.UUID) (*eventline.Job, error) {
 	scope := h.Context.ProjectScope()
 
 	var job eventline.Job
@@ -63,7 +64,7 @@ func (s *HTTPServer) LoadJobByName(h *HTTPHandler, jobName string) (*eventline.J
 	return &job, nil
 }
 
-func (s *HTTPServer) DeleteJob(h *HTTPHandler, jobId eventline.Id) error {
+func (s *HTTPServer) DeleteJob(h *HTTPHandler, jobId uuid.UUID) error {
 	scope := h.Context.ProjectScope()
 
 	var job eventline.Job
@@ -94,7 +95,7 @@ func (s *HTTPServer) DeleteJob(h *HTTPHandler, jobId eventline.Id) error {
 	return nil
 }
 
-func (s *HTTPServer) RenameJob(h *HTTPHandler, jobId eventline.Id, data *eventline.JobRenamingData) error {
+func (s *HTTPServer) RenameJob(h *HTTPHandler, jobId uuid.UUID, data *eventline.JobRenamingData) error {
 	scope := h.Context.ProjectScope()
 
 	err := s.Service.Pg.WithTx(func(conn pg.Conn) error {
@@ -120,7 +121,7 @@ func (s *HTTPServer) RenameJob(h *HTTPHandler, jobId eventline.Id, data *eventli
 	return nil
 }
 
-func (s *HTTPServer) EnableJob(h *HTTPHandler, jobId eventline.Id) error {
+func (s *HTTPServer) EnableJob(h *HTTPHandler, jobId uuid.UUID) error {
 	scope := h.Context.ProjectScope()
 
 	err := s.Service.Pg.WithTx(func(conn pg.Conn) error {
@@ -145,7 +146,7 @@ func (s *HTTPServer) EnableJob(h *HTTPHandler, jobId eventline.Id) error {
 	return nil
 }
 
-func (s *HTTPServer) DisableJob(h *HTTPHandler, jobId eventline.Id) error {
+func (s *HTTPServer) DisableJob(h *HTTPHandler, jobId uuid.UUID) error {
 	scope := h.Context.ProjectScope()
 
 	err := s.Service.Pg.WithTx(func(conn pg.Conn) error {
@@ -170,7 +171,7 @@ func (s *HTTPServer) DisableJob(h *HTTPHandler, jobId eventline.Id) error {
 	return nil
 }
 
-func (s *HTTPServer) ExecuteJob(h *HTTPHandler, jobId eventline.Id, input *eventline.JobExecutionInput) (*eventline.JobExecution, error) {
+func (s *HTTPServer) ExecuteJob(h *HTTPHandler, jobId uuid.UUID, input *eventline.JobExecutionInput) (*eventline.JobExecution, error) {
 	scope := h.Context.ProjectScope()
 
 	var jobExecution *eventline.JobExecution

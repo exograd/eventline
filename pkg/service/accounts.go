@@ -7,6 +7,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type DuplicateUsernameError struct {
@@ -47,7 +48,7 @@ func (s *Service) createAccount(conn pg.Conn, newAccount *eventline.NewAccount) 
 	}
 
 	account = &eventline.Account{
-		Id:           eventline.GenerateId(),
+		Id:           uuid.MustGenerate(uuid.V7),
 		CreationTime: now,
 		Username:     newAccount.Username,
 		Salt:         salt,
@@ -94,7 +95,7 @@ func (s *Service) MaybeCreateDefaultAccount(conn pg.Conn) (*eventline.Account, e
 	return account, nil
 }
 
-func (s *Service) SelectAccountProject(projectId eventline.Id, hctx *HTTPContext) error {
+func (s *Service) SelectAccountProject(projectId uuid.UUID, hctx *HTTPContext) error {
 	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var project eventline.Project
 		if err := project.Load(conn, projectId); err != nil {
@@ -121,7 +122,7 @@ func (s *Service) SelectAccountProject(projectId eventline.Id, hctx *HTTPContext
 	})
 }
 
-func (s *Service) SelfUpdateAccount(accountId eventline.Id, update *eventline.AccountSelfUpdate, hctx *HTTPContext) error {
+func (s *Service) SelfUpdateAccount(accountId uuid.UUID, update *eventline.AccountSelfUpdate, hctx *HTTPContext) error {
 	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var account eventline.Account
 		if err := account.LoadForUpdate(conn, accountId); err != nil {
@@ -144,7 +145,7 @@ func (s *Service) SelfUpdateAccount(accountId eventline.Id, update *eventline.Ac
 	})
 }
 
-func (s *Service) SelfUpdateAccountPassword(accountId eventline.Id, update *eventline.AccountPasswordUpdate) error {
+func (s *Service) SelfUpdateAccountPassword(accountId uuid.UUID, update *eventline.AccountPasswordUpdate) error {
 	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var account eventline.Account
 		if err := account.LoadForUpdate(conn, accountId); err != nil {
@@ -165,7 +166,7 @@ func (s *Service) SelfUpdateAccountPassword(accountId eventline.Id, update *even
 	})
 }
 
-func (s *Service) UpdateAccount(accountId eventline.Id, update *eventline.AccountUpdate) (*eventline.Account, error) {
+func (s *Service) UpdateAccount(accountId uuid.UUID, update *eventline.AccountUpdate) (*eventline.Account, error) {
 	var account eventline.Account
 
 	err := s.Pg.WithTx(func(conn pg.Conn) error {
@@ -198,7 +199,7 @@ func (s *Service) UpdateAccount(accountId eventline.Id, update *eventline.Accoun
 	return &account, nil
 }
 
-func (s *Service) UpdateAccountPassword(accountId eventline.Id, update *eventline.AccountPasswordUpdate) (*eventline.Account, error) {
+func (s *Service) UpdateAccountPassword(accountId uuid.UUID, update *eventline.AccountPasswordUpdate) (*eventline.Account, error) {
 	var account eventline.Account
 
 	err := s.Pg.WithTx(func(conn pg.Conn) error {
@@ -225,7 +226,7 @@ func (s *Service) UpdateAccountPassword(accountId eventline.Id, update *eventlin
 	return &account, nil
 }
 
-func (s *Service) DeleteAccount(accountId eventline.Id) error {
+func (s *Service) DeleteAccount(accountId uuid.UUID) error {
 	return s.Pg.WithTx(func(conn pg.Conn) error {
 		if err := eventline.DeleteAccount(conn, accountId); err != nil {
 			return err

@@ -41,7 +41,7 @@ func (s *Service) CreateAPIKey(newAPIKey *eventline.NewAPIKey, scope eventline.S
 		keyString = key.String()
 
 		apiKey = &eventline.APIKey{
-			Id:           eventline.GenerateId(),
+			Id:           uuid.MustGenerate(uuid.V7),
 			AccountId:    accountScope.AccountId,
 			Name:         newAPIKey.Name,
 			CreationTime: now,
@@ -62,7 +62,7 @@ func (s *Service) CreateAPIKey(newAPIKey *eventline.NewAPIKey, scope eventline.S
 	return apiKey, keyString, nil
 }
 
-func (s *Service) DeleteAPIKey(keyId eventline.Id, scope eventline.Scope) error {
+func (s *Service) DeleteAPIKey(keyId uuid.UUID, scope eventline.Scope) error {
 	return s.Pg.WithTx(func(conn pg.Conn) error {
 		var key eventline.APIKey
 

@@ -5,9 +5,10 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
-func (s *Service) AddFavouriteJob(conn pg.Conn, jobId eventline.Id, scope eventline.Scope) error {
+func (s *Service) AddFavouriteJob(conn pg.Conn, jobId uuid.UUID, scope eventline.Scope) error {
 	accountProjectScope := scope.(*eventline.AccountProjectScope)
 	projectScope := eventline.NewProjectScope(accountProjectScope.ProjectId)
 
@@ -25,7 +26,7 @@ func (s *Service) AddFavouriteJob(conn pg.Conn, jobId eventline.Id, scope eventl
 	return fj.Upsert(conn)
 }
 
-func (s *Service) RemoveFavouriteJob(conn pg.Conn, jobId eventline.Id, scope eventline.Scope) error {
+func (s *Service) RemoveFavouriteJob(conn pg.Conn, jobId uuid.UUID, scope eventline.Scope) error {
 	accountProjectScope := scope.(*eventline.AccountProjectScope)
 	projectScope := eventline.NewProjectScope(accountProjectScope.ProjectId)
 

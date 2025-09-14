@@ -6,9 +6,10 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
-func (s *HTTPServer) LoadIdentity(h *HTTPHandler, identityId eventline.Id) (*eventline.Identity, error) {
+func (s *HTTPServer) LoadIdentity(h *HTTPHandler, identityId uuid.UUID) (*eventline.Identity, error) {
 	scope := h.Context.ProjectScope()
 
 	var identity eventline.Identity

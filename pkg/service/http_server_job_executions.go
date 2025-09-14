@@ -6,9 +6,10 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
-func (s *HTTPServer) LoadJobExecution(h *HTTPHandler, jeId eventline.Id) (*eventline.JobExecution, error) {
+func (s *HTTPServer) LoadJobExecution(h *HTTPHandler, jeId uuid.UUID) (*eventline.JobExecution, error) {
 	scope := h.Context.ProjectScope()
 
 	var je eventline.JobExecution
@@ -35,7 +36,7 @@ func (s *HTTPServer) LoadJobExecution(h *HTTPHandler, jeId eventline.Id) (*event
 	return &je, nil
 }
 
-func (s *HTTPServer) AbortJobExecution(h *HTTPHandler, jeId eventline.Id) error {
+func (s *HTTPServer) AbortJobExecution(h *HTTPHandler, jeId uuid.UUID) error {
 	scope := h.Context.ProjectScope()
 
 	if _, err := s.Service.AbortJobExecution(jeId, scope); err != nil {
@@ -56,7 +57,7 @@ func (s *HTTPServer) AbortJobExecution(h *HTTPHandler, jeId eventline.Id) error 
 	return nil
 }
 
-func (s *HTTPServer) RestartJobExecution(h *HTTPHandler, jeId eventline.Id) error {
+func (s *HTTPServer) RestartJobExecution(h *HTTPHandler, jeId uuid.UUID) error {
 	scope := h.Context.ProjectScope()
 
 	if _, err := s.Service.RestartJobExecution(jeId, scope); err != nil {

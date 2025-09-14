@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/program"
+	"go.n16f.net/uuid"
 )
 
 func addJobExecutionCommands() {
@@ -28,7 +28,7 @@ func cmdAbortJobExecution(p *program.Program) {
 
 	jeIdString := p.ArgumentValue("job-execution-id")
 
-	var jeId eventline.Id
+	var jeId uuid.UUID
 	if err := jeId.Parse(jeIdString); err != nil {
 		p.Fatal("invalid id %q: %w", jeIdString, err)
 	}
@@ -45,7 +45,7 @@ func cmdRestartJobExecution(p *program.Program) {
 
 	jeIdString := p.ArgumentValue("job-execution-id")
 
-	var jeId eventline.Id
+	var jeId uuid.UUID
 	if err := jeId.Parse(jeIdString); err != nil {
 		p.Fatal("invalid id %q: %w", jeIdString, err)
 	}

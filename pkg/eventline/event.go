@@ -10,6 +10,7 @@ import (
 	"go.n16f.net/ejson"
 	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 var EventSorts Sorts = Sorts{
@@ -22,7 +23,7 @@ var EventSorts Sorts = Sorts{
 }
 
 type UnknownEventError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err UnknownEventError) Error() string {
@@ -38,9 +39,9 @@ type NewEvent struct {
 }
 
 type Event struct {
-	Id              Id          `json:"id"`
-	ProjectId       Id          `json:"project_id"`
-	JobId           Id          `json:"job_id"`
+	Id              uuid.UUID   `json:"id"`
+	ProjectId       uuid.UUID   `json:"project_id"`
+	JobId           uuid.UUID   `json:"job_id"`
 	CreationTime    time.Time   `json:"creation_time"`
 	EventTime       time.Time   `json:"event_time"`
 	Connector       string      `json:"connector"`
@@ -48,7 +49,7 @@ type Event struct {
 	Data            EventData   `json:"data"`
 	DataValue       interface{} `json:"-"`
 	Processed       bool        `json:"processed,omitempty"`
-	OriginalEventId *Id         `json:"original_event_id,omitempty"`
+	OriginalEventId *uuid.UUID  `json:"original_event_id,omitempty"`
 }
 
 type Events []*Event
@@ -102,7 +103,7 @@ func (e *Event) Def() *EventDef {
 	return cdef.Event(e.Name)
 }
 
-func (e *Event) Load(conn pg.Conn, id Id, scope Scope) error {
+func (e *Event) Load(conn pg.Conn, id uuid.UUID, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, job_id, creation_time, event_time,
        connector, name, data, processed, original_event_id
@@ -190,17 +191,12 @@ func (es Events) Page(cursor *Cursor) *Page {
 }
 
 func (e *Event) FromRow(row pgx.Row) error {
-	var originalEventId Id
 	var rawData []byte
 
 	err := row.Scan(&e.Id, &e.ProjectId, &e.JobId, &e.CreationTime, &e.EventTime,
-		&e.Connector, &e.Name, &rawData, &e.Processed, &originalEventId)
+		&e.Connector, &e.Name, &rawData, &e.Processed, &e.OriginalEventId)
 	if err != nil {
 		return err
-	}
-
-	if !originalEventId.IsZero() {
-		e.OriginalEventId = &originalEventId
 	}
 
 	edef := e.Def()

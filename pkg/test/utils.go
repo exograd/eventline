@@ -1,7 +1,7 @@
 package test
 
 import (
-	"github.com/google/uuid"
+	"go.n16f.net/uuid"
 )
 
 func RandomName(prefix, suffix string) string {
@@ -11,9 +11,7 @@ func RandomName(prefix, suffix string) string {
 		name += prefix + "-"
 	}
 
-	// We use UUIDs and not KSUIDs because KSUIDs can contain upper case
-	// letters, which are forbidden in names (see pkg/eventline/names.go).
-	name += uuid.NewString()
+	name += uuid.MustGenerate(uuid.V4).String()
 
 	if suffix != "" {
 		name += "-" + suffix

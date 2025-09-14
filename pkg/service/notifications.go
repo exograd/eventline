@@ -12,6 +12,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/ejson"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type NotificationsCfg struct {
@@ -96,7 +97,7 @@ func (s *Service) CreateNotification(conn pg.Conn, recipients []string, subject,
 
 	// Create the notification
 	notification := eventline.Notification{
-		Id:               eventline.GenerateId(),
+		Id:               uuid.MustGenerate(uuid.V7),
 		ProjectId:        projectId,
 		Recipients:       recipients,
 		Message:          buf.Bytes(),

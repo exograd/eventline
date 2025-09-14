@@ -1,4 +1,8 @@
 # Changelog
+## Next
+### Misc
+- Replace KSUIDs by UUIDs everywhere.
+
 ## v1.1.2
 ### Bug fixes
 - Fix multiple HTTP route issues.

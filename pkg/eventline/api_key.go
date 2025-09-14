@@ -11,6 +11,7 @@ import (
 	"go.n16f.net/ejson"
 	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 var APIKeySorts Sorts = Sorts{
@@ -23,7 +24,7 @@ var APIKeySorts Sorts = Sorts{
 }
 
 type UnknownAPIKeyError struct {
-	Id *Id
+	Id *uuid.UUID
 }
 
 func (err UnknownAPIKeyError) Error() string {
@@ -39,8 +40,8 @@ type NewAPIKey struct {
 }
 
 type APIKey struct {
-	Id           Id         `json:"id"`
-	AccountId    Id         `json:"account_id"`
+	Id           uuid.UUID  `json:"id"`
+	AccountId    uuid.UUID  `json:"account_id"`
 	Name         string     `json:"name"`
 	CreationTime time.Time  `json:"creation_time"`
 	LastUseTime  *time.Time `json:"last_use_time,omitempty"`
@@ -84,7 +85,7 @@ SELECT COUNT(*)
 	return count > 0, nil
 }
 
-func (k *APIKey) LoadForUpdate(conn pg.Conn, id Id, scope Scope) error {
+func (k *APIKey) LoadForUpdate(conn pg.Conn, id uuid.UUID, scope Scope) error {
 	query := `
 SELECT id, account_id, name, creation_time,
        last_use_time, key_hash

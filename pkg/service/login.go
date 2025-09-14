@@ -9,6 +9,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/ejson"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 const (
@@ -139,7 +140,7 @@ func (s *Service) CreateSession(conn pg.Conn, ns *eventline.NewSession, scope ev
 	accountScope := scope.(*eventline.AccountScope)
 
 	session := eventline.Session{
-		Id:              eventline.GenerateId(),
+		Id:              uuid.MustGenerate(uuid.V7),
 		AccountId:       accountScope.AccountId,
 		CreationTime:    now,
 		UpdateTime:      now,
@@ -155,7 +156,7 @@ func (s *Service) CreateSession(conn pg.Conn, ns *eventline.NewSession, scope ev
 	return &session, nil
 }
 
-func (s *Service) sessionCookie(sessionId eventline.Id) *http.Cookie {
+func (s *Service) sessionCookie(sessionId uuid.UUID) *http.Cookie {
 	return &http.Cookie{
 		Name:     SessionCookieName,
 		Value:    sessionId.String(),

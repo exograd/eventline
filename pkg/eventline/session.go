@@ -6,12 +6,13 @@ import (
 	"fmt"
 	"time"
 
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type UnknownSessionError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err UnknownSessionError) Error() string {
@@ -25,8 +26,8 @@ type NewSession struct {
 }
 
 type Session struct {
-	Id              Id               `json:"id"`
-	AccountId       Id               `json:"account_id"`
+	Id              uuid.UUID        `json:"id"`
+	AccountId       uuid.UUID        `json:"account_id"`
 	CreationTime    time.Time        `json:"creation_time"`
 	UpdateTime      time.Time        `json:"update_time"`
 	Data            *SessionData     `json:"data"`
@@ -35,10 +36,10 @@ type Session struct {
 }
 
 type SessionData struct {
-	ProjectId *Id `json:"project_id,omitempty"`
+	ProjectId *uuid.UUID `json:"project_id,omitempty"`
 }
 
-func (s *Session) LoadUpdate(conn pg.Conn, id Id) error {
+func (s *Session) LoadUpdate(conn pg.Conn, id uuid.UUID) error {
 	now := time.Now().UTC()
 
 	query := `
@@ -89,7 +90,7 @@ UPDATE sessions SET
 	return pg.Exec(conn, query, s.Id, s.AccountSettings)
 }
 
-func UpdateSessionsForProjectDeletion(conn pg.Conn, projectId Id) error {
+func UpdateSessionsForProjectDeletion(conn pg.Conn, projectId uuid.UUID) error {
 	query := `
 UPDATE sessions SET
     data = data - 'project_id'

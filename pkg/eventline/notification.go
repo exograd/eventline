@@ -4,13 +4,14 @@ import (
 	"errors"
 	"time"
 
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type Notification struct {
-	Id               Id
-	ProjectId        Id
+	Id               uuid.UUID
+	ProjectId        uuid.UUID
 	Recipients       []string
 	Message          []byte
 	NextDeliveryTime time.Time

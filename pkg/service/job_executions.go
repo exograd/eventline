@@ -8,6 +8,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 func (s *Service) LoadJobExecutionContext(conn pg.Conn, je *eventline.JobExecution) (*eventline.ExecutionContext, error) {
@@ -78,7 +79,7 @@ func (s *Service) StartJobExecution(conn pg.Conn, je *eventline.JobExecution, sc
 	return nil
 }
 
-func (s *Service) AbortJobExecution(jeId eventline.Id, scope eventline.Scope) (*eventline.JobExecution, error) {
+func (s *Service) AbortJobExecution(jeId uuid.UUID, scope eventline.Scope) (*eventline.JobExecution, error) {
 	var je eventline.JobExecution
 
 	now := time.Now().UTC()
@@ -135,7 +136,7 @@ func (s *Service) AbortJobExecution(jeId eventline.Id, scope eventline.Scope) (*
 	return &je, nil
 }
 
-func (s *Service) RestartJobExecution(jeId eventline.Id, scope eventline.Scope) (*eventline.JobExecution, error) {
+func (s *Service) RestartJobExecution(jeId uuid.UUID, scope eventline.Scope) (*eventline.JobExecution, error) {
 	var je eventline.JobExecution
 
 	now := time.Now().UTC()
@@ -228,7 +229,7 @@ func (s *Service) UpdateJobExecutionFailure(conn pg.Conn, je *eventline.JobExecu
 	return nil
 }
 
-func (s *Service) handleJobExecutionTermination(jeId eventline.Id) error {
+func (s *Service) handleJobExecutionTermination(jeId uuid.UUID) error {
 	now := time.Now().UTC()
 
 	return s.Pg.WithTx(func(conn pg.Conn) error {

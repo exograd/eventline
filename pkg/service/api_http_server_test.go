@@ -6,15 +6,16 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/test"
-	"go.n16f.net/service/pkg/pg"
 	"github.com/stretchr/testify/require"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type TestAPIClient struct {
 	Account          *eventline.Account
 	APIKey           *eventline.APIKey
 	APIKeyValue      string
-	CurrentProjectId *eventline.Id
+	CurrentProjectId *uuid.UUID
 
 	t *testing.T
 }

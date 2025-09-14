@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"go.n16f.net/service/pkg/pg"
 	"go.n16f.net/ejson"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type ProjectConfiguration struct {
@@ -30,7 +31,7 @@ func (err DuplicateProjectNameError) Error() string {
 	return fmt.Sprintf("duplicate project name %q", err.Name)
 }
 
-func (s *Service) CreateProject(newProject *eventline.NewProject, accountId *eventline.Id) (*eventline.Project, error) {
+func (s *Service) CreateProject(newProject *eventline.NewProject, accountId *uuid.UUID) (*eventline.Project, error) {
 	var project *eventline.Project
 
 	err := s.Pg.WithTx(func(conn pg.Conn) (err error) {
@@ -44,7 +45,7 @@ func (s *Service) CreateProject(newProject *eventline.NewProject, accountId *eve
 	return project, nil
 }
 
-func (s *Service) createProject(conn pg.Conn, newProject *eventline.NewProject, accountId *eventline.Id) (*eventline.Project, error) {
+func (s *Service) createProject(conn pg.Conn, newProject *eventline.NewProject, accountId *uuid.UUID) (*eventline.Project, error) {
 	now := time.Now().UTC()
 
 	exists, err := eventline.ProjectNameExists(conn, newProject.Name)
@@ -55,7 +56,7 @@ func (s *Service) createProject(conn pg.Conn, newProject *eventline.NewProject, 
 	}
 
 	project := &eventline.Project{
-		Id:           eventline.GenerateId(),
+		Id:           uuid.MustGenerate(uuid.V7),
 		Name:         newProject.Name,
 		CreationTime: now,
 		UpdateTime:   now,
@@ -106,7 +107,7 @@ func (s *Service) MaybeCreateDefaultProject(conn pg.Conn, account *eventline.Acc
 	return project, nil
 }
 
-func (s *Service) DeleteProject(projectId eventline.Id, hctx *HTTPContext) error {
+func (s *Service) DeleteProject(projectId uuid.UUID, hctx *HTTPContext) error {
 	scope := eventline.NewProjectScope(projectId)
 
 	return s.Pg.WithTx(func(conn pg.Conn) error {
@@ -208,7 +209,7 @@ func (s *Service) DeleteIdentities(conn pg.Conn, scope eventline.Scope) error {
 	return nil
 }
 
-func (s *Service) UpdateProjectConfiguration(projectId eventline.Id, cfg *ProjectConfiguration) error {
+func (s *Service) UpdateProjectConfiguration(projectId uuid.UUID, cfg *ProjectConfiguration) error {
 	cfg.ProjectSettings.Id = projectId
 	cfg.ProjectNotificationSettings.Id = projectId
 

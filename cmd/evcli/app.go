@@ -13,9 +13,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/exograd/eventline/pkg/eventline"
-	"go.n16f.net/program"
 	"github.com/google/go-github/v40/github"
+	"go.n16f.net/program"
+	"go.n16f.net/uuid"
 )
 
 type App struct {
@@ -27,7 +27,7 @@ type App struct {
 
 	HomePath string
 
-	projectIdOption   *eventline.Id
+	projectIdOption   *uuid.UUID
 	projectNameOption *string
 }
 
@@ -84,12 +84,12 @@ func (a *App) IdentifyCurrentProject() {
 
 	p.Debug(1, "using project %s as current project", id)
 
-	a.Client.ProjectId = &id
+	a.Client.ProjectId = id
 }
 
-func (a *App) identifyCurrentProject() (eventline.Id, error) {
+func (a *App) identifyCurrentProject() (*uuid.UUID, error) {
 	if a.projectIdOption != nil {
-		return *a.projectIdOption, nil
+		return a.projectIdOption, nil
 	}
 
 	if a.projectNameOption != nil {
@@ -97,14 +97,14 @@ func (a *App) identifyCurrentProject() (eventline.Id, error) {
 	}
 
 	if idString := os.Getenv("EVENTLINE_PROJECT_ID"); idString != "" {
-		var id eventline.Id
+		var id uuid.UUID
 		if err := id.Parse(idString); err != nil {
-			return eventline.ZeroId,
+			return nil,
 				fmt.Errorf("EVENTLINE_PROJECT_ID: invalid project id %q: %w",
 					idString, err)
 		}
 
-		return id, nil
+		return &id, nil
 	}
 
 	if name := os.Getenv("EVENTLINE_PROJECT_NAME"); name != "" {
@@ -114,14 +114,13 @@ func (a *App) identifyCurrentProject() (eventline.Id, error) {
 	return a.identifyCurrentProjectByName("main")
 }
 
-func (a *App) identifyCurrentProjectByName(name string) (eventline.Id, error) {
+func (a *App) identifyCurrentProjectByName(name string) (*uuid.UUID, error) {
 	project, err := a.Client.FetchProjectByName(name)
 	if err != nil {
-		return eventline.ZeroId,
-			fmt.Errorf("cannot fetch project %q: %w", name, err)
+		return nil, fmt.Errorf("cannot fetch project %q: %w", name, err)
 	}
 
-	return project.Id, nil
+	return &project.Id, nil
 }
 
 func (a *App) LookForLastBuild() {

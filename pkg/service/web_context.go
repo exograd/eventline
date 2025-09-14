@@ -6,6 +6,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/utils"
 	"go.n16f.net/program"
+	"go.n16f.net/uuid"
 )
 
 // The set of information we inject into every rendered piece of web content.
@@ -18,7 +19,7 @@ type WebContext struct {
 	LoggedIn         bool
 	AccountSettings  *eventline.AccountSettings
 	ProjectIdChecked bool // true if we have performed project id detection
-	ProjectId        *eventline.Id
+	ProjectId        *uuid.UUID
 	ProjectName      string
 }
 

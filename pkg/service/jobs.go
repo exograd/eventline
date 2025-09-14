@@ -10,6 +10,7 @@ import (
 	"github.com/exograd/eventline/pkg/utils"
 	"go.n16f.net/ejson"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type JobSpecValidator struct {
@@ -155,7 +156,7 @@ func (s *Service) CreateOrUpdateJob(conn pg.Conn, spec *eventline.JobSpec, scope
 	now := time.Now().UTC()
 
 	job := eventline.Job{
-		Id:           eventline.GenerateId(),
+		Id:           uuid.MustGenerate(uuid.V7),
 		ProjectId:    projectId,
 		CreationTime: now,
 		UpdateTime:   now,
@@ -167,7 +168,7 @@ func (s *Service) CreateOrUpdateJob(conn pg.Conn, spec *eventline.JobSpec, scope
 		return nil, false, err
 	}
 
-	job.Id = id
+	job.Id = *id
 
 	// Subscription handling
 	subscription := new(eventline.Subscription)
@@ -255,7 +256,7 @@ func (s *Service) DeleteJob(conn pg.Conn, job *eventline.Job, scope eventline.Sc
 	return nil
 }
 
-func (s *Service) RenameJob(conn pg.Conn, jobId eventline.Id, data *eventline.JobRenamingData, scope eventline.Scope) (*eventline.Job, error) {
+func (s *Service) RenameJob(conn pg.Conn, jobId uuid.UUID, data *eventline.JobRenamingData, scope eventline.Scope) (*eventline.Job, error) {
 	var job eventline.Job
 
 	if err := job.LoadForUpdate(conn, jobId, scope); err != nil {
@@ -279,7 +280,7 @@ func (s *Service) InstantiateJob(conn pg.Conn, job *eventline.Job, event *eventl
 
 	// Job
 	jobExecution := eventline.JobExecution{
-		Id:           eventline.GenerateId(),
+		Id:           uuid.MustGenerate(uuid.V7),
 		ProjectId:    projectId,
 		JobId:        job.Id,
 		JobSpec:      job.Spec,
@@ -304,7 +305,7 @@ func (s *Service) InstantiateJob(conn pg.Conn, job *eventline.Job, event *eventl
 	stepExecutions := make(eventline.StepExecutions, len(job.Spec.Steps))
 	for i := range job.Spec.Steps {
 		stepExecution := eventline.StepExecution{
-			Id:             eventline.GenerateId(),
+			Id:             uuid.MustGenerate(uuid.V7),
 			ProjectId:      projectId,
 			JobExecutionId: jobExecution.Id,
 			Position:       i + 1,
@@ -323,7 +324,7 @@ func (s *Service) InstantiateJob(conn pg.Conn, job *eventline.Job, event *eventl
 	return &jobExecution, nil
 }
 
-func (s *Service) EnableJob(conn pg.Conn, jobId eventline.Id, scope eventline.Scope) (*eventline.Job, error) {
+func (s *Service) EnableJob(conn pg.Conn, jobId uuid.UUID, scope eventline.Scope) (*eventline.Job, error) {
 	var job eventline.Job
 
 	if err := job.LoadForUpdate(conn, jobId, scope); err != nil {
@@ -346,7 +347,7 @@ func (s *Service) EnableJob(conn pg.Conn, jobId eventline.Id, scope eventline.Sc
 	return &job, nil
 }
 
-func (s *Service) DisableJob(conn pg.Conn, jobId eventline.Id, scope eventline.Scope) (*eventline.Job, error) {
+func (s *Service) DisableJob(conn pg.Conn, jobId uuid.UUID, scope eventline.Scope) (*eventline.Job, error) {
 	var job eventline.Job
 
 	if err := job.LoadForUpdate(conn, jobId, scope); err != nil {
@@ -369,7 +370,7 @@ func (s *Service) DisableJob(conn pg.Conn, jobId eventline.Id, scope eventline.S
 	return &job, nil
 }
 
-func (s *Service) ExecuteJob(conn pg.Conn, jobId eventline.Id, input *eventline.JobExecutionInput, scope eventline.Scope) (*eventline.JobExecution, error) {
+func (s *Service) ExecuteJob(conn pg.Conn, jobId uuid.UUID, input *eventline.JobExecutionInput, scope eventline.Scope) (*eventline.JobExecution, error) {
 	var job eventline.Job
 	if err := job.Load(conn, jobId, scope); err != nil {
 		return nil, fmt.Errorf("cannot load job: %w", err)

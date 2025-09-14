@@ -20,12 +20,15 @@ func (s *WebHTTPServer) processOAuth2Request(h *HTTPHandler) {
 		return
 	}
 
-	identityId, sessionId, err := DecodeOAuth2State(state)
+	pIdentityId, pSessionId, err := DecodeOAuth2State(state)
 	if err != nil {
 		h.Log.Error("invalid oauth2 state: %v", err)
 		h.ReplyError(400, "invalid_oauth2_state", "invalid oauth2 state")
 		return
 	}
+
+	identityId := *pIdentityId
+	sessionId := *pSessionId
 
 	// Check that we have an OAuth2 code
 	code := h.QueryParameter("code")

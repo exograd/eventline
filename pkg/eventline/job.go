@@ -14,6 +14,7 @@ import (
 	"go.n16f.net/ejson"
 	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 	"gopkg.in/yaml.v3"
 )
 
@@ -27,11 +28,11 @@ var JobSorts Sorts = Sorts{
 }
 
 type JobPageOptions struct {
-	ExcludeFavouriteJobAccountId *Id
+	ExcludeFavouriteJobAccountId *uuid.UUID
 }
 
 type UnknownJobError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err UnknownJobError) Error() string {
@@ -64,8 +65,8 @@ var StepFailureActionValues = []StepFailureAction{
 }
 
 type Job struct {
-	Id           Id        `json:"id"`
-	ProjectId    Id        `json:"project_id"`
+	Id           uuid.UUID `json:"id"`
+	ProjectId    uuid.UUID `json:"project_id"`
 	CreationTime time.Time `json:"creation_time"`
 	UpdateTime   time.Time `json:"update_time"`
 	Disabled     bool      `json:"disabled,omitempty"`
@@ -377,7 +378,7 @@ func (spec *JobSpec) IdentityNames() []string {
 	return names
 }
 
-func (j *Job) Load(conn pg.Conn, id Id, scope Scope) error {
+func (j *Job) Load(conn pg.Conn, id uuid.UUID, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, creation_time, update_time, disabled, spec
   FROM jobs
@@ -392,7 +393,7 @@ SELECT id, project_id, creation_time, update_time, disabled, spec
 	return err
 }
 
-func (j *Job) LoadForUpdate(conn pg.Conn, id Id, scope Scope) error {
+func (j *Job) LoadForUpdate(conn pg.Conn, id uuid.UUID, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, creation_time, update_time, disabled, spec
   FROM jobs
@@ -437,7 +438,7 @@ SELECT id, project_id, creation_time, update_time, disabled, spec
 	return pg.QueryObjects(conn, js, query, name)
 }
 
-func LoadJobNamesById(conn pg.Conn, ids Ids) (map[Id]string, error) {
+func LoadJobNamesById(conn pg.Conn, ids []uuid.UUID) (map[uuid.UUID]string, error) {
 	ctx := context.Background()
 
 	query := `
@@ -450,10 +451,10 @@ SELECT id, spec->>'name'
 		return nil, err
 	}
 
-	names := make(map[Id]string)
+	names := make(map[uuid.UUID]string)
 
 	for rows.Next() {
-		var id Id
+		var id uuid.UUID
 		var name string
 
 		if err := rows.Scan(&id, &name); err != nil {
@@ -501,7 +502,7 @@ SELECT j.id, j.project_id, j.creation_time, j.update_time, j.disabled, j.spec
 	return jobs.Page(cursor), nil
 }
 
-func (j *Job) Upsert(conn pg.Conn) (Id, error) {
+func (j *Job) Upsert(conn pg.Conn) (*uuid.UUID, error) {
 	ctx := context.Background()
 
 	query := `
@@ -515,14 +516,14 @@ INSERT INTO jobs
     spec = EXCLUDED.spec
   RETURNING id
 `
-	var id Id
+	var id uuid.UUID
 	row := conn.QueryRow(ctx, query,
 		j.Id, j.ProjectId, j.CreationTime, j.UpdateTime, j.Disabled, j.Spec)
 	if err := row.Scan(&id); err != nil {
-		return ZeroId, err
+		return nil, err
 	}
 
-	return id, nil
+	return &id, nil
 }
 
 func (j *Job) Update(conn pg.Conn, scope Scope) error {

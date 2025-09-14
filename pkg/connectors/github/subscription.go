@@ -5,13 +5,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/exograd/eventline/pkg/eventline"
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type UnknownSubscriptionError struct {
-	Id eventline.Id
+	Id uuid.UUID
 }
 
 func (err UnknownSubscriptionError) Error() string {
@@ -19,7 +19,7 @@ func (err UnknownSubscriptionError) Error() string {
 }
 
 type Subscription struct {
-	Id           eventline.Id
+	Id           uuid.UUID
 	Organization string
 	Repository   string // optional
 	HookId       HookId // either an org hook or a repo hook
@@ -57,7 +57,7 @@ SELECT hook_id
 	return &hookId, nil
 }
 
-func (s *Subscription) LoadForUpdate(conn pg.Conn, id eventline.Id) error {
+func (s *Subscription) LoadForUpdate(conn pg.Conn, id uuid.UUID) error {
 	query := `
 SELECT id, organization, repository, hook_id
   FROM c_github_subscriptions

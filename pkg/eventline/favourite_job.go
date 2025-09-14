@@ -4,12 +4,13 @@ import (
 	"fmt"
 
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type FavouriteJob struct {
-	AccountId Id
-	ProjectId Id
-	JobId     Id
+	AccountId uuid.UUID
+	ProjectId uuid.UUID
+	JobId     uuid.UUID
 }
 
 func LoadFavouriteJobs(conn pg.Conn, scope Scope) (Jobs, error) {
@@ -41,7 +42,7 @@ INSERT INTO favourite_jobs
 		fj.AccountId, fj.ProjectId, fj.JobId)
 }
 
-func DeleteFavouriteJob(conn pg.Conn, jobId Id, scope Scope) error {
+func DeleteFavouriteJob(conn pg.Conn, jobId uuid.UUID, scope Scope) error {
 	query := fmt.Sprintf(`
 DELETE FROM favourite_jobs
   WHERE %s AND job_id = $1

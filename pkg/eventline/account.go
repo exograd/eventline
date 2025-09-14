@@ -13,6 +13,7 @@ import (
 	"go.n16f.net/ejson"
 	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -55,7 +56,7 @@ const (
 )
 
 type UnknownAccountError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err UnknownAccountError) Error() string {
@@ -92,14 +93,14 @@ type AccountSelfUpdate struct {
 }
 
 type Account struct {
-	Id            Id               `json:"id"`
+	Id            uuid.UUID        `json:"id"`
 	CreationTime  time.Time        `json:"creation_time"`
 	Username      string           `json:"username"`
 	Salt          []byte           `json:"-"`
 	PasswordHash  []byte           `json:"-"`
 	Role          AccountRole      `json:"role"`
 	LastLoginTime *time.Time       `json:"last_login_time,omitempty"`
-	LastProjectId *Id              `json:"last_project_id,omitempty"`
+	LastProjectId *uuid.UUID       `json:"last_project_id,omitempty"`
 	Settings      *AccountSettings `json:"settings"`
 }
 
@@ -209,7 +210,7 @@ SELECT id, creation_time, username, salt,
 	return pg.QueryObjects(conn, as, query)
 }
 
-func (a *Account) Load(conn pg.Conn, id Id) error {
+func (a *Account) Load(conn pg.Conn, id uuid.UUID) error {
 	query := `
 SELECT id, creation_time, username, salt,
        password_hash, role, last_login_time, last_project_id,
@@ -225,7 +226,7 @@ SELECT id, creation_time, username, salt,
 	return err
 }
 
-func (a *Account) LoadForUpdate(conn pg.Conn, id Id) error {
+func (a *Account) LoadForUpdate(conn pg.Conn, id uuid.UUID) error {
 	query := `
 SELECT id, creation_time, username, salt,
        password_hash, role, last_login_time, last_project_id,
@@ -311,7 +312,7 @@ UPDATE accounts SET
 	return pg.Exec(conn, query, a.Id, a.Settings, a.Salt, a.PasswordHash)
 }
 
-func UpdateAccountLastProjectId(conn pg.Conn, accountId Id, projectId *Id) error {
+func UpdateAccountLastProjectId(conn pg.Conn, accountId uuid.UUID, projectId *uuid.UUID) error {
 	query := `
 UPDATE accounts SET
     last_project_id = $2
@@ -320,7 +321,7 @@ UPDATE accounts SET
 	return pg.Exec(conn, query, accountId, projectId)
 }
 
-func UpdateAccountsForProjectDeletion(conn pg.Conn, projectId Id) error {
+func UpdateAccountsForProjectDeletion(conn pg.Conn, projectId uuid.UUID) error {
 	query := `
 UPDATE accounts SET
     last_project_id = NULL
@@ -342,7 +343,7 @@ UPDATE accounts SET
 		a.Id, a.Username, a.Salt, a.PasswordHash, a.Role)
 }
 
-func DeleteAccount(conn pg.Conn, accountId Id) error {
+func DeleteAccount(conn pg.Conn, accountId uuid.UUID) error {
 	query := `
 DELETE FROM accounts
   WHERE id = $1;
@@ -360,18 +361,13 @@ func (as Accounts) Page(cursor *Cursor) *Page {
 }
 
 func (a *Account) FromRow(row pgx.Row) error {
-	var lastProjectId Id
 	var settings AccountSettings
 
 	err := row.Scan(&a.Id, &a.CreationTime, &a.Username, &a.Salt,
-		&a.PasswordHash, &a.Role, &a.LastLoginTime, &lastProjectId,
+		&a.PasswordHash, &a.Role, &a.LastLoginTime, &a.LastProjectId,
 		&settings)
 	if err != nil {
 		return err
-	}
-
-	if !lastProjectId.IsZero() {
-		a.LastProjectId = &lastProjectId
 	}
 
 	a.Settings = &settings

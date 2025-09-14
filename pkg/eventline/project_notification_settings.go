@@ -5,19 +5,20 @@ import (
 	"net/mail"
 	"strings"
 
-	"go.n16f.net/service/pkg/pg"
-	"go.n16f.net/ejson"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/ejson"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type ProjectNotificationSettings struct {
-	Id                     Id       `json:"id"` // ignored in input
-	OnSuccessfulJob        bool     `json:"on_successful_job,omitempty"`
-	OnFirstSuccessfulJob   bool     `json:"on_first_successful_job,omitempty"`
-	OnFailedJob            bool     `json:"on_failed_job,omitempty"`
-	OnAbortedJob           bool     `json:"on_aborted_job,omitempty"`
-	OnIdentityRefreshError bool     `json:"on_identity_refresh_error,omitempty"`
-	EmailAddresses         []string `json:"email_addresses"`
+	Id                     uuid.UUID `json:"id"` // ignored in input
+	OnSuccessfulJob        bool      `json:"on_successful_job,omitempty"`
+	OnFirstSuccessfulJob   bool      `json:"on_first_successful_job,omitempty"`
+	OnFailedJob            bool      `json:"on_failed_job,omitempty"`
+	OnAbortedJob           bool      `json:"on_aborted_job,omitempty"`
+	OnIdentityRefreshError bool      `json:"on_identity_refresh_error,omitempty"`
+	EmailAddresses         []string  `json:"email_addresses"`
 }
 
 func (ps *ProjectNotificationSettings) Check(v *ejson.Validator) {
@@ -73,7 +74,7 @@ func (ps *ProjectNotificationSettings) CheckEmailAddresses(v *ejson.Validator, a
 	})
 }
 
-func (ps *ProjectNotificationSettings) Load(conn pg.Conn, id Id) error {
+func (ps *ProjectNotificationSettings) Load(conn pg.Conn, id uuid.UUID) error {
 	query := `
 SELECT id, on_successful_job, on_first_successful_job,
        on_failed_job, on_aborted_job, on_identity_refresh_error,

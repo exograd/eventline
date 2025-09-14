@@ -8,6 +8,7 @@ import (
 	"github.com/exograd/eventline/pkg/utils"
 	"github.com/exograd/eventline/pkg/web"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 func (s *WebHTTPServer) setupEventRoutes() {
@@ -36,7 +37,7 @@ func (s *WebHTTPServer) hEventsGET(h *HTTPHandler) {
 	}
 
 	var page *eventline.Page
-	var jobNames map[eventline.Id]string
+	var jobNames map[uuid.UUID]string
 
 	err = s.Pg.WithConn(func(conn pg.Conn) (err error) {
 		page, err = eventline.LoadEventPage(conn, cursor, scope)
@@ -45,7 +46,7 @@ func (s *WebHTTPServer) hEventsGET(h *HTTPHandler) {
 			return
 		}
 
-		var jobIds eventline.Ids
+		var jobIds []uuid.UUID
 		for _, element := range page.Elements {
 			event := element.(*eventline.Event)
 			jobIds = append(jobIds, event.JobId)
@@ -66,7 +67,7 @@ func (s *WebHTTPServer) hEventsGET(h *HTTPHandler) {
 
 	bodyData := struct {
 		Page     *eventline.Page
-		JobNames map[eventline.Id]string
+		JobNames map[uuid.UUID]string
 	}{
 		Page:     page,
 		JobNames: jobNames,

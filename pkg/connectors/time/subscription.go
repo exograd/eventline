@@ -5,12 +5,13 @@ import (
 	"time"
 
 	"github.com/exograd/eventline/pkg/eventline"
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type Subscription struct {
-	Id       eventline.Id
+	Id       uuid.UUID
 	LastTick *time.Time
 	NextTick time.Time
 }
@@ -66,7 +67,7 @@ UPDATE c_time_subscriptions SET
 		s.Id, s.LastTick, s.NextTick)
 }
 
-func DeleteSubscription(conn pg.Conn, id eventline.Id) error {
+func DeleteSubscription(conn pg.Conn, id uuid.UUID) error {
 	query := `
 DELETE FROM c_time_subscriptions
   WHERE id = $1;

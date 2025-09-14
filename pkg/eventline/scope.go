@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type Scope interface {
@@ -27,10 +28,10 @@ func (scope *GlobalScope) SQLCondition2(correlation string) string {
 }
 
 type AccountScope struct {
-	AccountId Id
+	AccountId uuid.UUID
 }
 
-func NewAccountScope(accountId Id) Scope {
+func NewAccountScope(accountId uuid.UUID) Scope {
 	return &AccountScope{
 		AccountId: accountId,
 	}
@@ -45,10 +46,10 @@ func (scope *AccountScope) SQLCondition2(correlation string) string {
 }
 
 type ProjectScope struct {
-	ProjectId Id
+	ProjectId uuid.UUID
 }
 
-func NewProjectScope(projectId Id) Scope {
+func NewProjectScope(projectId uuid.UUID) Scope {
 	return &ProjectScope{
 		ProjectId: projectId,
 	}
@@ -63,11 +64,11 @@ func (scope *ProjectScope) SQLCondition2(correlation string) string {
 }
 
 type AccountProjectScope struct {
-	AccountId Id
-	ProjectId Id
+	AccountId uuid.UUID
+	ProjectId uuid.UUID
 }
 
-func NewAccountProjectScope(accountId, projectId Id) Scope {
+func NewAccountProjectScope(accountId, projectId uuid.UUID) Scope {
 	return &AccountProjectScope{
 		AccountId: accountId,
 		ProjectId: projectId,

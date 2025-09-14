@@ -7,6 +7,7 @@ import (
 	"github.com/exograd/eventline/pkg/eventline"
 	"github.com/exograd/eventline/pkg/test"
 	"github.com/stretchr/testify/require"
+	"go.n16f.net/uuid"
 )
 
 func TestWebProjects(t *testing.T) {
@@ -44,13 +45,13 @@ func TestWebProjects(t *testing.T) {
 	require.Equal(201, res.StatusCode)
 
 	var responseData struct {
-		ProjectId eventline.Id `json:"project_id"`
+		ProjectId uuid.UUID `json:"project_id"`
 	}
 
 	assertResponseJSONBody(t, res, &responseData)
 
 	projectId := responseData.ProjectId
-	require.False(projectId.IsZero())
+	require.False(projectId.IsNil())
 
 	// Create a project with a duplicate name
 	req = client.NewRequest("POST", "/projects/create")

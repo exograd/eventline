@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/program"
+	"go.n16f.net/uuid"
 )
 
 var (
@@ -71,7 +71,7 @@ func main() {
 	}
 
 	if projectIdString := optionValue("project-id"); projectIdString != nil {
-		var projectId eventline.Id
+		var projectId uuid.UUID
 		if err := projectId.Parse(*projectIdString); err != nil {
 			p.Fatal("invalid project id %q: %v", *projectIdString, err)
 		}

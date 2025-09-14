@@ -6,9 +6,10 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
-func (s *Service) ReplayEvent(eventId eventline.Id, scope eventline.Scope) (*eventline.Event, error) {
+func (s *Service) ReplayEvent(eventId uuid.UUID, scope eventline.Scope) (*eventline.Event, error) {
 	var event eventline.Event
 
 	now := time.Now().UTC()
@@ -21,7 +22,7 @@ func (s *Service) ReplayEvent(eventId eventline.Id, scope eventline.Scope) (*eve
 
 		event = originalEvent
 
-		event.Id = eventline.GenerateId()
+		event.Id = uuid.MustGenerate(uuid.V7)
 		event.CreationTime = now
 		event.Processed = false
 		event.OriginalEventId = &eventId

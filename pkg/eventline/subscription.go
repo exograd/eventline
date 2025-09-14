@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	"go.n16f.net/service/pkg/pg"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type ExternalSubscriptionError struct {
@@ -23,7 +24,7 @@ func (err ExternalSubscriptionError) Error() string {
 }
 
 type UnknownSubscriptionError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err UnknownSubscriptionError) Error() string {
@@ -31,7 +32,7 @@ func (err UnknownSubscriptionError) Error() string {
 }
 
 type UnknownJobSubscriptionError struct {
-	JobId Id
+	JobId uuid.UUID
 }
 
 func (err UnknownJobSubscriptionError) Error() string {
@@ -47,10 +48,10 @@ const (
 )
 
 type Subscription struct {
-	Id             Id
-	ProjectId      *Id
-	JobId          *Id
-	IdentityId     *Id
+	Id             uuid.UUID
+	ProjectId      *uuid.UUID
+	JobId          *uuid.UUID
+	IdentityId     *uuid.UUID
 	Connector      string
 	Event          string
 	Parameters     SubscriptionParameters
@@ -75,7 +76,7 @@ func (s *Subscription) NewEvent(cname, ename string, etime *time.Time, data Even
 	}
 
 	return &Event{
-		Id:           GenerateId(),
+		Id:           uuid.MustGenerate(uuid.V7),
 		ProjectId:    *s.ProjectId,
 		JobId:        *s.JobId,
 		CreationTime: now,
@@ -86,7 +87,7 @@ func (s *Subscription) NewEvent(cname, ename string, etime *time.Time, data Even
 	}
 }
 
-func (s *Subscription) Load(conn pg.Conn, id Id) error {
+func (s *Subscription) Load(conn pg.Conn, id uuid.UUID) error {
 	query := `
 SELECT id, project_id, job_id, identity_id, connector, event, parameters,
        creation_time, status, update_delay, last_update_time, next_update_time
@@ -113,7 +114,7 @@ SELECT id, project_id, job_id, identity_id, connector, event, parameters,
 	return pg.QueryObjects(conn, ss, query)
 }
 
-func (s *Subscription) LoadByJobForUpdate(conn pg.Conn, jobId Id, scope Scope) error {
+func (s *Subscription) LoadByJobForUpdate(conn pg.Conn, jobId uuid.UUID, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, job_id, identity_id, connector, event, parameters,
        creation_time, status, update_delay, last_update_time, next_update_time
@@ -206,26 +207,13 @@ DELETE FROM subscriptions
 }
 
 func (s *Subscription) FromRow(row pgx.Row) error {
-	var projectId, jobId, identityId Id
 	var rawParameters json.RawMessage
 
-	err := row.Scan(&s.Id, &projectId, &jobId, &identityId,
+	err := row.Scan(&s.Id, &s.ProjectId, &s.JobId, &s.IdentityId,
 		&s.Connector, &s.Event, &rawParameters, &s.CreationTime, &s.Status,
 		&s.UpdateDelay, &s.LastUpdateTime, &s.NextUpdateTime)
 	if err != nil {
 		return err
-	}
-
-	if !projectId.IsZero() {
-		s.ProjectId = &projectId
-	}
-
-	if !jobId.IsZero() {
-		s.JobId = &jobId
-	}
-
-	if !identityId.IsZero() {
-		s.IdentityId = &identityId
 	}
 
 	edef := s.EventDef()

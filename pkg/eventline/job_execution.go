@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 var JobExecutionSorts Sorts = Sorts{
@@ -21,11 +22,11 @@ var JobExecutionSorts Sorts = Sorts{
 }
 
 type JobExecutionPageOptions struct {
-	JobId *Id
+	JobId *uuid.UUID
 }
 
 type UnknownJobExecutionError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err UnknownJobExecutionError) Error() string {
@@ -33,7 +34,7 @@ func (err UnknownJobExecutionError) Error() string {
 }
 
 type JobExecutionAbortedError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err *JobExecutionAbortedError) Error() string {
@@ -46,7 +47,7 @@ func IsJobAbortedError(err error) bool {
 }
 
 type JobExecutionFinishedError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err *JobExecutionFinishedError) Error() string {
@@ -54,7 +55,7 @@ func (err *JobExecutionFinishedError) Error() string {
 }
 
 type JobExecutionNotFinishedError struct {
-	Id Id
+	Id uuid.UUID
 }
 
 func (err *JobExecutionNotFinishedError) Error() string {
@@ -80,11 +81,11 @@ var JobExecutionStatusValues = []JobExecutionStatus{
 }
 
 type JobExecution struct {
-	Id             Id                     `json:"id"`
-	ProjectId      Id                     `json:"project_id"`
-	JobId          Id                     `json:"job_id"`
+	Id             uuid.UUID              `json:"id"`
+	ProjectId      uuid.UUID              `json:"project_id"`
+	JobId          uuid.UUID              `json:"job_id"`
 	JobSpec        *JobSpec               `json:"job_spec"`
-	EventId        *Id                    `json:"event_id,omitempty"`
+	EventId        *uuid.UUID             `json:"event_id,omitempty"`
 	Parameters     map[string]interface{} `json:"parameters,omitempty"`
 	CreationTime   time.Time              `json:"creation_time"`
 	UpdateTime     time.Time              `json:"update_time"`
@@ -126,7 +127,7 @@ func (je *JobExecution) Finished() bool {
 		je.Status != JobExecutionStatusStarted
 }
 
-func (je *JobExecution) Load(conn pg.Conn, id Id, scope Scope) error {
+func (je *JobExecution) Load(conn pg.Conn, id uuid.UUID, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, job_id, job_spec, event_id, parameters,
        creation_time, update_time, scheduled_time, status, start_time,
@@ -143,7 +144,7 @@ SELECT id, project_id, job_id, job_spec, event_id, parameters,
 	return err
 }
 
-func (je *JobExecution) LoadForUpdate(conn pg.Conn, id Id, scope Scope) error {
+func (je *JobExecution) LoadForUpdate(conn pg.Conn, id uuid.UUID, scope Scope) error {
 	query := fmt.Sprintf(`
 SELECT id, project_id, job_id, job_spec, event_id, parameters,
        creation_time, update_time, scheduled_time, status, start_time,
@@ -161,7 +162,7 @@ SELECT id, project_id, job_id, job_spec, event_id, parameters,
 	return err
 }
 
-func (je *JobExecution) LoadForUpdateNoScope(conn pg.Conn, id Id) error {
+func (je *JobExecution) LoadForUpdateNoScope(conn pg.Conn, id uuid.UUID) error {
 	query := `
 SELECT id, project_id, job_id, job_spec, event_id, parameters,
        creation_time, update_time, scheduled_time, status, start_time,
@@ -258,7 +259,7 @@ SELECT id, project_id, job_id, job_spec, event_id,
 	return &je, nil
 }
 
-func (jes *JobExecutions) LoadByEvent(conn pg.Conn, eventId Id) error {
+func (jes *JobExecutions) LoadByEvent(conn pg.Conn, eventId uuid.UUID) error {
 	query := `
 SELECT id, project_id, job_id, job_spec, event_id, parameters,
        creation_time, update_time, scheduled_time, status, start_time,
@@ -270,7 +271,7 @@ SELECT id, project_id, job_id, job_spec, event_id, parameters,
 	return pg.QueryObjects(conn, jes, query, eventId)
 }
 
-func LoadLastJobExecutions(conn pg.Conn, jobIds Ids, scope Scope) (map[Id]*JobExecution, error) {
+func LoadLastJobExecutions(conn pg.Conn, jobIds []uuid.UUID, scope Scope) (map[uuid.UUID]*JobExecution, error) {
 	query := fmt.Sprintf(`
 WITH ranked_jobs AS
        (SELECT id, project_id, job_id, job_spec, event_id, parameters,
@@ -292,7 +293,7 @@ WITH ranked_jobs AS
 		return nil, err
 	}
 
-	table := make(map[Id]*JobExecution)
+	table := make(map[uuid.UUID]*JobExecution)
 	for _, je := range jobExecutions {
 		table[je.JobId] = je
 	}
@@ -419,21 +420,10 @@ func (jes JobExecutions) Page(cursor *Cursor) *Page {
 }
 
 func (je *JobExecution) FromRow(row pgx.Row) error {
-	var eventId Id
-
-	err := row.Scan(&je.Id, &je.ProjectId, &je.JobId, &je.JobSpec, &eventId,
+	return row.Scan(&je.Id, &je.ProjectId, &je.JobId, &je.JobSpec, &je.EventId,
 		&je.Parameters, &je.CreationTime, &je.UpdateTime, &je.ScheduledTime,
 		&je.Status, &je.StartTime, &je.EndTime, &je.RefreshTime,
 		&je.ExpirationTime, &je.FailureMessage)
-	if err != nil {
-		return err
-	}
-
-	if !eventId.IsZero() {
-		je.EventId = &eventId
-	}
-
-	return nil
 }
 
 func (jes *JobExecutions) AddFromRow(row pgx.Row) error {

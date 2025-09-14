@@ -17,6 +17,7 @@ import (
 	"go.n16f.net/log"
 	"go.n16f.net/program"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 var RunnerDefs = map[string]*RunnerDef{}
@@ -56,7 +57,7 @@ type RunnerInitData struct {
 	Cfg  RunnerCfg
 	Data *RunnerData
 
-	TerminationChan chan<- Id
+	TerminationChan chan<- uuid.UUID
 
 	RefreshInterval time.Duration
 
@@ -102,11 +103,11 @@ type Runner struct {
 	// Keep a private copy to avoid potential concurrency issues with
 	// JobExecution since we need the id in both the main goroutine and the
 	// refresh goroutine.
-	jeId Id
+	jeId uuid.UUID
 
 	refreshInterval time.Duration
 
-	terminationChan chan<- Id
+	terminationChan chan<- uuid.UUID
 
 	StopChan <-chan struct{}
 	Wg       *sync.WaitGroup
@@ -623,7 +624,7 @@ func (r *Runner) StepCommandString(se *StepExecution, s *Step, rootPath string) 
 	return buf.String()
 }
 
-func (r *Runner) updateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution, error) {
+func (r *Runner) updateJobExecutionSuccess(jeId uuid.UUID, scope Scope) (*JobExecution, error) {
 	var je JobExecution
 
 	err := r.Pg.WithTx(func(conn pg.Conn) error {
@@ -654,7 +655,7 @@ func (r *Runner) updateJobExecutionSuccess(jeId Id, scope Scope) (*JobExecution,
 	return &je, nil
 }
 
-func (r *Runner) updateJobExecutionAbortion(jeId Id, scope Scope) (*JobExecution, StepExecutions, error) {
+func (r *Runner) updateJobExecutionAbortion(jeId uuid.UUID, scope Scope) (*JobExecution, StepExecutions, error) {
 	var je JobExecution
 	var ses StepExecutions
 
@@ -704,7 +705,7 @@ func (r *Runner) updateJobExecutionAbortion(jeId Id, scope Scope) (*JobExecution
 	return &je, ses, nil
 }
 
-func (r *Runner) updateJobExecutionFailure(jeId Id, jeErr error, scope Scope) (*JobExecution, StepExecutions, error) {
+func (r *Runner) updateJobExecutionFailure(jeId uuid.UUID, jeErr error, scope Scope) (*JobExecution, StepExecutions, error) {
 	var je JobExecution
 	var ses StepExecutions
 
@@ -755,7 +756,7 @@ func (r *Runner) updateJobExecutionFailure(jeId Id, jeErr error, scope Scope) (*
 	return &je, ses, nil
 }
 
-func (r *Runner) updateStepExecutionStart(jeId, seId Id, scope Scope) (*JobExecution, *StepExecution, error) {
+func (r *Runner) updateStepExecutionStart(jeId, seId uuid.UUID, scope Scope) (*JobExecution, *StepExecution, error) {
 	return r.updateStepExecution(jeId, seId, func(se *StepExecution) {
 		now := time.Now().UTC()
 
@@ -766,7 +767,7 @@ func (r *Runner) updateStepExecutionStart(jeId, seId Id, scope Scope) (*JobExecu
 	}, scope)
 }
 
-func (r *Runner) updateStepExecutionAborted(jeId, seId Id, scope Scope) (*JobExecution, *StepExecution, error) {
+func (r *Runner) updateStepExecutionAborted(jeId, seId uuid.UUID, scope Scope) (*JobExecution, *StepExecution, error) {
 	return r.updateStepExecution(jeId, seId, func(se *StepExecution) {
 		now := time.Now().UTC()
 
@@ -775,7 +776,7 @@ func (r *Runner) updateStepExecutionAborted(jeId, seId Id, scope Scope) (*JobExe
 	}, scope)
 }
 
-func (r *Runner) updateStepExecutionSuccess(jeId, seId Id, scope Scope) (*JobExecution, *StepExecution, error) {
+func (r *Runner) updateStepExecutionSuccess(jeId, seId uuid.UUID, scope Scope) (*JobExecution, *StepExecution, error) {
 	return r.updateStepExecution(jeId, seId, func(se *StepExecution) {
 		now := time.Now().UTC()
 
@@ -784,7 +785,7 @@ func (r *Runner) updateStepExecutionSuccess(jeId, seId Id, scope Scope) (*JobExe
 	}, scope)
 }
 
-func (r *Runner) updateStepExecutionFailure(jeId, seId Id, err error, scope Scope) (*JobExecution, *StepExecution, error) {
+func (r *Runner) updateStepExecutionFailure(jeId, seId uuid.UUID, err error, scope Scope) (*JobExecution, *StepExecution, error) {
 	return r.updateStepExecution(jeId, seId, func(se *StepExecution) {
 		now := time.Now().UTC()
 
@@ -794,7 +795,7 @@ func (r *Runner) updateStepExecutionFailure(jeId, seId Id, err error, scope Scop
 	}, scope)
 }
 
-func (r *Runner) updateStepExecution(jeId, seId Id, fn func(*StepExecution), scope Scope) (*JobExecution, *StepExecution, error) {
+func (r *Runner) updateStepExecution(jeId, seId uuid.UUID, fn func(*StepExecution), scope Scope) (*JobExecution, *StepExecution, error) {
 	var je JobExecution
 	var se StepExecution
 

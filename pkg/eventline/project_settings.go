@@ -3,14 +3,15 @@ package eventline
 import (
 	"errors"
 
-	"go.n16f.net/service/pkg/pg"
-	"go.n16f.net/ejson"
 	"github.com/jackc/pgx/v5"
+	"go.n16f.net/ejson"
+	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 type ProjectSettings struct {
-	Id         Id     `json:"id"` // Ignored in input
-	CodeHeader string `json:"code_header"`
+	Id         uuid.UUID `json:"id"` // Ignored in input
+	CodeHeader string    `json:"code_header"`
 }
 
 func (ps *ProjectSettings) ValidateJSON(v *ejson.Validator) {
@@ -20,7 +21,7 @@ func (ps *ProjectSettings) ValidateJSON(v *ejson.Validator) {
 		"invalid shebang: %v", err)
 }
 
-func (ps *ProjectSettings) Load(conn pg.Conn, id Id) error {
+func (ps *ProjectSettings) Load(conn pg.Conn, id uuid.UUID) error {
 	query := `
 SELECT id, code_header
   FROM project_settings

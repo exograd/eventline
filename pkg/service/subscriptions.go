@@ -6,6 +6,7 @@ import (
 
 	"github.com/exograd/eventline/pkg/eventline"
 	"go.n16f.net/service/pkg/pg"
+	"go.n16f.net/uuid"
 )
 
 func (s *Service) CreateSubscription(conn pg.Conn, job *eventline.Job, scope eventline.Scope) (*eventline.Subscription, error) {
@@ -13,7 +14,7 @@ func (s *Service) CreateSubscription(conn pg.Conn, job *eventline.Job, scope eve
 
 	triggerData := job.Spec.Trigger
 
-	var identityId *eventline.Id
+	var identityId *uuid.UUID
 
 	if name := triggerData.Identity; name != "" {
 		id, err := eventline.LoadIdentityIdByName(conn, name, scope)
@@ -21,13 +22,13 @@ func (s *Service) CreateSubscription(conn pg.Conn, job *eventline.Job, scope eve
 			return nil, fmt.Errorf("cannot load identity %q: %w", name, err)
 		}
 
-		identityId = &id
+		identityId = id
 	}
 
 	now := time.Now().UTC()
 
 	subscription := eventline.Subscription{
-		Id:             eventline.GenerateId(),
+		Id:             uuid.MustGenerate(uuid.V7),
 		ProjectId:      &projectId,
 		JobId:          &job.Id,
 		IdentityId:     identityId,
